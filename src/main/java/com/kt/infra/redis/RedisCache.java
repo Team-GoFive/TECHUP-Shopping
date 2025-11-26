@@ -24,8 +24,8 @@ public class RedisCache {
 		redisTemplate.opsForValue().set(key, value, ttl.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
-	public <T> void set(RedisKey redisKey, Object email, T value) {
-		set(redisKey.key(email), value, redisKey.getTtl());
+	public <T> void set(RedisKey redisKey, Object keyParam, T value) {
+		set(redisKey.key(keyParam), value, redisKey.getTtl());
 	}
 
 	public <T> T get(String key, Class<T> clazz) {

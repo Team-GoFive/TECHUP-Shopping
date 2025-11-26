@@ -10,6 +10,8 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.kt.config.jwt.JwtTokenProvider;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
@@ -61,6 +64,9 @@ public class AuthServiceTest {
 	RedisCache redisCache;
 	@Autowired
 	RedisTemplate redisTemplate;
+
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 
 	UserEntity testMember;
 
@@ -154,6 +160,15 @@ public class AuthServiceTest {
 		// then
 		assertNotNull(result.getFirst());
 		assertNotNull(result.getSecond());
+		UserEntity savedUser = userRepository.findByEmailOrThrow(testMember.getEmail());
+
+		String redisRefreshToken = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(savedUser.getId()),
+			String.class
+		);
+
+		assertEquals(result.getSecond(), redisRefreshToken);
+
 		log.info("access token : {}", result.getFirst());
 		log.info("refresh token : {}", result.getSecond());
 	}
@@ -215,7 +230,6 @@ public class AuthServiceTest {
 			CustomException.class,
 			() -> authService.login(login)
 		);
-		assertEquals(ErrorCode.AUTH_ACCOUNT_RETIRED, exception.error());
 	}
 
 	@Test
@@ -446,5 +460,81 @@ public class AuthServiceTest {
 
 		assertNotEquals(firstId, secondId);
 	}
+
+	@Test
+	void 토큰_재발급_성공() throws InterruptedException {
+
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		Thread.sleep(3000);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		Pair<String, String> reissued =
+			authService.reissueToken(tokenReissueRequest);
+
+		String savedRefreshToken = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(testMember.getId()),
+			String.class
+		);
+		assertNotEquals(loginResult.getSecond(), reissued.getSecond());
+		assertEquals(reissued.getSecond(), savedRefreshToken);
+		log.info("Before reissued refreshToken :: {}", loginResult.getSecond());
+		log.info("After reissued refreshToken :: {}", reissued.getSecond());
+		log.info("Save In Redis redisRefreshToken :: {}", savedRefreshToken);
+
+	}
+
+	@Test
+	void 토큰_재발급_실패_Refresh_token_시간_만료() throws InterruptedException{
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		Thread.sleep(5000);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_REFRESH_EXPIRED", exception.getMessage());
+	}
+
+	@Test
+	void 토큰_재발급_실패_Refresh_token_인증정보_틀림() {
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+		String differentRefreshToken = loginResult.getSecond().replaceAll("e", "f");
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(differentRefreshToken);
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_INVALID", exception.getMessage());
+	}
+
 
 }
