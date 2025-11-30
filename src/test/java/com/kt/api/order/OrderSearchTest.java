@@ -54,18 +54,15 @@ public class OrderSearchTest {
 
 	@BeforeEach
 	void setUp() {
-		// 유저 생성
 		testMember = createMember();
 		userRepository.save(testMember);
 
-		// 카테고리 생성
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
-		// 상품 생성
+
 		testProduct = createProduct(category);
 		productRepository.save(testProduct);
-		// 주문 생성
-		productRepository.save(testProduct);
+
 		for (int i = 0; i < 2; i++) {
 			List<OrderRequest.Item> items = List.of(
 				new OrderRequest.Item(testProduct.getId(), 1L)

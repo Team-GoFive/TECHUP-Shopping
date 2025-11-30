@@ -67,6 +67,7 @@ public class OrderCancelTest extends MockMvcTest {
 
 	@Test
 	void 주문_취소_성공__200_OK() throws Exception {
+		// when
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
 		ResultActions actions = mockMvc.perform(
@@ -74,6 +75,7 @@ public class OrderCancelTest extends MockMvcTest {
 				.with(user(testMember.getEmail()))
 		);
 
+		// then
 		actions.andDo(print());
 		actions.andExpect(status().isOk());
 		assertThat(saved.getStatus()).isEqualTo(OrderStatus.CANCELED);
