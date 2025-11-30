@@ -91,8 +91,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private boolean isCancelable(OrderStatus status) {
-		return status == OrderStatus.WAITING_PAYMENT ||
-			status == OrderStatus.SHIPPING_COMPLETED;
+		if (status == OrderStatus.PURCHASE_CONFIRMED)
+			return false;
+		if (status == OrderStatus.SHIPPING_COMPLETED)
+			return false;
+		return true;
 	}
 
 	@Override
