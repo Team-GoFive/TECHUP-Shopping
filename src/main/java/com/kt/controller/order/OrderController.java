@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
+import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.dto.response.AdminOrderResponse;
+import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.OrderService;
 
@@ -33,7 +36,7 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@GetMapping
-	ResponseEntity<?> searchOrders(
+	ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
 		return ApiResult.page(
@@ -42,7 +45,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/{orderId}")
-	ResponseEntity<?> getOrderDetail(
+	ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
 		return ApiResult.wrap(
@@ -51,7 +54,7 @@ public class OrderController {
 	}
 
 	@PostMapping
-	ResponseEntity<?> createOrder(
+	ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@Valid @RequestBody OrderRequest request
 	) {
@@ -63,7 +66,7 @@ public class OrderController {
 	}
 
 	@PatchMapping("/{orderId}/cancel")
-	ResponseEntity<?> cancelOrder(
+	ResponseEntity<ApiResult<Void>> cancelOrder(
 		@PathVariable UUID orderId
 	) {
 		orderService.cancelOrder(orderId);
@@ -71,7 +74,7 @@ public class OrderController {
 	}
 
 	@PutMapping("/{orderId}")
-	ResponseEntity<?> updateOrder(
+	ResponseEntity<ApiResult<Void>> updateOrder(
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request
 	) {
