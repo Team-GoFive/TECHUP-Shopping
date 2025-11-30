@@ -70,7 +70,7 @@ public class OrderController {
 		return empty();
 	}
 
-	@PutMapping("/api/orders/{orderId}")
+	@PutMapping("/{orderId}")
 	ResponseEntity<?> updateOrder(
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request
