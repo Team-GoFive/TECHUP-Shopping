@@ -52,7 +52,7 @@ public class OrderListTest extends MockMvcTest {
 		UserEntity user = UserEntityCreator.createMember();
 
 		savedUser = userRepository.save(user);
-		OrderEntity order = OrderEntityCreator.craeteOrderEntity(savedUser);
+		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
 		savedOrder = orderRepository.save(order);
 
 		// when

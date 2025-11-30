@@ -40,7 +40,7 @@ public class OrderUpdateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		OrderEntity order = OrderEntityCreator.craeteOrderEntity();
+		OrderEntity order = OrderEntityCreator.createOrderEntity();
 		savedOrder = orderRepository.save(order);
 	}
 
