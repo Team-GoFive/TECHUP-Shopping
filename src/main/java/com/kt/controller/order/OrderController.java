@@ -34,8 +34,7 @@ public class OrderController {
 	ResponseEntity<?> searchOrders(
 		@ModelAttribute Paging paging
 	) {
-		orderService.searchOrder(paging.toPageable());
-		return ApiResult.wrap(null);
+		return ApiResult.page(orderService.searchOrder(paging.toPageable()));
 	}
 
 	@GetMapping("/{orderId}")

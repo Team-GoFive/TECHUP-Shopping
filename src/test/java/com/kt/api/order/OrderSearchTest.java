@@ -4,6 +4,7 @@ import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public class OrderSearchTest {
 		productRepository.save(testProduct);
 		// 주문 생성
 		productRepository.save(testProduct);
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			List<OrderRequest.Item> items = List.of(
 				new OrderRequest.Item(testProduct.getId(), 1L)
 			);
@@ -83,12 +84,14 @@ public class OrderSearchTest {
 	void 주문_목록_조회_성공__200_OK() throws Exception {
 		ResultActions actions = mockMvc.perform(
 			get("/api/orders")
-				.with(SecurityMockMvcRequestPostProcessors.user(""))
+				.with(SecurityMockMvcRequestPostProcessors.user(testMember.getEmail()))
 				.param("page", "1")
 				.param("size", "10")
 		);
 
+		actions.andDo(print());
 		actions.andExpect(status().isOk());
+		actions.andExpect(jsonPath("$.data.list.length()").value(2));
 
 	}
 }
