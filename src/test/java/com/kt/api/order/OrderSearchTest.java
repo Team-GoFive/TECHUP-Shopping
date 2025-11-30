@@ -34,7 +34,7 @@ import com.kt.service.ReviewService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("상품 목록 조회 - GET /api/orders")
+@DisplayName("주문 목록 조회 - GET /api/orders")
 public class OrderSearchTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -80,7 +80,7 @@ public class OrderSearchTest {
 	}
 
 	@Test
-	void 상품_목록_조회_성공__200_OK() throws Exception {
+	void 주문_목록_조회_성공__200_OK() throws Exception {
 		ResultActions actions = mockMvc.perform(
 			get("/api/orders")
 				.with(SecurityMockMvcRequestPostProcessors.user(""))

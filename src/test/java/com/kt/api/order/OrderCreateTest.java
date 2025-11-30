@@ -38,7 +38,7 @@ import com.kt.service.OrderService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("상품 생성 - POST /api/orders")
+@DisplayName("주문 생성 - POST /api/orders")
 public class OrderCreateTest {
 	@Autowired
 	MockMvc mockMvc;
@@ -111,7 +111,7 @@ public class OrderCreateTest {
 	}
 
 	@Test
-	void 여러_상품_주문_생성_성공__200_OK() throws Exception {
+	void 여러_상품에_대하여_주문_생성_성공__200_OK() throws Exception {
 		// when
 		DefaultCurrentUser currentUser = new DefaultCurrentUser(
 			testMember.getId(),
