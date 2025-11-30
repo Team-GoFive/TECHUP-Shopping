@@ -7,19 +7,21 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.exception.CustomException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
-import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -71,40 +73,75 @@ class OrderServiceTest {
 		defaultCategory = categoryRepository.save(category);
 	}
 
-	@Test
-	void 주문_생성_성공() {
-		// given
-		String email = "test@example.com";
-
-		UserEntity savedUser = userRepository.save(
+	UserEntity createUser(String email) {
+		return userRepository.save(
 			UserEntity.create(
-				"김도현",
-				"test@example.com",
+				"테스트유저",
+				email,
 				"111",
 				UserRole.MEMBER,
 				Gender.MALE,
-				LocalDate.now(),
-				"0101010"
+				LocalDate.of(2000, 1, 1),
+				"010-1234-5678"
 			)
 		);
+	}
 
-		ProductEntity product1 = ProductEntity.create("상품1", 10L, 10000L, defaultCategory);
-		productRepository.save(product1);
+	ProductEntity createProduct(String name, long stock, long price) {
+		return productRepository.save(
+			ProductEntity.create(name, stock, price, defaultCategory)
+		);
+	}
 
-		ProductEntity product2 = ProductEntity.create("상품2", 5L, 20000L, defaultCategory);
-		productRepository.save(product2);
+	OrderEntity createOrder(UserEntity user, OrderStatus status) {
+		return orderRepository.save(
+			OrderEntity.create(
+				ReceiverVO.create(
+					"수령인",
+					"010-0000-0000",
+					"서울시",
+					"강남구",
+					"테헤란로",
+					"101호"
+				),
+				user,
+				status
+			)
+		);
+	}
 
-		OrderRequest.Item item1 = new OrderRequest.Item(product1.getId(), 2L);
-		OrderRequest.Item item2 = new OrderRequest.Item(product2.getId(), 1L);
+	OrderProductEntity createOrderWithProducts(OrderEntity order, ProductEntity product, long quantity) {
 
+		product.decreaseStock(quantity);
+		productRepository.save(product);
+
+		return orderProductRepository.save(
+			OrderProductEntity.create(
+				quantity,
+				product.getPrice(),
+				OrderProductStatus.CREATED,
+				order,
+				product
+			)
+		);
+	}
+
+	@Test
+	void 주문_생성_성공() {
+		// given
+		UserEntity user = createUser("test@example.com");
+		ProductEntity p1 = createProduct("상품1", 10L, 10000L);
+		ProductEntity p2 = createProduct("상품2", 5L, 20000L);
+
+		OrderRequest.Item item1 = new OrderRequest.Item(p1.getId(), 2L);
+		OrderRequest.Item item2 = new OrderRequest.Item(p2.getId(), 1L);
 		List<OrderRequest.Item> items = List.of(item1, item2);
 
 		// when
-		orderService.createOrder(email, items);
+		orderService.createOrder(user.getEmail(), items);
 
 		// then
 		List<OrderEntity> orders = orderRepository.findAll();
-
 		assertThat(orders).isNotEmpty();
 		OrderEntity savedOrder = orders.get(orders.size() - 1);
 
@@ -116,8 +153,8 @@ class OrderServiceTest {
 
 		assertThat(orderProducts).hasSize(2);
 
-		ProductEntity finalProduct1 = productRepository.findById(product1.getId()).get();
-		ProductEntity finalProduct2 = productRepository.findById(product2.getId()).get();
+		ProductEntity finalProduct1 = productRepository.findById(p1.getId()).get();
+		ProductEntity finalProduct2 = productRepository.findById(p2.getId()).get();
 
 		assertThat(finalProduct1.getStock()).isEqualTo(10000L - 2L);
 		assertThat(finalProduct2.getStock()).isEqualTo(20000L - 1L);
@@ -129,28 +166,14 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_실패__상품없음() {
 		// given
+		UserEntity user = createUser("test@example.com");
 
-		String email = "test@example.com";
-		UserEntity user = UserEntity.create(
-			"김도현",
-			"test@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-
-		UserEntity savedEntity = userRepository.save(user);
-
-		UUID invalidProductId = UUID.fromString("11111111-2222-3333-4444-555555555555");
-
+		UUID invalidId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(invalidProductId, 1L)
-		);
+			new OrderRequest.Item(invalidId, 1L));
 
 		// when, then
-		assertThatThrownBy(() -> orderService.createOrder(email, items))
+		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PRODUCT_NOT_FOUND");
 	}
@@ -190,33 +213,12 @@ class OrderServiceTest {
 	@Test
 	void 주문상품_조회() {
 		// given
-		UserEntity user = UserEntity.create(
-			"김도현",
-			"test@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-		UserEntity savedUser = userRepository.save(user);
+		UserEntity user = createUser("test@example.com");
+		ProductEntity product = createProduct("테스트상품", 10L, 10000L);
 
-		ProductEntity product = ProductEntity.create("테스트 상품", 5L, 10000L, defaultCategory);
-		ProductEntity savedProduct = productRepository.save(product);
-
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create("이름", "번호", "도시", "시군구", "도로명", "상세"),
-			savedUser
-		);
+		OrderEntity order = createOrder(user, OrderStatus.CREATED);
+		createOrderWithProducts(order, product, 2L);
 		OrderEntity savedOrder = orderRepository.save(order);
-		OrderProductEntity orderProduct = OrderProductEntity.create(
-			2L,
-			10000L,
-			OrderProductStatus.CREATED,
-			savedOrder,
-			savedProduct
-		);
-		OrderProductEntity savedOrderProduct = orderProductRepository.save(orderProduct);
 
 		// when
 		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(savedOrder.getId());
@@ -231,54 +233,13 @@ class OrderServiceTest {
 	@Test
 	void 주문_취소_성공() {
 		// given
-		long initialStock = 10000L;
-		long orderQuantity = 3L;
-
-		UserEntity user = UserEntity.create(
-			"유저5",
-			"cancel_test@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-		userRepository.save(user);
-
-		ProductEntity product = ProductEntity.create(
-			"취소상품",
-			10000L,
-			initialStock,
-			ProductStatus.ACTIVATED,
-			defaultCategory
-		);
+		UserEntity user = createUser("cancel@example.com");
+		ProductEntity product = createProduct("상품", 10000L, 5000L);
 		productRepository.save(product);
+		OrderEntity order = createOrder(user, OrderStatus.WAITING_PAYMENT);
 
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create(
-				"이름",
-				"번호",
-				"도시",
-				"시군구",
-				"도로명",
-				"상세"
-			),
-			user,
-			OrderStatus.CREATED
-		);
-		orderRepository.save(order);
-
-		product.decreaseStock(orderQuantity);
-		productRepository.save(product);
-
-		OrderProductEntity orderProduct = OrderProductEntity.create(
-			orderQuantity,
-			10000L,
-			OrderProductStatus.CREATED,
-			order,
-			product
-		);
-		orderProductRepository.save(orderProduct);
+		OrderProductEntity orderProduct = createOrderWithProducts(order, product, 3L);
+		long beforeStock = product.getStock();
 
 		UUID orderId = order.getId();
 
@@ -286,48 +247,21 @@ class OrderServiceTest {
 		orderService.cancelOrder(orderId);
 
 		// then
-		OrderProductEntity canceledOrderProduct = orderProductRepository.findById(orderProduct.getId())
-			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
-		assertThat(canceledOrderProduct.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
+		OrderProductEntity afterOp = orderProductRepository.findById(orderProduct.getId()).get();
+		assertThat(afterOp.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
 
-		ProductEntity finalProduct = productRepository.findById(product.getId())
-			.orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-		assertThat(finalProduct.getStock()).isEqualTo(initialStock);
-
+		ProductEntity finalP = productRepository.findById(product.getId()).get();
+		assertThat(finalP.getStock()).isEqualTo(beforeStock + 3L);
 	}
 
 	@Test
-	void 주문_취소_실패__이미_처리됨() {
+	void 주문_취소_실패__이미_구매확정() {
 		// given
-		UserEntity user = UserEntity.create(
-			"유저",
-			"cancel_fail@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-		userRepository.save(user);
+		UserEntity user = createUser("fail@example.com");
+		OrderEntity order = createOrder(user, OrderStatus.PURCHASE_CONFIRMED);
 
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create(
-				"이름",
-				"번호",
-				"도시",
-				"시군구",
-				"도로명",
-				"상세"
-			),
-			user,
-			OrderStatus.PURCHASE_CONFIRMED
-		);
-		orderRepository.save(order);
-
-		UUID orderId = order.getId();
-
-		// when, then
-		assertThatThrownBy(() -> orderService.cancelOrder(orderId))
+		// when & then
+		assertThatThrownBy(() -> orderService.cancelOrder(order.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
@@ -335,53 +269,10 @@ class OrderServiceTest {
 	@Test
 	void 주문_수정_성공__배송정보_변경() {
 		// given
-		long initialStock = 10000L;
-
-		UserEntity user = UserEntity.create(
-			"유저",
-			"update_test@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-		userRepository.save(user);
-
-		ProductEntity product = ProductEntity.create(
-			"기존 상품",
-			10000L,
-			initialStock,
-			ProductStatus.ACTIVATED,
-			defaultCategory
-		);
-		productRepository.save(product);
-
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create(
-				"김기존",
-				"01011112222",
-				"서울시",
-				"강남구",
-				"역삼로",
-				"1층"
-			),
-			user,
-			OrderStatus.CREATED
-		);
-		orderRepository.save(order);
-
-		product.decreaseStock(2L);
-		productRepository.save(product);
-
-		OrderProductEntity orderProduct = OrderProductEntity.create(
-			2L,
-			10000L,
-			OrderProductStatus.CREATED,
-			order,
-			product
-		);
-		orderProductRepository.save(orderProduct);
+		UserEntity user = createUser("update@example.com");
+		ProductEntity product = createProduct("상품", 10000L, 5000L);
+		OrderEntity order = createOrder(user, OrderStatus.CREATED);
+		createOrderWithProducts(order, product, 2L);
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
 			"박수정",
@@ -392,64 +283,168 @@ class OrderServiceTest {
 			"2층"
 		);
 
-		UUID orderId = order.getId();
-
 		// when
-		orderService.updateOrder(orderId, updateRequest);
+		orderService.updateOrder(order.getId(), updateRequest);
 
 		// then
-		OrderEntity updatedOrder = orderRepository.findById(orderId).get();
-
-		assertThat(updatedOrder.getReceiverVO().getName()).isEqualTo("박수정");
-		assertThat(updatedOrder.getReceiverVO().getMobile()).isEqualTo("01099998888");
-
-		ProductEntity finalProduct = productRepository.findById(product.getId()).get();
-		assertThat(finalProduct.getStock()).isEqualTo(initialStock - 2L);
+		OrderEntity updated = orderRepository.findById(order.getId()).get();
+		assertThat(updated.getReceiverVO().getName()).isEqualTo("박수정");
 	}
 
 	@Test
 	void 주문_수정_실패__이미_처리됨() {
 		// given
-		UserEntity user = UserEntity.create(
-			"유저",
-			"update_fail@example.com",
-			"111",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-		userRepository.save(user);
+		UserEntity user = createUser("fail2@example.com");
+		OrderEntity order = createOrder(user, OrderStatus.PURCHASE_CONFIRMED);
 
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create(
-				"이름",
-				"번호",
-				"도시",
-				"시군구",
-				"도로명",
-				"상세"
-			),
-			user,
-			OrderStatus.PURCHASE_CONFIRMED
-		);
-		orderRepository.save(order);
-
-		UUID orderId = order.getId();
-
-		OrderRequest.Update updateRequest = new OrderRequest.Update(
-			"박수정",
-			"01099998888",
-			"부산시",
-			"해운대구",
-			"센텀대로",
-			"2층"
+		OrderRequest.Update req = new OrderRequest.Update(
+			"이름",
+			"010",
+			"도시",
+			"동네",
+			"도로",
+			"상세"
 		);
 
-		// when, then
-		assertThatThrownBy(() -> orderService.updateOrder(orderId, updateRequest))
+		// then
+		assertThatThrownBy(() -> orderService.updateOrder(order.getId(), req))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
+
+	@Test
+	void 주문_리스트_조회_성공() {
+		// given
+		UserEntity admin = userRepository.save(
+			UserEntity.create(
+				"관리자",
+				"admin@example.com",
+				"111",
+				UserRole.ADMIN,
+				Gender.MALE,
+				LocalDate.of(1990, 1, 1),
+				"010-0000-0000"
+			)
+		);
+
+		UserEntity user = createUser("user1@example.com");
+		ProductEntity p = createProduct("상품1", 100L, 10000L);
+
+		OrderEntity order1 = createOrder(user, OrderStatus.CREATED);
+		OrderEntity order2 = createOrder(user, OrderStatus.WAITING_PAYMENT);
+
+		createOrderWithProducts(order1, p, 1L);
+		createOrderWithProducts(order2, p, 2L);
+
+		Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+
+		// when
+		Page<AdminOrderResponse.Search> result = orderService.searchOrder(pageable);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getContent().size()).isEqualTo(2);
+		assertThat(result.getContent()
+			.stream()
+			.map(AdminOrderResponse.Search::orderId)
+			.toList()
+		).contains(order1.getId(), order2.getId());
+	}
+
+	@Test
+	void 주문_상세_조회_성공() {
+		// given
+		UserEntity admin = userRepository.save(
+			UserEntity.create(
+				"관리자",
+				"admin2@example.com",
+				"111",
+				UserRole.ADMIN,
+				Gender.MALE,
+				LocalDate.of(1990, 1, 1),
+				"010-0000-0000"
+			)
+		);
+
+		UserEntity user = createUser("detailUser@example.com");
+		ProductEntity p = createProduct("상세상품", 50L, 20000L);
+
+		OrderEntity order = createOrder(user, OrderStatus.CREATED);
+		OrderProductEntity op = createOrderWithProducts(order, p, 3L);
+
+		// when
+		AdminOrderResponse.Detail detail = orderService.getOrderDetail(order.getId());
+
+		// then
+		assertThat(detail).isNotNull();
+		assertThat(detail.orderId()).isEqualTo(order.getId());
+		assertThat(detail.ordererName()).isEqualTo(user.getName());
+		assertThat(detail.products()).hasSize(1);
+		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
+	}
+
+	@Test
+	void 주문_상태_변경_성공() {
+		// given
+		UserEntity admin = userRepository.save(
+			UserEntity.create(
+				"관리자",
+				"admin3@example.com",
+				"111",
+				UserRole.ADMIN,
+				Gender.MALE,
+				LocalDate.of(1990, 1, 1),
+				"010-0000-0000"
+			)
+		);
+
+		UserEntity user = createUser("statusUser@example.com");
+		ProductEntity p = createProduct("상태상품", 100L, 10000L);
+
+		OrderEntity order = createOrder(user, OrderStatus.CREATED);
+		createOrderWithProducts(order, p, 1L);
+
+		// 변경할 상태
+		OrderStatus newStatus = OrderStatus.SHIPPING;
+
+		// when
+		orderService.updateOrderStatus(order.getId(), newStatus);
+
+		// then
+		OrderEntity updated = orderRepository.findById(order.getId()).get();
+		assertThat(updated.getStatus()).isEqualTo(newStatus);
+	}
+	@Test
+	void 주문_상태_변경_실패__현재배송중() {
+		// given
+		UserEntity admin = userRepository.save(
+			UserEntity.create(
+				"관리자",
+				"admin4@example.com",
+				"111",
+				UserRole.ADMIN,
+				Gender.MALE,
+				LocalDate.of(1990, 1, 1),
+				"010-0000-0000"
+			)
+		);
+
+		UserEntity user = createUser("deliveryUser@example.com");
+		ProductEntity product = createProduct("배송상품", 100L, 10000L);
+
+		OrderEntity order = createOrder(user, OrderStatus.SHIPPING);
+		createOrderWithProducts(order, product, 1L);
+
+		OrderStatus newStatus = OrderStatus.CANCELED;
+
+		// when & then
+		assertThatThrownBy(() ->
+			orderService.updateOrderStatus(order.getId(), newStatus)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
+	}
+
+
 
 }

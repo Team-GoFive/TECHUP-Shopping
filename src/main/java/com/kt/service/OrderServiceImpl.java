@@ -3,8 +3,12 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.exception.CustomException;
 
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,15 +94,18 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	private boolean canCancel(OrderStatus status) {
+		return status == OrderStatus.WAITING_PAYMENT ||
+			status == OrderStatus.SHIPPING_COMPLETED;
+	}
 	@Override
 	public void cancelOrder(UUID orderId) {
 		OrderEntity order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
+		if (!canCancel(order.getStatus())) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
-
 
 		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
 
@@ -144,6 +151,47 @@ public class OrderServiceImpl implements OrderService {
 		order.updateReceiverVO(newReceiverVO);
 		orderRepository.save(order);
 	}
+
+	@Override
+	public Page<AdminOrderResponse.Search> searchOrder(Pageable pageable) {
+		return orderRepository.findAll(pageable)
+			.map(AdminOrderResponse.Search::from);
+	}
+
+	@Override
+	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
+
+		OrderEntity order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
+
+		return AdminOrderResponse.Detail.from(order, orderProducts);
+	}
+
+	@Override
+	public void updateOrderStatus(UUID orderId, OrderStatus newStatus) {
+		OrderEntity order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+		OrderStatus current = order.getStatus();
+
+		if (current == OrderStatus.PURCHASE_CONFIRMED) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
+		}
+
+		if (current == OrderStatus.SHIPPING) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		order.updateStatus(newStatus);
+	}
+
+
+
+
+
 
 
 }

@@ -76,7 +76,7 @@ public class OrderEntity extends BaseEntity {
 		this.receiverVO = receiverVO;
 	}
 
-	public void changeStatus(OrderStatus newStatus) {
+	public void updateStatus(OrderStatus newStatus) {
 		this.status = newStatus;
 	}
 
