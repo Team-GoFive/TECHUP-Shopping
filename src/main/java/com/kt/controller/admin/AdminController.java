@@ -1,9 +1,14 @@
 package com.kt.controller.admin;
 
-import static com.kt.common.api.ApiResult.*;
-
 import java.util.UUID;
 
+import com.kt.common.api.PageResponse;
+
+import com.kt.domain.dto.request.AccountRequest;
+
+import com.kt.domain.dto.response.AccountResponse;
+
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
-import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
@@ -26,6 +30,8 @@ import com.kt.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import static com.kt.common.api.ApiResult.*;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -36,14 +42,15 @@ public class AdminController {
 	private final AccountService accountService;
 
 	@GetMapping("/admins")
-	public ResponseEntity<?> searchAdmins(
-		@ModelAttribute Paging paging,
-		@ModelAttribute AccountSearchRequestVO accountSearchRequestVO
+	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
+		@ParameterObject AccountRequest.Search request,
+		@ModelAttribute Paging paging
+
 	) {
 		return page(
 			accountService.searchAccounts(
-				paging.toPageable(),
-				accountSearchRequestVO
+				request,
+				paging.toPageable()
 			)
 		);
 	}

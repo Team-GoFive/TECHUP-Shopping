@@ -1,12 +1,13 @@
 package com.kt.controller.admin;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,21 +30,24 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.assertj.core.api.Assertions.*;
+
+
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class AdminControllerTest {
+	@Autowired MockMvc mockMvc;
+	@Autowired UserRepository userRepository;
+	@Autowired PasswordEncoder passwordEncoder;
+	@Autowired ObjectMapper objectMapper;
 
 	static final String TEST_PASSWORD = "admin12345";
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
+
 	UserEntity testAdmin;
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	void setUp() {
@@ -75,30 +79,50 @@ class AdminControllerTest {
 	@Test
 	void 관리자_목록_조회_성공() throws Exception {
 
-		mockMvc.perform(get("/api/admin/admins")
+		MvcResult result = mockMvc.perform(
+			get("/api/admin/admins")
 				.param("page", "1")
 				.param("size", "10")
-				.param("keyword", "")
+				.param("role", UserRole.ADMIN.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "")
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"))
-			.andExpect(jsonPath("$.data.list").exists())
-			.andExpect(jsonPath("$.data.totalCount").value(1));
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공"),
+				jsonPath("$.data").exists(),
+				jsonPath("$.data.totalCount").value(1),
+				jsonPath("$.data.totalPages").value(1)
+			).andReturn();
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
+
 	}
 
 	@Test
 	void 관리자_상세_조회_성공() throws Exception {
 
-		mockMvc.perform(get("/api/admin/admins/{adminId}", testAdmin.getId())
-				.with(user(adminPrincipal()))
+		MvcResult result = mockMvc.perform(get(
+			"/api/admin/admins/{adminId}", testAdmin.getId()
+				).with(user(adminPrincipal()))
 			)
 			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"))
-			.andExpect(jsonPath("$.data.id").value(testAdmin.getId().toString()))
-			.andExpect(jsonPath("$.data.email").value(testAdmin.getEmail()));
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공"),
+				jsonPath("$.data").exists(),
+				jsonPath("$.data.id").value(testAdmin.getId().toString()),
+				jsonPath("$.data.email").value(testAdmin.getEmail())
+			).andReturn();
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 	@Test
@@ -113,17 +137,22 @@ class AdminControllerTest {
 			"010-1111-1111"
 		);
 
-		mockMvc.perform(post("/api/admin/admins")
+		MvcResult result = mockMvc.perform(
+			post("/api/admin/admins")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"))
-			.andExpect(jsonPath("$.message").value("성공"));
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
 		assertThat(userRepository.findByEmail("test@examlple.com")).isPresent();
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 	@Test
@@ -136,31 +165,42 @@ class AdminControllerTest {
 			Gender.FEMALE
 		);
 
-		mockMvc.perform(put("/api/admin/admins/{adminId}", testAdmin.getId())
+		MvcResult result = mockMvc.perform(put("/api/admin/admins/{adminId}", testAdmin.getId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requset))
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"));
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
 		UserEntity foundedUser = userRepository.findByIdOrThrow(testAdmin.getId());
 
 		assertThat(foundedUser.getName()).isEqualTo("김도현");
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 	@Test
 	void 관리자_삭제_성공() throws Exception {
 
-		mockMvc.perform(delete("/api/admin/admins/{adminId}", testAdmin.getId())
+		MvcResult result = mockMvc.perform(delete("/api/admin/admins/{adminId}", testAdmin.getId())
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"));
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
 		UserEntity foundedUser = userRepository.findByIdOrThrow(testAdmin.getId());
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 }

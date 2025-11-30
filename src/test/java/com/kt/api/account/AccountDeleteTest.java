@@ -17,7 +17,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.repository.AccountRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.security.DefaultCurrentUser;
 

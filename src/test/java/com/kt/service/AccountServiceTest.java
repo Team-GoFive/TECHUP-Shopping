@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 
+import com.kt.domain.dto.request.AccountRequest;
+
 import org.junit.jupiter.api.Assertions;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.AccountSearchRequestVO;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
@@ -104,61 +105,67 @@ class AccountServiceTest {
 	@Test
 	void 회원_조회_성공() {
 		// given
-		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
-			"회원",
+
+		AccountRequest.Search request = new AccountRequest.Search(
 			UserRole.MEMBER,
-			null
+			null,
+			null,
+			"회원"
 		);
 
 		// when
-		Page<?> foundMembers = accountService.searchAccounts(
-			Pageable.ofSize(10),
-			accountSearchRequestVO
+		Page<?> result = accountService.searchAccounts(
+			request,
+			Pageable.ofSize(10)
 		);
 
 		// then
-		assertThat(foundMembers).isNotNull();
-		assertThat(foundMembers.getContent()).hasSize(1);
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(1);
 	}
 
 	@Test
 	void 관리자_조회_성공() {
 		// given
-		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
-			"관리자",
+
+		AccountRequest.Search request = new AccountRequest.Search(
 			UserRole.ADMIN,
-			null
+			null,
+			null,
+			""
 		);
 
 		// when
-		Page<?> foundAdmins = accountService.searchAccounts(
-			Pageable.ofSize(10),
-			accountSearchRequestVO
+		Page<?> result = accountService.searchAccounts(
+			request,
+			Pageable.ofSize(10)
 		);
 
 		// then
-		assertThat(foundAdmins).isNotNull();
-		assertThat(foundAdmins.getContent()).hasSize(1);
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(1);
 	}
 
 	@Test
 	void 배송기사_조회_성공() {
 		// given
-		AccountSearchRequestVO accountSearchRequestVO = new AccountSearchRequestVO(
-			"기사",
+
+		AccountRequest.Search request = new AccountRequest.Search(
 			UserRole.COURIER,
-			CourierWorkStatus.RESTING
+			null,
+			null,
+			""
 		);
 
 		// when
-		Page<?> foundCouriers = accountService.searchAccounts(
-			Pageable.ofSize(10),
-			accountSearchRequestVO
+		Page<?> result = accountService.searchAccounts(
+			request,
+			Pageable.ofSize(10)
 		);
 
 		// then
-		assertThat(foundCouriers).isNotNull();
-		assertThat(foundCouriers.getContent()).hasSize(2);
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).hasSize(2);
 	}
 
 

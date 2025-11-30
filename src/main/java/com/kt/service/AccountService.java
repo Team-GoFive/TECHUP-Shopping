@@ -2,14 +2,17 @@ package com.kt.service;
 
 import java.util.UUID;
 
+import com.kt.domain.dto.request.AccountRequest;
+
+import com.kt.domain.dto.response.AccountResponse;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import com.kt.domain.dto.request.AccountSearchRequestVO;
 
 public interface AccountService {
-	Page<?> searchAccounts(
-		Pageable pageable,
-		AccountSearchRequestVO accountSearchRequestVO
+	Page<AccountResponse.Search> searchAccounts(
+		AccountRequest.Search request,
+		Pageable pageable
 	);
 
 	void adminResetAccountPassword(UUID accountId);
