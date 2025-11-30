@@ -1,5 +1,7 @@
 package com.kt.controller.order;
 
+import static com.kt.common.api.ApiResult.*;
+
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -34,15 +36,18 @@ public class OrderController {
 	ResponseEntity<?> searchOrders(
 		@ModelAttribute Paging paging
 	) {
-		return ApiResult.page(orderService.searchOrder(paging.toPageable()));
+		return ApiResult.page(
+			orderService.searchOrder(paging.toPageable())
+		);
 	}
 
 	@GetMapping("/{orderId}")
 	ResponseEntity<?> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
-		orderService.getOrderDetail(orderId);
-		return ApiResult.wrap(null);
+		return ApiResult.wrap(
+			orderService.getOrderProducts(orderId)
+		);
 	}
 
 	@PostMapping
@@ -54,7 +59,7 @@ public class OrderController {
 			currentUser.getUsername(),
 			request.items()
 		);
-		return ApiResult.wrap(null);
+		return empty();
 	}
 
 	@PatchMapping("/{orderId}/cancel")
@@ -62,7 +67,7 @@ public class OrderController {
 		@PathVariable UUID orderId
 	) {
 		orderService.cancelOrder(orderId);
-		return ApiResult.wrap(null);
+		return empty();
 	}
 
 	@PutMapping("/api/orders/{orderId}")
@@ -71,7 +76,7 @@ public class OrderController {
 		@Valid @RequestBody OrderRequest.Update request
 	) {
 		orderService.updateOrder(orderId, request);
-		return ApiResult.wrap(null);
+		return empty();
 	}
 
 }
