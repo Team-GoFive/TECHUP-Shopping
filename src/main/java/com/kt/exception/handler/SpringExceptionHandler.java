@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class SpringExceptionHandler extends BaseExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ApiErrorResponse> customException(BaseException ex) {
+	public ResponseEntity<ApiErrorResponse> customException(CustomException ex) {
 		log.info("Exception Message : {}", ex.error().getMessage());
 		return toResponse(ex);
 	}
