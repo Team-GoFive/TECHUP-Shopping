@@ -26,11 +26,9 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
-import com.kt.service.ReviewService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,10 +47,6 @@ public class OrderSearchTest {
 	OrderService orderService;
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	OrderRepository orderRepository;
-	@Autowired
-	ReviewService reviewService;
 
 	UserEntity testMember;
 

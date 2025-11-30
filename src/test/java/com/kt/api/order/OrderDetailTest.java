@@ -27,7 +27,6 @@ import com.kt.repository.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
-import com.kt.service.ReviewService;
 
 @DisplayName("상품 상세 조회 - GET /api/orders/{orderId}")
 public class OrderDetailTest extends MockMvcTest {
@@ -42,8 +41,6 @@ public class OrderDetailTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
-	@Autowired
-	ReviewService reviewService;
 
 	UserEntity testMember;
 

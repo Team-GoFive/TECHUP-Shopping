@@ -33,7 +33,6 @@ import com.kt.repository.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.OrderService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,8 +47,6 @@ public class OrderCreateTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	ProductRepository productRepository;
-	@Autowired
-	OrderService orderService;
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
