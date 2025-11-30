@@ -46,7 +46,6 @@ public class OrderController {
 		return ApiResult.wrap(null);
 	}
 
-	// TODO: 주문 생성 /api/orders
 	@PostMapping
 	ResponseEntity<?> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
