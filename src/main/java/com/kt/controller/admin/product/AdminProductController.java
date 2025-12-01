@@ -36,8 +36,6 @@ public class AdminProductController {
 
 	private final ProductService productService;
 
-	// TODO: 상품 삭제
-
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> create(
 		@RequestBody @Valid AdminProductRequest.Create request
