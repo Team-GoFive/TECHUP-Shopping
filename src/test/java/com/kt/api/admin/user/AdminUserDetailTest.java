@@ -1,4 +1,4 @@
-package com.kt.api.admin.account;
+package com.kt.api.admin.user;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @DisplayName("유저 상세 조회 (어드민) - GET /api/admin/users/{userId}")
-public class AdminAccountDetailTest extends MockMvcTest {
+public class AdminUserDetailTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;
