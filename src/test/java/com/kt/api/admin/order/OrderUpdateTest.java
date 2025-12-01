@@ -1,7 +1,7 @@
 package com.kt.api.admin.order;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
@@ -24,7 +25,7 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.repository.OrderRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@DisplayName("주문 수정(어드민) - Update api/orders/{id}/change-status")
+@DisplayName("주문 수정(어드민) - Update api/orders/{orderid}/change-status")
 public class OrderUpdateTest extends MockMvcTest {
 
 	@Autowired
@@ -40,6 +41,7 @@ public class OrderUpdateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
+
 		OrderEntity order = OrderEntityCreator.createOrderEntity();
 		savedOrder = orderRepository.save(order);
 	}
@@ -51,18 +53,19 @@ public class OrderUpdateTest extends MockMvcTest {
 		OrderStatus newStatus = OrderStatus.PURCHASE_CONFIRMED;
 
 		// when
-		mockMvc.perform(
-				put("/api/admin/orders/{id}/change-status", savedOrder.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(newStatus))
-			)
-			.andDo(print())
+		ResultActions result = mockMvc.perform(
+			patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(newStatus))
+		);
+
+		// then
+		result.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value("ok"))
 			.andExpect(jsonPath("$.message").value("성공"));
 
-		// then
 		OrderEntity updatedOrder = orderRepository.findByIdOrThrow(savedOrder.getId());
 		assertThat(updatedOrder.getStatus()).isEqualTo(newStatus);
 	}
@@ -73,7 +76,7 @@ public class OrderUpdateTest extends MockMvcTest {
 		OrderStatus newStatus
 	) throws Exception {
 		mockMvc.perform(
-				put("/api/admin/orders/{id}/change-status", savedOrder.getId())
+				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
 					.contentType(MediaType.APPLICATION_JSON)
 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 					.content(objectMapper.writeValueAsString(newStatus))
@@ -82,6 +85,7 @@ public class OrderUpdateTest extends MockMvcTest {
 			.andExpect(status().isBadRequest());
 
 	}
+	// TODO: 에러 익셉션 적용 후 수정
 	//
 	// @Test
 	// void 주문_상태변경_실패_주문없음_403_NotFount() throws Exception {
