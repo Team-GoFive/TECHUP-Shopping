@@ -78,12 +78,12 @@ class UserServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		userRepository.deleteAll();
-		orderRepository.deleteAll();
-		orderProductRepository.deleteAll();
 		reviewRepository.deleteAll();
+		orderProductRepository.deleteAll();
+		orderRepository.deleteAll();
+		userRepository.deleteAll();
 		productRepository.deleteAll();
-		em.clear();
+		categoryRepository.deleteAll();
 
 		testUser = UserEntity.create(
 			"주문자테스터1",
