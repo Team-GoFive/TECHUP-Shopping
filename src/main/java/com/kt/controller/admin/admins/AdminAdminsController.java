@@ -1,4 +1,4 @@
-package com.kt.controller.admin;
+package com.kt.controller.admin.admins;
 
 import java.util.UUID;
 
@@ -34,14 +34,14 @@ import lombok.RequiredArgsConstructor;
 import static com.kt.common.api.ApiResult.*;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/admins")
 @RequiredArgsConstructor
-public class AdminController {
+public class AdminAdminsController {
 
 	private final UserService userService;
 	private final AccountService accountService;
 
-	@GetMapping("/admins")
+	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
 		@ParameterObject AccountRequest.Search request,
 		@ModelAttribute Paging paging
@@ -55,14 +55,14 @@ public class AdminController {
 		);
 	}
 
-	@GetMapping("/admins/{adminId}")
+	@GetMapping("/{adminId}")
 	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(@PathVariable UUID adminId) {
 		return wrap(
 			userService.getUserDetail(adminId)
 		);
 	}
 
-	@PostMapping("/admins")
+	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
 		@RequestBody @Valid SignupRequest.SignupMember request
 	) {
@@ -70,7 +70,7 @@ public class AdminController {
 		return empty();
 	}
 
-	@PutMapping("/admins/{adminId}")
+	@PutMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> updateAdmin(
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
@@ -79,7 +79,7 @@ public class AdminController {
 		return empty();
 	}
 
-	@DeleteMapping("/admins/{adminId}")
+	@DeleteMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> deleteAdmin(@PathVariable UUID adminId) {
 		userService.deleteUser(adminId);
 		return empty();
