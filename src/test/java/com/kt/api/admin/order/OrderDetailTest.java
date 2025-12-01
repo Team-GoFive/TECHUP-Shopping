@@ -24,7 +24,7 @@ import com.kt.repository.OrderRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@DisplayName("주문 상세 조회(어드민) - get api/orders/{orderId}")
+@DisplayName("주문 상세 조회(어드민) - get /api/admin/orders/{orderId}")
 public class OrderDetailTest extends MockMvcTest {
 
 	OrderEntity savedOrder;
@@ -70,7 +70,7 @@ public class OrderDetailTest extends MockMvcTest {
 		// given
 
 		UUID randomOrderId = UUID.randomUUID();
-		mockMvc.perform(get("/api/orders/{orderId}", randomOrderId)
+		mockMvc.perform(get("/api/admin/orders/{orderId}", randomOrderId)
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
