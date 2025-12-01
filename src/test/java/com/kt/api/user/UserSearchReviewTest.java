@@ -59,21 +59,16 @@ public class UserSearchReviewTest extends MockMvcTest {
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 	DefaultCurrentUser testMemberDetails;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
-		userRepository.save(user);
-
-		testMemberDetails = new DefaultCurrentUser(
-			user.getId(),
-			user.getEmail(),
-			user.getRole()
-		);
+		testUser  = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		testOrder = OrderEntity.create(receiver, user);
+		testOrder = OrderEntity.create(receiver, testUser);
 		orderRepository.save(testOrder);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
@@ -95,7 +90,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviews")
-				.with(user(testMemberDetails))
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
 		).andDo(print());
@@ -103,6 +98,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 		// then
 		Actions
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.totalCount").value(1))
 			.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
 			.andExpect(jsonPath("$.data.list[0].content").value(review.getContent().toString()));
 	}

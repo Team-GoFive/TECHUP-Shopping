@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CategoryEntityCreator;
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
@@ -31,7 +32,6 @@ import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("내 리뷰 가능한 주문상품 조회 - GET /api/users/orderproducts/reviewable")
 public class UserSearchReviewableTest extends MockMvcTest {
@@ -51,22 +51,16 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
-	DefaultCurrentUser testMemberDetails;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
-		userRepository.save(user);
-
-		testMemberDetails = new DefaultCurrentUser(
-			user.getId(),
-			user.getEmail(),
-			user.getRole()
-		);
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		testOrder = OrderEntity.create(receiver, user);
+		testOrder = OrderEntity.create(receiver, testUser);
 		orderRepository.save(testOrder);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
@@ -89,7 +83,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/orderproducts/reviewable")
-				.with(user(testMemberDetails))
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
 		).andDo(print());
@@ -113,7 +107,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/orderproducts/reviewable")
-				.with(user(testMemberDetails))
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
 		).andDo(print());
@@ -133,7 +127,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/orderproducts/reviewable")
-				.with(user(testMemberDetails))
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
 		).andDo(print());
