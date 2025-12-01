@@ -1,6 +1,7 @@
 package com.kt.api.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -8,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +19,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 목록 조회 - GET /api/products")
 public class ProductSearchTest extends MockMvcTest {
@@ -36,12 +34,6 @@ public class ProductSearchTest extends MockMvcTest {
 	ProductRepository productRepository;
 
 	CategoryEntity testCategory;
-
-	DefaultCurrentUser userDetails = new DefaultCurrentUser(
-		UUID.randomUUID(),
-		"test@test.com",
-		UserRole.MEMBER
-	);
 
 	ArrayList<ProductEntity> products;
 
@@ -55,6 +47,7 @@ public class ProductSearchTest extends MockMvcTest {
 			products.add(createProduct(testCategory));
 		}
 
+		// 비활성화 상품 추가
 		for (int i = 0; i < 5; i++) {
 			ProductEntity product = createProduct(testCategory);
 			product.inActivate();
@@ -65,16 +58,16 @@ public class ProductSearchTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원은_활성화된_상품만_조회_가능__200_OK() throws Exception {
+	void 상품_조회_성공__200_OK() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 				.param("page", "1")
 				.param("size", "10")
-		);
+		).andDo(print());
+
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isOk());
 		actions.andExpect(jsonPath("$.data.list.length()").value(5));
 		actions.andExpect(
@@ -89,12 +82,12 @@ public class ProductSearchTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 				.param("page", "0")
 				.param("size", "10")
-		);
+		).andDo(print());
+
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isBadRequest());
 	}
 
@@ -103,12 +96,12 @@ public class ProductSearchTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 				.param("page", "1")
 				.param("size", "0")
-		);
+		).andDo(print());
+
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isBadRequest());
 	}
 
@@ -117,12 +110,12 @@ public class ProductSearchTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products")
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 				.param("page", "1")
 				.param("size", "21")
-		);
+		).andDo(print());
+
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isBadRequest());
 	}
 }

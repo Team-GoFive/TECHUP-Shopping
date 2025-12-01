@@ -1,6 +1,7 @@
 package com.kt.api.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -16,12 +17,10 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 상세 조회 - GET /api/products/{productId}")
 public class ProductDetailTest extends MockMvcTest {
@@ -33,12 +32,6 @@ public class ProductDetailTest extends MockMvcTest {
 	ProductRepository productRepository;
 
 	CategoryEntity testCategory;
-
-	DefaultCurrentUser userDetails = new DefaultCurrentUser(
-		UUID.randomUUID(),
-		"test@test.com",
-		UserRole.MEMBER
-	);
 
 	ProductEntity activatedProduct;
 	ProductEntity inActivatedProduct;
@@ -60,12 +53,11 @@ public class ProductDetailTest extends MockMvcTest {
 	void 회원_상품_상세_조회_성공__200_OK() throws Exception {
 		//  when
 		ResultActions actions = mockMvc.perform(
-				get("/api/products/{productId}", activatedProduct.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-			)
-			.andExpect(status().isOk());
+			get("/api/products/{productId}", activatedProduct.getId())
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
+		).andDo(print());
 
-		actions.andDo(print());
+		// then
 		actions.andExpect(status().isOk());
 		actions.andExpect(jsonPath("$.data.id").value(activatedProduct.getId().toString()));
 	}
@@ -75,7 +67,7 @@ public class ProductDetailTest extends MockMvcTest {
 		//  when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products/{productId}", UUID.randomUUID())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 		).andDo(print());
 
 		// then
@@ -87,9 +79,8 @@ public class ProductDetailTest extends MockMvcTest {
 		//  when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products/{productId}", inActivatedProduct.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
 		).andDo(print());
-		;
 
 		// then
 		actions.andExpect(status().isNotFound());
