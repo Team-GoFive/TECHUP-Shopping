@@ -16,11 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.MockMvcTest;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -34,11 +33,7 @@ import com.kt.service.OrderService;
 @AutoConfigureMockMvc
 @Transactional
 @DisplayName("주문 목록 조회 - GET /api/orders")
-public class OrderSearchTest {
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
+public class OrderSearchTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
