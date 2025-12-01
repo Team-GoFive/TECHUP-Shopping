@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,18 +22,16 @@ import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("유저 활성화 (어드민)  - PATCH /api/admin/users{userId}/enabled")
-public class AdminUserEnabledTest extends MockMvcTest {
+@DisplayName("유저 비활성화 (어드민) - PATCH /api/admin/users/{userId}/disabled")
+public class UserDisabledTest extends MockMvcTest {
 
-	String TEST_PASSWORD = "123456";
-
+	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;
 	UserEntity testAdmin;
 
@@ -55,7 +52,6 @@ public class AdminUserEnabledTest extends MockMvcTest {
 			LocalDate.of(1999, 1, 1),
 			"01012340001"
 		);
-
 		testUser = UserEntity.create(
 			"테스트유저1",
 			"usertest@gmail.com",
@@ -65,9 +61,8 @@ public class AdminUserEnabledTest extends MockMvcTest {
 			LocalDate.of(2000, 1, 1),
 			"01012340002"
 		);
-
-		userRepository.save(testAdmin);
 		userRepository.save(testUser);
+		userRepository.save(testAdmin);
 	}
 
 	@AfterEach
@@ -76,10 +71,7 @@ public class AdminUserEnabledTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_활성화_성공_200() throws Exception {
-		// given
-		testUser.disabled();
-
+	void 회원_비활성화_성공() throws Exception {
 		DefaultCurrentUser admin = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
@@ -88,7 +80,7 @@ public class AdminUserEnabledTest extends MockMvcTest {
 
 		// when
 		MvcResult result = mockMvc.perform(
-				patch("/api/admin/users/{userId}/enabled", testUser.getId())
+				patch("/api/admin/users/{userId}/disabled", testUser.getId())
 					.with(user(admin))
 			)
 			.andDo(print())
@@ -100,29 +92,10 @@ public class AdminUserEnabledTest extends MockMvcTest {
 
 		// then
 		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.ENABLED, savedUser.getStatus());
+		assertEquals(UserStatus.DISABLED, savedUser.getStatus());
 
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
-	}
-
-	@Test
-	void 회원_활성화_실패_404_NotFound() throws Exception {
-		// given
-
-		DefaultCurrentUser admin = new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
-		);
-
-		// when
-		mockMvc.perform(
-				patch("/api/admin/users/{userId}/enabled", UUID.randomUUID())
-					.with(user(admin))
-			)
-			.andDo(print())
-			.andExpect(status().isNotFound());
 	}
 
 }

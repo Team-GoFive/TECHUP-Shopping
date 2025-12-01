@@ -3,6 +3,6 @@ package com.kt.api.admin.account;
 import com.kt.common.MockMvcTest;
 
 // TODO: /api/admin/accounts/{accountId} test
-public class AdminAccountDisabledTest extends MockMvcTest {
+public class AccountDisabledTest extends MockMvcTest {
 
 }

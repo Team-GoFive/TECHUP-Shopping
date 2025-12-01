@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @DisplayName("유저 상세 조회 (어드민) - GET /api/admin/users/{userId}")
-public class AdminUserDetailTest extends MockMvcTest {
+public class UserDetailTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;

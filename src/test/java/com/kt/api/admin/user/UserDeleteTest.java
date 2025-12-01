@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +29,8 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("유저 비활성화 (어드민) - PATCH /api/admin/users/{userId}/disabled")
-public class AdminUserDisabledTest extends MockMvcTest {
+@DisplayName("유저 삭제 (어드민) - GET /api/admin/users/{userId}/disabled")
+public class UserDeleteTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;
@@ -71,16 +72,15 @@ public class AdminUserDisabledTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_비활성화_성공() throws Exception {
+	void 회원_삭제_성공() throws Exception {
 		DefaultCurrentUser admin = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
 			UserRole.ADMIN
 		);
 
-		// when
 		MvcResult result = mockMvc.perform(
-				patch("/api/admin/users/{userId}/disabled", testUser.getId())
+				patch("/api/admin/users/{userId}/removed", testUser.getId())
 					.with(user(admin))
 			)
 			.andDo(print())
@@ -90,12 +90,27 @@ public class AdminUserDisabledTest extends MockMvcTest {
 				jsonPath("$.message").value("성공")
 			).andReturn();
 
-		// then
 		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.DISABLED, savedUser.getStatus());
+		assertEquals(UserStatus.DELETED, savedUser.getStatus());
 
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 	}
 
+	@Test
+	void 회원_삭제_실패__404_NotFound() throws Exception {
+		DefaultCurrentUser admin = new DefaultCurrentUser(
+			testAdmin.getId(),
+			testAdmin.getEmail(),
+			UserRole.ADMIN
+		);
+
+		mockMvc.perform(
+				patch("/api/admin/users/{userId}/removed", UUID.randomUUID())
+					.with(user(admin))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isNotFound());
+	}
 }

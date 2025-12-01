@@ -3,7 +3,6 @@ package com.kt.api.admin.account;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
-import com.kt.constant.UserStatus;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
@@ -18,18 +17,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -37,7 +30,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 @Slf4j
 @DisplayName("")
-class AdminAccountReadTest extends MockMvcTest {
+class AccountReadTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;

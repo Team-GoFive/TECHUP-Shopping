@@ -29,10 +29,11 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("유저 삭제 (어드민) - GET /api/admin/users/{userId}/disabled")
-public class AdminUserDeleteTest extends MockMvcTest {
+@DisplayName("유저 활성화 (어드민)  - PATCH /api/admin/users{userId}/enabled")
+public class UserEnabledTest extends MockMvcTest {
 
-	static final String TEST_PASSWORD = "1234561111";
+	String TEST_PASSWORD = "123456";
+
 	UserEntity testUser;
 	UserEntity testAdmin;
 
@@ -53,6 +54,7 @@ public class AdminUserDeleteTest extends MockMvcTest {
 			LocalDate.of(1999, 1, 1),
 			"01012340001"
 		);
+
 		testUser = UserEntity.create(
 			"테스트유저1",
 			"usertest@gmail.com",
@@ -62,8 +64,9 @@ public class AdminUserDeleteTest extends MockMvcTest {
 			LocalDate.of(2000, 1, 1),
 			"01012340002"
 		);
-		userRepository.save(testUser);
+
 		userRepository.save(testAdmin);
+		userRepository.save(testUser);
 	}
 
 	@AfterEach
@@ -72,15 +75,19 @@ public class AdminUserDeleteTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_삭제_성공() throws Exception {
+	void 회원_활성화_성공_200() throws Exception {
+		// given
+		testUser.disabled();
+
 		DefaultCurrentUser admin = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
 			UserRole.ADMIN
 		);
 
+		// when
 		MvcResult result = mockMvc.perform(
-				patch("/api/admin/users/{userId}/removed", testUser.getId())
+				patch("/api/admin/users/{userId}/enabled", testUser.getId())
 					.with(user(admin))
 			)
 			.andDo(print())
@@ -90,27 +97,31 @@ public class AdminUserDeleteTest extends MockMvcTest {
 				jsonPath("$.message").value("성공")
 			).andReturn();
 
+		// then
 		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.DELETED, savedUser.getStatus());
+		assertEquals(UserStatus.ENABLED, savedUser.getStatus());
 
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 	}
 
 	@Test
-	void 회원_삭제_실패__404_NotFound() throws Exception {
+	void 회원_활성화_실패_404_NotFound() throws Exception {
+		// given
+
 		DefaultCurrentUser admin = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
 			UserRole.ADMIN
 		);
 
+		// when
 		mockMvc.perform(
-				patch("/api/admin/users/{userId}/removed", UUID.randomUUID())
+				patch("/api/admin/users/{userId}/enabled", UUID.randomUUID())
 					.with(user(admin))
 			)
 			.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+			.andExpect(status().isNotFound());
 	}
+
 }
