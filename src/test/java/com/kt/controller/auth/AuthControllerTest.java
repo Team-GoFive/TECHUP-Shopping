@@ -29,7 +29,7 @@ import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.infra.redis.RedisCache;
-import com.kt.repository.AccountRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;

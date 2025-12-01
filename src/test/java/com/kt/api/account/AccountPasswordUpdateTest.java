@@ -21,7 +21,8 @@ import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.AccountRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 

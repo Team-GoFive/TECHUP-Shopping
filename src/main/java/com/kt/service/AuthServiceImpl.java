@@ -18,7 +18,7 @@ import com.kt.exception.CustomException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
 
-import com.kt.repository.AccountRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 

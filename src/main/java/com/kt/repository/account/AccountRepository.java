@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.account;
 
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.AbstractAccountEntity;
@@ -12,7 +12,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends JpaRepository<AbstractAccountEntity, UUID> {
+public interface AccountRepository extends JpaRepository<AbstractAccountEntity, UUID>,
+	AccountRepositoryCustom {
 
 	default AbstractAccountEntity findByEmailOrThrow(String email) {
 		return findByEmail(email).orElseThrow(

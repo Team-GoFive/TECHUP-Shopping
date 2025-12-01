@@ -10,6 +10,8 @@ import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 
@@ -30,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -47,39 +51,63 @@ class AdminAccountControllerTest {
 	static final String TEST_PASSWORD = "1234561111";
 	UserEntity testUser;
 	CourierEntity testCourier;
+	CourierEntity secondTestCourier;
+	CourierEntity thirdTestCourier;
 	UserEntity testAdmin;
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"admintest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1999, 1, 1),
-			"010"
-		);
-		userRepository.save(testAdmin);
 
-		testUser = UserEntity.create(
-			"테스트유저1",
-			"usertest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"010"
-		);
-		userRepository.save(testUser);
+		if (userRepository.findByEmail("admintest@gmail.com").isEmpty()) {
+			testAdmin = UserEntity.create(
+				"테스트관리자1",
+				"admintest@gmail.com",
+				passwordEncoder.encode(TEST_PASSWORD),
+				UserRole.ADMIN,
+				Gender.MALE,
+				LocalDate.of(1999, 1, 1),
+				"01012340001"
+			);
+			userRepository.save(testAdmin);
+		}
+		if (userRepository.findByEmail("usertest@gmail.com").isEmpty()) {
+			testUser = UserEntity.create(
+				"테스트유저1",
+				"usertest@gmail.com",
+				passwordEncoder.encode(TEST_PASSWORD),
+				UserRole.MEMBER,
+				Gender.MALE,
+				LocalDate.of(2000, 1, 1),
+				"01012340002"
+			);
+			userRepository.save(testUser);
+		}
 
-		testCourier = CourierEntity.create(
-			"테스트기사1",
-			"couriertest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			Gender.MALE
-		);
-		courierRepository.save(testCourier);
+		if (courierRepository.findAll().isEmpty()) {
+			testCourier = CourierEntity.create(
+				"테스트기사1",
+				"couriertest@gmail.com",
+				passwordEncoder.encode(TEST_PASSWORD),
+				Gender.MALE
+			);
+
+			secondTestCourier = CourierEntity.create(
+				"최첨지",
+				"couriertest123@gmail.com",
+				passwordEncoder.encode(TEST_PASSWORD),
+				Gender.MALE
+			);
+
+			thirdTestCourier = CourierEntity.create(
+				"김테스트",
+				"couriertest3451@gmail.com",
+				passwordEncoder.encode(TEST_PASSWORD),
+				Gender.MALE
+			);
+			courierRepository.save(testCourier);
+			courierRepository.save(secondTestCourier);
+			courierRepository.save(thirdTestCourier);
+		}
 	}
 
 	@Test
@@ -90,20 +118,62 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(get("/api/admin/accounts")
+		MvcResult result = mockMvc.perform(get("/api/admin/accounts")
 				.param("page", "1")
 				.param("size", "10")
-				.param("keyword", "")
-				.param("role", "MEMBER")
-				.with(SecurityMockMvcRequestPostProcessors.user(admin))
+				.param("role", UserRole.MEMBER.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "")
+				.with(user(admin))
 			)
 			.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.content").exists(),
-				jsonPath("$.number").value(0)
-			);
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공"),
+				jsonPath("$.data").exists(),
+				jsonPath("$.data.totalCount").value(1),
+				jsonPath("$.data.totalPages").value(1)
+			).andReturn();
+
+		String response = result.getResponse().getContentAsString();
+		log.info("response : {}", response);
 	}
+
+	@Test
+	void 기사_목록_조회_성공() throws Exception {
+		DefaultCurrentUser admin = new DefaultCurrentUser(
+			testAdmin.getId(),
+			testAdmin.getEmail(),
+			UserRole.ADMIN
+		);
+
+		MvcResult result = mockMvc.perform(get("/api/admin/accounts")
+				.param("page", "1")
+				.param("size", "10")
+				.param("role", UserRole.COURIER.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "테스트")
+				.with(user(admin))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공"),
+				jsonPath("$.data").exists(),
+				jsonPath("$.data.totalCount").value(2),
+				jsonPath("$.data.totalPages").value(1)
+			)
+			.andReturn();
+
+		String response = result.getResponse().getContentAsString();
+		log.info("response : {}", response);
+	}
+
+
 
 	@Test
 	void 회원_상세_조회_성공() throws Exception {
@@ -113,22 +183,28 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(get("/api/admin/users/{userId}", testUser.getId())
+		MvcResult result = mockMvc.perform(
+			get("/api/admin/users/{userId}", testUser.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(admin))
 			)
 			.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.id").value(testUser.getId().toString()),
-				jsonPath("$.email").value(testUser.getEmail())
-			);
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공"),
+				jsonPath("$.data").exists(),
+				jsonPath("$.data.id").value(testUser.getId().toString()),
+				jsonPath("$.data.email").value(testUser.getEmail())
+			).andReturn();
+
+		String response = result.getResponse().getContentAsString();
+		log.info("response : {}", response);
 	}
 
 	@Test
 	void 회원_활성화_성공() throws Exception {
 		// given
 		testUser.disabled();
-		userRepository.save(testUser);
 
 		DefaultCurrentUser admin = new DefaultCurrentUser(
 			testAdmin.getId(),
@@ -137,14 +213,23 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-			mockMvc.perform(patch("/api/admin/users/{userId}/enabled", testUser.getId())
-				.with(user(admin)))
-				.andDo(print())
-			.andExpect(status().isOk());
+		MvcResult result = mockMvc.perform(
+			patch("/api/admin/users/{userId}/enabled", testUser.getId())
+			.with(user(admin))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
 		// then
-		UserEntity found = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.ENABLED, found.getStatus());
+		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
+		assertEquals(UserStatus.ENABLED, savedUser.getStatus());
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 	@Test
@@ -156,14 +241,23 @@ class AdminAccountControllerTest {
 		);
 
 		// when
-		mockMvc.perform(patch("/api/admin/users/{userId}/disabled", testUser.getId())
-				.with(user(admin)))
+		MvcResult result = mockMvc.perform(
+			patch("/api/admin/users/{userId}/disabled", testUser.getId())
+				.with(user(admin))
+			)
 			.andDo(print())
-			.andExpect(status().isOk());
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
 		// then
-		UserEntity found = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.DISABLED, found.getStatus());
+		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
+		assertEquals(UserStatus.DISABLED, savedUser.getStatus());
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 
@@ -175,13 +269,22 @@ class AdminAccountControllerTest {
 			UserRole.ADMIN
 		);
 
-		mockMvc.perform(patch("/api/admin/users/{userId}/removed", testUser.getId())
-				.with(user(admin)))
+		MvcResult result = mockMvc.perform(
+			patch("/api/admin/users/{userId}/removed", testUser.getId())
+				.with(user(admin))
+			)
 			.andDo(print())
-			.andExpect(status().isOk());
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.code").value("ok"),
+				jsonPath("$.message").value("성공")
+			).andReturn();
 
-		UserEntity found = userRepository.findByIdOrThrow(testUser.getId());
-		assertEquals(UserStatus.DELETED, found.getStatus());
+		UserEntity savedUser = userRepository.findByIdOrThrow(testUser.getId());
+		assertEquals(UserStatus.DELETED, savedUser.getStatus());
+
+		String responseJson = result.getResponse().getContentAsString();
+		log.info("response : {}", responseJson);
 	}
 
 
