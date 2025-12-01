@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CategoryEntityCreator;
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
@@ -102,5 +105,25 @@ public class UserSearchReviewTest extends MockMvcTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
 			.andExpect(jsonPath("$.data.list[0].content").value(review.getContent().toString()));
+	}
+
+	@Test
+	void 내리뷰조회_실패__다른사용자() throws Exception {
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.saveAndFlush(review);
+
+		// when
+		ResultActions Actions = mockMvc.perform(
+			get("/api/users/reviews")
+				.with(user(CurrentUserCreator.getMemberUserDetails()))
+				.param("page","1")
+				.param("size","10")
+		).andDo(print());
+
+		// then
+		Actions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.totalCount").value(0));
 	}
 }

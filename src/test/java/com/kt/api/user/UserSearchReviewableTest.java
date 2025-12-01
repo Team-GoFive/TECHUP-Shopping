@@ -23,6 +23,7 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderRepository;
@@ -80,7 +81,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 
 
 	@Test
-	void 리뷰가능한주문상품조회_성공__200_OK() throws Exception {
+	void 주문상품조회_성공__200_OK() throws Exception {
 		// given
 		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(testOrder);
@@ -96,49 +97,50 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		// then
 		Actions
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.totalCount").value(1))
 			.andExpect(jsonPath("$.data.list[0].orderProductId").value(testOrderProduct.getId().toString()));
 	}
 
 
-	// @Test
-	// void 작성한리뷰존재_시__404_Not_Found() throws Exception {
-	// 	// given
-	// 	testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
-	// 	ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
-	// 	review.mapToOrderProduct(testOrderProduct);
-	// 	reviewRepository.saveAndFlush(review);
-	//
-	// 	// when
-	// 	ResultActions Actions = mockMvc.perform(
-	// 		get("/api/users/orderproducts/reviewable")
-	// 			.with(user(testMemberDetails))
-	// 			.param("page","1")
-	// 			.param("size","10")
-	// 	).andDo(print());
-	//
-	// 	// then
-	// 	Actions
-	// 		.andExpect(status().isNotFound())
-	// 		.andExpect(jsonPath("$.data.totalCount").value(0));
-	// }
-	//
-	// @Test
-	// void 주문상태_구매확정_아님__404_Not_Found() throws Exception {
-	// 	// given
-	// 	testOrder.updateStatus(OrderStatus.CANCELED);
-	// 	orderRepository.save(testOrder);
-	//
-	// 	// when
-	// 	ResultActions Actions = mockMvc.perform(
-	// 		get("/api/users/orderproducts/reviewable")
-	// 			.with(user(testMemberDetails))
-	// 			.param("page","1")
-	// 			.param("size","10")
-	// 	).andDo(print());
-	//
-	// 	// then
-	// 	Actions
-	// 		.andExpect(status().isNotFound())
-	// 		.andExpect(jsonPath("$.data.totalCount").value(0));
-	// }
+	@Test
+	void 주문상품조회_실패__작성된리뷰존재_주문상품없음() throws Exception {
+		// given
+		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.saveAndFlush(review);
+
+		// when
+		ResultActions Actions = mockMvc.perform(
+			get("/api/users/orderproducts/reviewable")
+				.with(user(testMemberDetails))
+				.param("page","1")
+				.param("size","10")
+		).andDo(print());
+
+		// then
+		Actions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.totalCount").value(0));
+	}
+
+	@Test
+	void 주문상품조회_실패__주문상태구매확정아님_주문상품없음() throws Exception {
+		// given
+		testOrder.updateStatus(OrderStatus.CANCELED);
+		orderRepository.save(testOrder);
+
+		// when
+		ResultActions Actions = mockMvc.perform(
+			get("/api/users/orderproducts/reviewable")
+				.with(user(testMemberDetails))
+				.param("page","1")
+				.param("size","10")
+		).andDo(print());
+
+		// then
+		Actions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.totalCount").value(0));
+	}
 }
