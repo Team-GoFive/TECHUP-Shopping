@@ -1,10 +1,13 @@
 package com.kt.domain.dto.request;
 
+import java.util.List;
+import java.util.UUID;
+
+import com.kt.constant.OrderStatus;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import java.util.UUID;
 
 public record OrderRequest(
 	@NotNull
@@ -17,7 +20,8 @@ public record OrderRequest(
 		@NotNull
 		@Min(1)
 		Long quantity
-	){}
+	) {
+	}
 
 	public record Update(
 		@NotBlank
@@ -35,5 +39,12 @@ public record OrderRequest(
 		String roadAddress,
 
 		String detail
-	){}
+	) {
+	}
+
+	public record ChangeStatus(
+		@NotNull
+		OrderStatus status
+	) {
+	}
 }
