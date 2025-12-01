@@ -73,24 +73,25 @@ public class ProductDetailTest extends MockMvcTest {
 	@Test
 	void 존재하지_않는_상품_id_조회_시_404_Not_Found() throws Exception {
 		//  when
-		// ResultActions actions = mockMvc.perform(
-		// 	get("/api/products/{productId}", UUID.randomUUID())
-		// 		.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-		// );
-		//
-		// // then
-		// actions.andExpect(status().isNotFound());
-		// TODO: 예외 처리 구현 후 수정 필요
+		ResultActions actions = mockMvc.perform(
+			get("/api/products/{productId}", UUID.randomUUID())
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+		).andDo(print());
+
+		// then
+		actions.andExpect(status().isNotFound());
 	}
 
 	@Test
 	void 비활성화된_상품_id로_조회_시_404_Not_Found() throws Exception {
 		//  when
-		// ResultActions actions = mockMvc.perform(
-		// 	get("/api/products/{productId}", inActivatedProduct.getId())
-		// 		.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-		// );
+		ResultActions actions = mockMvc.perform(
+			get("/api/products/{productId}", inActivatedProduct.getId())
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+		).andDo(print());
+		;
 
-		// TODO: 예외 처리 구현 후 수정 필요
+		// then
+		actions.andExpect(status().isNotFound());
 	}
 }
