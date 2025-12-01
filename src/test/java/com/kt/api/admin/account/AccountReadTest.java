@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @Slf4j
-@DisplayName("")
+@DisplayName("유저 목록 조회 (어드민) - GET /api/admin/accounts")
 class AccountReadTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
