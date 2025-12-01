@@ -22,6 +22,7 @@ import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,7 +37,7 @@ public class ProductController extends SwaggerAssistance {
 		@AuthenticationPrincipal CurrentUser user,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type,
-		@ParameterObject Paging paging
+		@Valid @ParameterObject Paging paging
 	) {
 		return page(
 			productService.search(

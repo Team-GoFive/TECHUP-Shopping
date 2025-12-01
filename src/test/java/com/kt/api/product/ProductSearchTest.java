@@ -83,4 +83,46 @@ public class ProductSearchTest extends MockMvcTest {
 			)
 		);
 	}
+
+	@Test
+	void 올바른_페이지_파라미터가_아닐경우_400_Bad_Request() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.param("page", "0")
+				.param("size", "10")
+		);
+		// then
+		actions.andDo(print());
+		actions.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void 올바른_사이즈_파라미터가_아닐경우_400_Bad_Request() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.param("page", "1")
+				.param("size", "0")
+		);
+		// then
+		actions.andDo(print());
+		actions.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void 사이즈_최대값_초과시_400_Bad_Request() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/products")
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.param("page", "1")
+				.param("size", "21")
+		);
+		// then
+		actions.andDo(print());
+		actions.andExpect(status().isBadRequest());
+	}
 }
