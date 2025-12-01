@@ -56,7 +56,7 @@ public class AdminAdminsController {
 	}
 
 	@GetMapping("/{adminId}")
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(@PathVariable UUID adminId) {
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(@PathVariable UUID adminId) {
 		return wrap(
 			userService.getUserDetail(adminId)
 		);
