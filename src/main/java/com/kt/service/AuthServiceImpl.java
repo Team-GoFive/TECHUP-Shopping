@@ -1,6 +1,7 @@
 package com.kt.service;
 
 import com.kt.config.jwt.JwtTokenProvider;
+import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.TokenType;
 import com.kt.constant.UserRole;
@@ -164,13 +165,24 @@ public class AuthServiceImpl implements AuthService {
 	public void requestResetPassword(ResetPasswordRequest request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			account,
-			null,
-			PasswordRequestType.RESET
-		);
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatus(
+				account,
+				PasswordRequestStatus.PENDING
+			).orElseGet(
+				() -> PasswordRequestEntity.create(
+					account, null, PasswordRequestType.RESET
+				)
+			);
+
+		if (!passwordRequest.isNew()) {
+			passwordRequest.updateLastRequestedAt();
+			return;
+		}
 		passwordRequestRepository.save(passwordRequest);
 	}
+
+
 
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;

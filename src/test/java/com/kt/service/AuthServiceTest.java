@@ -480,11 +480,45 @@ public class AuthServiceTest {
 		authService.requestResetPassword(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
-			.findAllByAccount(user).getFirst();
+			.findByAccountAndStatus(
+				user, PasswordRequestStatus.PENDING)
+			.orElse(null);
 
 		assertNotNull(passwordRequest);
+		assertNull(passwordRequest.getLastRequestedAt());
 		assertEquals(passwordRequest.getAccount().getId(), user.getId());
 		assertEquals(passwordRequest.getStatus(), PasswordRequestStatus.PENDING);
+
+		log.info("request account email : {}", passwordRequest.getAccount().getEmail());
+	}
+
+	@Test
+	void 비밀번호_초기화_재요청_성공() {
+		ResetPasswordRequest request = new ResetPasswordRequest(
+			user.getEmail()
+		);
+
+		authService.requestResetPassword(request);
+
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatus(
+				user, PasswordRequestStatus.PENDING
+			).orElse(null);
+
+		assertNotNull(passwordRequest);
+		assertNull(passwordRequest.getLastRequestedAt());
+
+		log.info("Before Re-request lastRequestedAt : {}", passwordRequest.getLastRequestedAt());
+
+		authService.requestResetPassword(request);
+		PasswordRequestEntity savedPasswordRequest = passwordRequestRepository
+			.findByAccountAndStatus(
+				user, PasswordRequestStatus.PENDING
+			).orElse(null);
+
+		assertNotNull(savedPasswordRequest.getLastRequestedAt());
+		log.info("After Re-request lastRequestedAt : {}", savedPasswordRequest.getLastRequestedAt());
+		assertEquals(passwordRequest.getAccount().getId(), user.getId());
 
 		log.info("request account email : {}", passwordRequest.getAccount().getEmail());
 	}
