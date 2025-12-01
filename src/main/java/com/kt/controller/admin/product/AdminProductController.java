@@ -1,4 +1,4 @@
-package com.kt.controller.product;
+package com.kt.controller.admin.product;
 
 import static com.kt.common.api.ApiResult.*;
 

@@ -1,4 +1,4 @@
-package com.kt.controller.review;
+package com.kt.controller.admin.review;
 
 import static com.kt.common.api.ApiResult.*;
 
@@ -33,7 +33,7 @@ public class AdminReviewController {
 		@ModelAttribute Paging paging,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type
-	){
+	) {
 		return page(
 			reviewService.getReviewsByAdmin(
 				paging.toPageable(),
@@ -46,7 +46,7 @@ public class AdminReviewController {
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> delete(
 		@PathVariable UUID reviewId
-	){
+	) {
 		reviewService.delete(reviewId);
 		return empty();
 	}
