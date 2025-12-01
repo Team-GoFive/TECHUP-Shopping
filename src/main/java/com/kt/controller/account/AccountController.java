@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-	// 테스트
 	private final AccountService accountService;
 
 	@PatchMapping("/{accountId}/password")
