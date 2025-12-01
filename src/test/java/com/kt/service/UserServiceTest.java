@@ -41,9 +41,6 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -63,9 +60,6 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-
-	@PersistenceContext
-	EntityManager em;
 
 	UserEntity testUser;
 	UserEntity testUser2;
