@@ -36,7 +36,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@DisplayName("내 리뷰 가능한 주문상품 조회 - GET /api/users/reviews")
+@DisplayName("내가 작성한 리뷰 조회 - GET /api/users/reviews")
 public class UserSearchReviewTest extends MockMvcTest {
 
 	@Autowired
