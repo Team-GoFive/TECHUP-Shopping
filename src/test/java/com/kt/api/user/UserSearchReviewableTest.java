@@ -1,0 +1,144 @@
+package com.kt.api.user;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.ResultActions;
+
+import com.kt.common.CategoryEntityCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.OrderProductCreator;
+import com.kt.common.ProductCreator;
+import com.kt.common.ReceiverCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.OrderStatus;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.user.UserRepository;
+import com.kt.security.DefaultCurrentUser;
+
+@DisplayName("내 리뷰 가능한 주문상품 조회 - GET /api/users/orderproducts/reviewable")
+public class UserSearchReviewableTest extends MockMvcTest {
+	@Autowired
+	ReviewRepository reviewRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	OrderRepository orderRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
+
+	OrderEntity testOrder;
+	OrderProductEntity testOrderProduct;
+	ProductEntity testProduct;
+	DefaultCurrentUser testMemberDetails;
+
+	@BeforeEach
+	void setUp() throws Exception {
+		UserEntity user = UserEntityCreator.createMember();
+		userRepository.save(user);
+
+		testMemberDetails = new DefaultCurrentUser(
+			user.getId(),
+			user.getEmail(),
+			user.getRole()
+		);
+
+		ReceiverVO receiver = ReceiverCreator.createReceiver();
+
+		testOrder = OrderEntity.create(receiver, user);
+		orderRepository.save(testOrder);
+
+		CategoryEntity category = CategoryEntityCreator.createCategory();
+		categoryRepository.save(category);
+
+		testProduct = ProductCreator.createProduct(category);
+		productRepository.save(testProduct);
+
+		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct);
+		orderProductRepository.save(testOrderProduct);
+	}
+
+
+	@Test
+	void 리뷰가능한주문상품조회_성공__200_OK() throws Exception {
+		// given
+		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		orderRepository.save(testOrder);
+
+		// when
+		ResultActions Actions = mockMvc.perform(
+			get("/api/users/orderproducts/reviewable")
+				.with(user(testMemberDetails))
+				.param("page","1")
+				.param("size","10")
+		).andDo(print());
+
+		// then
+		Actions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.list[0].orderProductId").value(testOrderProduct.getId().toString()));
+	}
+
+
+	// @Test
+	// void 작성한리뷰존재_시__404_Not_Found() throws Exception {
+	// 	// given
+	// 	testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+	// 	ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+	// 	review.mapToOrderProduct(testOrderProduct);
+	// 	reviewRepository.saveAndFlush(review);
+	//
+	// 	// when
+	// 	ResultActions Actions = mockMvc.perform(
+	// 		get("/api/users/orderproducts/reviewable")
+	// 			.with(user(testMemberDetails))
+	// 			.param("page","1")
+	// 			.param("size","10")
+	// 	).andDo(print());
+	//
+	// 	// then
+	// 	Actions
+	// 		.andExpect(status().isNotFound())
+	// 		.andExpect(jsonPath("$.data.totalCount").value(0));
+	// }
+	//
+	// @Test
+	// void 주문상태_구매확정_아님__404_Not_Found() throws Exception {
+	// 	// given
+	// 	testOrder.updateStatus(OrderStatus.CANCELED);
+	// 	orderRepository.save(testOrder);
+	//
+	// 	// when
+	// 	ResultActions Actions = mockMvc.perform(
+	// 		get("/api/users/orderproducts/reviewable")
+	// 			.with(user(testMemberDetails))
+	// 			.param("page","1")
+	// 			.param("size","10")
+	// 	).andDo(print());
+	//
+	// 	// then
+	// 	Actions
+	// 		.andExpect(status().isNotFound())
+	// 		.andExpect(jsonPath("$.data.totalCount").value(0));
+	// }
+}
