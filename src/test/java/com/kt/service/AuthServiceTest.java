@@ -14,7 +14,6 @@ import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.CustomException;
 import com.kt.infra.redis.RedisCache;
-import com.kt.repository.AccountRepository;
 import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
@@ -25,7 +24,6 @@ import com.mysema.commons.lang.Pair;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
