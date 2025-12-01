@@ -1,4 +1,4 @@
-package com.kt.api.category;
+package com.kt.controller.category;
 
 import java.util.List;
 
