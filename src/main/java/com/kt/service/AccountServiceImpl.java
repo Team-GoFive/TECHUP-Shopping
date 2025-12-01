@@ -70,6 +70,11 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
+	public void deleteAccountPermanently(UUID accountId) {
+		accountRepository.deleteById(accountId);
+	}
+
+	@Override
 	public void adminResetAccountPassword(UUID accountId) {
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
 		String resetPassword = getRandomPassword();

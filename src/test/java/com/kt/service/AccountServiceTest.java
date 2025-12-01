@@ -1,6 +1,7 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
@@ -266,7 +267,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 계정삭제_성공(){
+	void 계정삭제_성공_soft(){
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",
@@ -279,6 +280,23 @@ class AccountServiceTest {
 		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(courier.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
+	}
+
+	@Test
+	void 계정삭제_성공_hard(){
+		CourierEntity courier = CourierEntity.create(
+			"배송기사테스터",
+			"wjd123@naver.com",
+			passwordEncoder.encode(TEST_PASSWORD),
+			Gender.MALE
+		);
+		courierRepository.save(courier);
+
+		accountService.deleteAccountPermanently(courier.getId());
+
+		assertThatThrownBy(() -> accountRepository.findByIdOrThrow(courier.getId()))
+			.isInstanceOf(CustomException.class);
+
 	}
 
 	@Test

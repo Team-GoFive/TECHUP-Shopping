@@ -1,8 +1,5 @@
 package com.kt.controller.admin.account;
 
-import com.kt.common.api.ApiResult;
-import com.kt.common.api.PageResponse;
-import com.kt.domain.dto.request.AccountRequest;
 
 import com.kt.domain.dto.response.AccountResponse;
 
@@ -10,6 +7,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +18,6 @@ import com.kt.service.AccountService;
 import lombok.RequiredArgsConstructor;
 
 import static com.kt.common.api.ApiResult.*;
-
-// TODO: 계정 soft delete
-// TODO: 계정 hard delete
 
 @RestController
 @RequestMapping("/api/admin")
@@ -42,6 +38,16 @@ public class AdminAccountController {
 		);
 	}
 
+	@PatchMapping("/accounts/{accountId}")
+	public ResponseEntity<ApiResult<Void>> deleteAccount(@PathVariable UUID accountId) {
+		accountService.deleteAccount(accountId);
+		return empty();
+	}
+
+	@DeleteMapping("/accounts/{accountId}/force")
+	public ResponseEntity<ApiResult<Void>> deleteAccountPermanently(@PathVariable UUID accountId) {
+		accountService.deleteAccountPermanently(accountId);
+		return empty();
+	}
+
 }
-
-
