@@ -83,7 +83,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 			.join(order).on(user.id.eq(order.orderBy.id))
 			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
 			.join(review).on(orderProduct.id.eq(review.orderProduct.id))
-			.where(review.isNotNull())
+			.where(review.isNotNull().and(user.id.eq(userId)))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -94,7 +94,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 			.join(order).on(user.id.eq(order.orderBy.id))
 			.join(orderProduct).on(order.id.eq(orderProduct.order.id))
 			.join(review).on(orderProduct.id.eq(review.orderProduct.id))
-			.where(review.isNotNull())
+			.where(review.isNotNull().and(user.id.eq(userId)))
 			.fetch().size();
 
 		return new PageImpl<>(contents, pageable, total);
