@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,27 +38,27 @@ public class AdminOrderController {
 		));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{orderId}")
 	public ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(
-		@PathVariable UUID id
+		@PathVariable UUID orderId
 	) {
-		return wrap(orderService.getOrderDetail(id));
+		return wrap(orderService.getOrderDetail(orderId));
 	}
 
-	@PutMapping("/{id}/change-status")
+	@PatchMapping("/{orderId}/change-status")
 	public ResponseEntity<ApiResult<Void>> updateOrderStatus(
-		@PathVariable UUID id,
+		@PathVariable UUID orderId,
 		@RequestBody OrderStatus newStatus
 	) {
-		orderService.updateOrderStatus(id, newStatus);
+		orderService.updateOrderStatus(orderId, newStatus);
 		return empty();
 	}
 
-	@PutMapping("/{id}/cancel")
+	@PatchMapping("/{orderId}/cancel")
 	public ResponseEntity<ApiResult<Void>> cancelOrder(
-		@PathVariable UUID id
+		@PathVariable UUID orderId
 	) {
-		orderService.cancelOrder(id);
+		orderService.cancelOrder(orderId);
 		return empty();
 	}
 }
