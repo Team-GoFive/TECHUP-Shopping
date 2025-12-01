@@ -8,10 +8,12 @@ import com.kt.domain.entity.UserEntity;
 
 public class UserEntityCreator {
 
+	public static final String DEFAULT_MEMBER_EMAIL = "member@test.com";
+
 	public static UserEntity createMember() {
 		return UserEntity.create(
 			"회원1",
-			"member@test.com",
+			DEFAULT_MEMBER_EMAIL,
 			"1234",
 			UserRole.MEMBER,
 			Gender.MALE,

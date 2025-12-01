@@ -1,0 +1,84 @@
+package com.kt.api.order;
+
+import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.ProductEntityCreator.*;
+import static com.kt.common.UserEntityCreator.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.ResultActions;
+
+import com.kt.common.MockMvcTest;
+import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.OrderRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.user.UserRepository;
+import com.kt.service.OrderService;
+
+@DisplayName("상품 상세 조회 - GET /api/orders/{orderId}")
+public class OrderDetailTest extends MockMvcTest {
+
+	@Autowired
+	CategoryRepository categoryRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	OrderService orderService;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	OrderRepository orderRepository;
+
+	UserEntity testMember;
+
+	ProductEntity testProduct;
+
+	@BeforeEach
+	void setUp() {
+		// 유저 생성
+		testMember = createMember();
+		userRepository.save(testMember);
+
+		CategoryEntity category = createCategory();
+		categoryRepository.save(category);
+
+		testProduct = createProduct(category);
+		productRepository.save(testProduct);
+
+		List<OrderRequest.Item> items = List.of(
+			new OrderRequest.Item(testProduct.getId(), 1L)
+		);
+		orderService.createOrder(testMember.getEmail(), items);
+	}
+
+	@Test
+	void 주문_상세_조회_성공__200_OK() throws Exception {
+		// when
+		OrderEntity orderEntity = orderRepository.findAll().stream().findFirst().orElseThrow();
+
+		ResultActions actions = mockMvc.perform(
+			get("/api/orders/{orderId}", orderEntity.getId())
+				.with(SecurityMockMvcRequestPostProcessors.user(testMember.getEmail()))
+		);
+
+		// then
+		actions.andDo(print());
+		actions.andExpect(status().isOk());
+		actions.andExpect(jsonPath("$.data.orderId").value(orderEntity.getId().toString()));
+		actions.andExpect(jsonPath("$.data.orderProducts.length()").value(1));
+		actions.andExpect(jsonPath("$.data.orderProducts[0].productId").value(testProduct.getId().toString()));
+	}
+}
