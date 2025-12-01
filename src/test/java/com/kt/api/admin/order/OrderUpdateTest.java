@@ -85,56 +85,55 @@ public class OrderUpdateTest extends MockMvcTest {
 			.andExpect(status().isBadRequest());
 
 	}
-	// TODO: 에러 익셉션 적용 후 수정
-	//
-	// @Test
-	// void 주문_상태변경_실패_주문없음_403_NotFount() throws Exception {
-	//
-	// 	// given
-	// 	UUID randomId = UUID.randomUUID();
-	//
-	// 	// when
-	// 	mockMvc.perform(
-	// 			put("/api/admin/orders/{id}/change-status", randomId)
-	// 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-	// 				.contentType(MediaType.APPLICATION_JSON)
-	// 				.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-	// 		)
-	// 		.andDo(print())
-	// 		.andExpect(status().isNotFound());
-	// }
-	//
-	// @Test
-	// void 주문_상태변경_실패__이미구매확정_400_BadRequest() throws Exception {
-	//
-	// 	// given
-	// 	savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
-	// 	orderRepository.save(savedOrder);
-	//
-	// 	mockMvc.perform(
-	// 			put("/api/admin/orders/{id}/change-status", savedOrder.getId())
-	// 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-	// 				.contentType(MediaType.APPLICATION_JSON)
-	// 				.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-	// 		)
-	// 		.andDo(print())
-	// 		.andExpect(status().isBadRequest());
-	// }
-	//
-	// @Test
-	// void 주문_상태변경_실패__배송중_400_() throws Exception {
-	//
-	// 	// given
-	// 	savedOrder.updateStatus(OrderStatus.SHIPPING);
-	// 	orderRepository.save(savedOrder);
-	//
-	// 	mockMvc.perform(
-	// 			put("/api/admin/orders/{id}/change-status", savedOrder.getId())
-	// 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-	// 				.contentType(MediaType.APPLICATION_JSON)
-	// 				.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-	// 		)
-	// 		.andDo(print())
-	// 		.andExpect(status().isBadRequest());
-	// }
+
+	@Test
+	void 주문_상태변경_실패_주문없음_403_NotFount() throws Exception {
+
+		// given
+		UUID randomId = UUID.randomUUID();
+
+		// when
+		mockMvc.perform(
+				patch("/api/admin/orders/{id}/change-status", randomId)
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
+			)
+			.andDo(print())
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void 주문_상태변경_실패__이미구매확정_400_BadRequest() throws Exception {
+
+		// given
+		savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		orderRepository.save(savedOrder);
+
+		mockMvc.perform(
+				patch("/api/admin/orders/{id}/change-status", savedOrder.getId())
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
+			)
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void 주문_상태변경_실패__배송중_400_() throws Exception {
+
+		// given
+		savedOrder.updateStatus(OrderStatus.SHIPPING);
+		orderRepository.save(savedOrder);
+
+		mockMvc.perform(
+				patch("/api/admin/orders/{id}/change-status", savedOrder.getId())
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
+			)
+			.andDo(print())
+			.andExpect(status().isBadRequest());
+	}
 }

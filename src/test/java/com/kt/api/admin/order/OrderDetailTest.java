@@ -65,17 +65,17 @@ public class OrderDetailTest extends MockMvcTest {
 	}
 
 	// TODO: 에러 익셉션 적용 후 수정
-	// @Test
-	// void 주문_상세_조회__실패_404_NotFound() throws Exception {
-	// 	// given
-	//
-	// 	UUID randomOrderId = UUID.randomUUID();
-	// 	mockMvc.perform(get("/api/orders/{orderId}", randomOrderId)
-	// 			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 		).
-	// 		andDo(print())
-	// 		.andExpectAll(status().isNotFound());
-	// }
+	@Test
+	void 주문_상세_조회__실패_404_NotFound() throws Exception {
+		// given
+
+		UUID randomOrderId = UUID.randomUUID();
+		mockMvc.perform(get("/api/orders/{orderId}", randomOrderId)
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+			).
+			andDo(print())
+			.andExpectAll(status().isNotFound());
+	}
 
 }

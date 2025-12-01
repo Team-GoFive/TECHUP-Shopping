@@ -47,7 +47,7 @@ public class OrderCancelTest extends MockMvcTest {
 	}
 
 	@Test
-	void 주문_취소_성공_200() throws Exception {
+	void 주문_취소__성공_200() throws Exception {
 		UserEntity user = UserEntityCreator.createMember();
 
 		savedUser = userRepository.save(user);
@@ -64,19 +64,15 @@ public class OrderCancelTest extends MockMvcTest {
 			.andExpect(jsonPath("$.message").value("성공"));
 	}
 
-	// TODO: 에러 익셉션 적용 후 수정
-	//
-	// @Test
-	// void 주문_취소_성공_200() throws Exception {
-	//
-	// 	mockMvc.perform(patch("/api/orders/{orderId}/cancel", order.getId())
-	// 			.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 		).
-	// 		andDo(print())
-	// 		.andExpectAll(status().isOk())
-	// 		.andExpect(jsonPath("$.code").value("ok"))
-	// 		.andExpect(jsonPath("$.message").value("성공"));
-	// }
+	@Test
+	void 주문_취소__실패_NotFound_404() throws Exception {
+
+		mockMvc.perform(patch("/api/orders/{orderId}/cancel", UUID.randomUUID())
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.contentType(MediaType.APPLICATION_JSON)
+			).
+			andDo(print())
+			.andExpectAll(status().isNotFound());
+	}
 
 }
