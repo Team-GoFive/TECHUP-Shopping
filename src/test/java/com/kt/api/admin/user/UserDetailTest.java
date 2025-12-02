@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.UserEntity;
@@ -30,36 +33,17 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("유저 상세 조회 (어드민) - GET /api/admin/users/{userId}")
 public class UserDetailTest extends MockMvcTest {
 
-	static final String TEST_PASSWORD = "1234561111";
+	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	UserEntity testUser;
 	UserEntity testAdmin;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserRepository userRepository;
 
 	@BeforeEach
 	void setUp() {
 
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"admintest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1999, 1, 1),
-			"01012340001"
-		);
-		testUser = UserEntity.create(
-			"테스트유저1",
-			"usertest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"01012340002"
-		);
+		testAdmin = UserEntityCreator.createAdmin();
+		testUser = UserEntityCreator.createMember();
 
 		userRepository.save(testUser);
 		userRepository.save(testAdmin);
@@ -67,17 +51,15 @@ public class UserDetailTest extends MockMvcTest {
 
 	@Test
 	void 회원_상세_조회_성공() throws Exception {
-		DefaultCurrentUser admin = new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/admin/users/{userId}", testUser.getId())
+				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 		);
 
-		MvcResult result = mockMvc.perform(
-				get("/api/admin/users/{userId}", testUser.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(admin))
-			)
-			.andDo(print())
+		// then
+		MvcResult result = actions.andDo(print())
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.code").value("ok"),
@@ -93,15 +75,10 @@ public class UserDetailTest extends MockMvcTest {
 
 	@Test
 	void 회원_상세_조회_실패__404_NotFound() throws Exception {
-		DefaultCurrentUser admin = new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
-		);
 
 		mockMvc.perform(
 				get("/api/admin/users/{userId}", UUID.randomUUID())
-					.with(SecurityMockMvcRequestPostProcessors.user(admin))
+					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 			)
 			.andDo(print())
 			.andExpectAll(

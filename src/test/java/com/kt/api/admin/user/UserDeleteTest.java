@@ -17,8 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
@@ -32,53 +35,32 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("유저 삭제 (어드민) - GET /api/admin/users/{userId}/disabled")
 public class UserDeleteTest extends MockMvcTest {
 
-	static final String TEST_PASSWORD = "1234561111";
+	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	UserEntity testUser;
 	UserEntity testAdmin;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserRepository userRepository;
 
 	@BeforeEach
 	void setUp() {
 
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"admintest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1999, 1, 1),
-			"01012340001"
-		);
-		testUser = UserEntity.create(
-			"테스트유저1",
-			"usertest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"01012340002"
-		);
+		testAdmin = UserEntityCreator.createAdmin();
+		testUser = UserEntityCreator.createMember();
 		userRepository.save(testUser);
 		userRepository.save(testAdmin);
 	}
 
 	@Test
 	void 회원_삭제_성공() throws Exception {
-		DefaultCurrentUser admin = new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			patch("/api/admin/users/{userId}/removed", testUser.getId())
+				.with(user(userDetails))
 		);
 
-		MvcResult result = mockMvc.perform(
-				patch("/api/admin/users/{userId}/removed", testUser.getId())
-					.with(user(admin))
-			)
-			.andDo(print())
+		// then
+		MvcResult result = actions.andDo(print())
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.code").value("ok"),
@@ -94,17 +76,15 @@ public class UserDeleteTest extends MockMvcTest {
 
 	@Test
 	void 회원_삭제_실패__404_NotFound() throws Exception {
-		DefaultCurrentUser admin = new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			patch("/api/admin/users/{userId}/removed", UUID.randomUUID())
+				.with(user(userDetails))
 		);
 
-		mockMvc.perform(
-				patch("/api/admin/users/{userId}/removed", UUID.randomUUID())
-					.with(user(admin))
-			)
-			.andDo(print())
+		// then
+		actions.andDo(print())
 			.andExpectAll(
 				status().isNotFound());
 	}
