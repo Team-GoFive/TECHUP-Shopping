@@ -34,13 +34,12 @@ import static com.kt.common.api.ApiResult.*;
 		@ApiResponse(responseCode = "500", description = "서버 에러")
 	}
 )
-@Tag(name = "User", description = "User API")
+@Tag(name = "User", description = "유저 관련 API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-
 
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "403", description = "접근권한 없음"),
@@ -64,9 +63,6 @@ public class UserController {
 	@Operation(
 		summary = "내 정보 수정",
 		description = "로그인한 유저의 정보 수정 관련 API"
-		, parameters = {
-		@Parameter(name = "UserRequest.UpdateDetails" , description = "유저 정보를 수정하는 필드를 포함하는 DTO")
-		}
 	)
 	public ResponseEntity<ApiResult<Void>> updateUserBySelf(
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
@@ -83,9 +79,6 @@ public class UserController {
 	@Operation(
 		summary = "내가 작성하지 않은 리뷰를 조회",
 		description = "로그인한 유저의 작성하지 않은 리뷰 조회 관련 API"
-		, parameters = {
-		@Parameter(name = "Paging" , description = "페이징 처리에 필요한 정보 (page, size)를 포함하는 DTO")
-	}
 	)
 	public ResponseEntity<ApiResult<PageResponse<OrderProductResponse.SearchReviewable>>> searchReviewables(
 		@ModelAttribute Paging paging,

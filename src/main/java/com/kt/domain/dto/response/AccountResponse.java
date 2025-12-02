@@ -4,8 +4,10 @@ import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.querydsl.core.annotations.QueryProjection;
 
-public class AccountResponse {
+import io.swagger.v3.oas.annotations.media.Schema;
 
+public class AccountResponse {
+	@Schema(name="AccountSearchResponse")
 	public record Search(
 		String name,
 		String email,

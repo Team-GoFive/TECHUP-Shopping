@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
-@Tag(name = "계정컨트롤러", description = "계정(유저, 관리자, 배송기사) API")
+@Tag(name = "account", description = "계정 관련 API")
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class AccountController {
 
 	@Operation(
 		summary = "비밀번호 변경",
-		description = "계정의 비밀번호를 변경하는 API입니다."
+		description = "계정의 비밀번호 변경 관련 API"
 		, parameters = {
 			@Parameter(name = "accountId" , description = "계정 ID")
 		}
@@ -54,7 +54,7 @@ public class AccountController {
 
 	@Operation(
 		summary = "계정 탈퇴",
-		description = "로그인한 계정을 탈퇴하는 API입니다."
+		description = "로그인한 계정 탈퇴 관련 API"
 	)
 	@DeleteMapping("/retire")
 	public ResponseEntity<ApiResult<Void>> delete(

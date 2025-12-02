@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Courier", description = "Courier API")
+@Tag(name = "Courier", description = "배송기사 관련 API")
 @RestController
 @RequestMapping("/api/couriers")
 @RequiredArgsConstructor
@@ -48,8 +48,7 @@ public class CourierController {
 		summary = "배송기사 정보 수정",
 		description = "배송기사의 정보 수정 관련 API"
 		, parameters = {
-			@Parameter(name = "courierId" , description = "배송기사 ID"),
-			@Parameter(name = "CourierRequest.UpdateDetails" , description = "배송기사 정보를 수정하는 필드를 포함하는 DTO")
+			@Parameter(name = "courierId" , description = "배송기사 ID")
 		}
 	)
 	@PutMapping("/{courierId}")
