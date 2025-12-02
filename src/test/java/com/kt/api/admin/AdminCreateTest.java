@@ -1,4 +1,4 @@
-package com.kt.api.admin.admins;
+package com.kt.api.admin;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -8,9 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.UserRequest;
+import com.kt.domain.dto.request.MemberRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
@@ -30,9 +28,8 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admins/{adminsId}")
-public class AdminsUpdateTest extends MockMvcTest {
-
+@DisplayName("유저 생성 (어드민) - POST /api/admins")
+public class AdminCreateTest extends MockMvcTest {
 	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
 	UserRepository userRepository;
@@ -63,19 +60,22 @@ public class AdminsUpdateTest extends MockMvcTest {
 	}
 
 	@Test
-	void 관리자_업데이트_성공() throws Exception {
+	void 관리자_생성_성공() throws Exception {
 
-		var requset = new UserRequest.UpdateDetails(
-			"김도현",
-			"010-1234-1234",
+		var request = new MemberRequest.SignupMember(
+			"테스트어드민",
+			"test@examlple.com",
+			"1234",
+			Gender.MALE,
 			LocalDate.now(),
-			Gender.FEMALE
+			"010-1111-1111"
 		);
 
-		MvcResult result = mockMvc.perform(put("/api/admins/{adminId}", testAdmin.getId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requset))
-				.with(user(adminPrincipal()))
+		MvcResult result = mockMvc.perform(
+				post("/api/admins")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.with(user(adminPrincipal()))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -84,31 +84,9 @@ public class AdminsUpdateTest extends MockMvcTest {
 				jsonPath("$.message").value("성공")
 			).andReturn();
 
-		UserEntity foundedUser = userRepository.findByIdOrThrow(testAdmin.getId());
-
-		assertThat(foundedUser.getName()).isEqualTo("김도현");
+		assertThat(userRepository.findByEmail("test@examlple.com")).isPresent();
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
-	}
-
-	@Test
-	void 관리자_업데이트_실패__404_NotFound() throws Exception {
-
-		var requset = new UserRequest.UpdateDetails(
-			"김도현",
-			"010-1234-1234",
-			LocalDate.now(),
-			Gender.FEMALE
-		);
-
-		mockMvc.perform(put("/api/admins/{adminId}", UUID.randomUUID())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requset))
-				.with(user(adminPrincipal()))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
 	}
 
 }

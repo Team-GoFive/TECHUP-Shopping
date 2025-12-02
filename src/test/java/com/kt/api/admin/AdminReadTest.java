@@ -1,4 +1,4 @@
-package com.kt.api.admin.admins;
+package com.kt.api.admin;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @DisplayName("관리자 목록 조회 (어드민) - GET /api/admins")
-public class AdminsReadTest extends MockMvcTest {
+public class AdminReadTest extends MockMvcTest {
 	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
 	UserRepository userRepository;
