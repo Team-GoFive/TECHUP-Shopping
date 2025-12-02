@@ -21,6 +21,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.repository.OrderRepository;
 import com.kt.security.DefaultCurrentUser;
@@ -51,13 +52,15 @@ public class OrderUpdateTest extends MockMvcTest {
 
 		// given
 		OrderStatus newStatus = OrderStatus.PURCHASE_CONFIRMED;
-
+		var request = new OrderRequest.ChangeStatus(
+			newStatus
+		);
 		// when
 		ResultActions result = mockMvc.perform(
 			patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(newStatus))
+				.content(objectMapper.writeValueAsString(request))
 		);
 
 		// then
@@ -87,17 +90,20 @@ public class OrderUpdateTest extends MockMvcTest {
 	}
 
 	@Test
-	void 주문_상태변경_실패_주문없음_403_NotFount() throws Exception {
+	void 주문_상태변경_실패_주문없음_404_NotFound() throws Exception {
 
 		// given
 		UUID randomId = UUID.randomUUID();
+		var request = new OrderRequest.ChangeStatus(
+			OrderStatus.SHIPPING_COMPLETED
+		);
 
 		// when
 		mockMvc.perform(
-				patch("/api/admin/orders/{id}/change-status", randomId)
+				patch("/api/admin/orders/{orderId}/change-status", randomId)
 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
+					.content(objectMapper.writeValueAsString(request))
 			)
 			.andDo(print())
 			.andExpect(status().isNotFound());
@@ -111,7 +117,7 @@ public class OrderUpdateTest extends MockMvcTest {
 		orderRepository.save(savedOrder);
 
 		mockMvc.perform(
-				patch("/api/admin/orders/{id}/change-status", savedOrder.getId())
+				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
@@ -121,14 +127,14 @@ public class OrderUpdateTest extends MockMvcTest {
 	}
 
 	@Test
-	void 주문_상태변경_실패__배송중_400_() throws Exception {
+	void 주문_상태변경_실패__배송중_400_BadRequest() throws Exception {
 
 		// given
 		savedOrder.updateStatus(OrderStatus.SHIPPING);
 		orderRepository.save(savedOrder);
 
 		mockMvc.perform(
-				patch("/api/admin/orders/{id}/change-status", savedOrder.getId())
+				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))

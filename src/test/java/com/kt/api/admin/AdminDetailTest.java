@@ -14,8 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.UserEntity;
@@ -27,42 +30,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("관리자 상세 조회 (어드민) - GET /api/admins/{adminId}")
 public class AdminDetailTest extends MockMvcTest {
-	static final String TEST_PASSWORD = "admin12345";
+	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
 	UserEntity testAdmin;
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"test@example.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1231-1212"
-		);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
-	}
-
-	private DefaultCurrentUser adminPrincipal() {
-		return new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
-		);
 	}
 
 	@Test
 	void 관리자_상세_조회_성공() throws Exception {
 
-		MvcResult result = mockMvc.perform(get(
-					"/api/admins/{adminId}", testAdmin.getId()
-				).with(user(adminPrincipal()))
-			)
+		// when
+		ResultActions actions = mockMvc.perform(get(
+				"/api/admins/{adminId}", testAdmin.getId()
+			).with(user(userDetails))
+		);
+
+		// then
+		MvcResult result = actions
 			.andDo(print())
 			.andExpectAll(
 				status().isOk(),

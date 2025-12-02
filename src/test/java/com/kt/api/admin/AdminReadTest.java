@@ -14,8 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.UserEntity;
@@ -27,48 +30,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("관리자 목록 조회 (어드민) - GET /api/admins")
 public class AdminReadTest extends MockMvcTest {
-	static final String TEST_PASSWORD = "admin12345";
+	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
 	UserEntity testAdmin;
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"test@example.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1231-1212"
-		);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
-	}
-
-	private DefaultCurrentUser adminPrincipal() {
-		return new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
-		);
 	}
 
 	@Test
 	void 관리자_목록_조회_성공() throws Exception {
 
-		MvcResult result = mockMvc.perform(
-				get("/api/admins")
-					.param("page", "1")
-					.param("size", "10")
-					.param("role", UserRole.ADMIN.name())
-					.param("userStatus", "")
-					.param("courierWorkStatus", "")
-					.param("searchKeyword", "")
-					.with(user(adminPrincipal()))
-			)
+		ResultActions actions = mockMvc.perform(
+			get("/api/admins")
+				.param("page", "1")
+				.param("size", "10")
+				.param("role", UserRole.ADMIN.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "")
+				.with(user(userDetails))
+		);
+
+		MvcResult result = actions
 			.andDo(print())
 			.andExpectAll(
 				status().isOk(),
@@ -78,7 +65,7 @@ public class AdminReadTest extends MockMvcTest {
 				jsonPath("$.data.totalCount").value(1),
 				jsonPath("$.data.totalPages").value(1)
 			).andReturn();
-
+		
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 

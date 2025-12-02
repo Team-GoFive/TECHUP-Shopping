@@ -30,6 +30,7 @@ public class CurrentUserCreator {
 			UserRole.MEMBER
 		);
 	}
+
 	public static DefaultCurrentUser getMemberUserDetails(UUID userId) {
 		return new DefaultCurrentUser(
 			userId,

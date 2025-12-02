@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.MemberRequest;
@@ -30,33 +33,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("유저 생성 (어드민) - POST /api/admins")
 public class AdminCreateTest extends MockMvcTest {
-	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	PasswordEncoder passwordEncoder;
 	UserEntity testAdmin;
+	DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"test@example.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1231-1212"
-		);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
-	}
-
-	private DefaultCurrentUser adminPrincipal() {
-		return new DefaultCurrentUser(
-			testAdmin.getId(),
-			testAdmin.getEmail(),
-			UserRole.ADMIN
-		);
 	}
 
 	@Test
@@ -75,7 +60,7 @@ public class AdminCreateTest extends MockMvcTest {
 				post("/api/admins")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
-					.with(user(adminPrincipal()))
+					.with(user(userDetails))
 			)
 			.andDo(print())
 			.andExpectAll(
