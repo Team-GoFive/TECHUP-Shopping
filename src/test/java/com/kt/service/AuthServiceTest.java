@@ -7,7 +7,7 @@ import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.ResetPasswordRequest;
+import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
@@ -376,10 +376,11 @@ public class AuthServiceTest {
 
 	@Test
 	@Transactional
-	void 유저_비밀번호_초기화_성공() {
-		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
-			user.getEmail()
-		);
+	void 계정_비밀번호_초기화_성공() {
+		PasswordManagementRequest.PasswordReset resetRequest =
+			new PasswordManagementRequest.PasswordReset(
+				user.getEmail()
+			);
 
 		authService.resetPassword(resetRequest);
 
@@ -388,11 +389,12 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void 유저_비밀번호_초기화_실패_계정_없음() {
+	void 계정_비밀번호_초기화_실패_계정_없음() {
 		String notExistsEmail = "test@email.com";
-		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
-			notExistsEmail
-		);
+		PasswordManagementRequest.PasswordReset resetRequest =
+			new PasswordManagementRequest.PasswordReset(
+				notExistsEmail
+			);
 		assertThrowsExactly(
 			CustomException.class, () ->
 				authService.resetPassword(resetRequest)
@@ -473,9 +475,10 @@ public class AuthServiceTest {
 
 	@Test
 	void 비밀번호_초기화_요청_성공() {
-		ResetPasswordRequest request = new ResetPasswordRequest(
-			user.getEmail()
-		);
+		PasswordManagementRequest.PasswordReset request =
+			new PasswordManagementRequest.PasswordReset(
+				user.getEmail()
+			);
 
 		authService.requestResetPassword(request);
 
@@ -493,9 +496,10 @@ public class AuthServiceTest {
 
 	@Test
 	void 비밀번호_초기화_요청_실패_데이터_존재() {
-		ResetPasswordRequest request = new ResetPasswordRequest(
-			user.getEmail()
-		);
+		PasswordManagementRequest.PasswordReset request =
+			new PasswordManagementRequest.PasswordReset(
+				user.getEmail()
+			);
 
 		authService.requestResetPassword(request);
 

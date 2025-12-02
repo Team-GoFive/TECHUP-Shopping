@@ -1,5 +1,7 @@
 package com.kt.controller.auth;
 
+import com.kt.domain.dto.request.PasswordManagementRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.TokenResponse;
 import com.kt.service.AuthService;
@@ -76,7 +77,7 @@ public class AuthController {
 
 	@PatchMapping("/init-password")
 	public ResponseEntity<ApiResult<Void>> resetPassword(
-		@RequestBody @Valid ResetPasswordRequest request
+		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
 	) {
 		authService.resetPassword(request);
 		return empty();

@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
+import com.kt.domain.dto.request.PasswordManagementRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,6 @@ import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.infra.redis.RedisCache;
@@ -80,7 +81,10 @@ class AuthControllerTest {
 			"010-3333-2222"
 		);
 		UserEntity savedUser = userRepository.save(user);
-		ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest(savedUser.getEmail());
+		PasswordManagementRequest.PasswordReset resetPasswordRequest =
+			new PasswordManagementRequest.PasswordReset(
+				savedUser.getEmail()
+			);
 
 		// when
 		mockMvc.perform(patch("/api/auth/init-password")
