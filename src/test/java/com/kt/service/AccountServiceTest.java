@@ -26,6 +26,7 @@ import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -321,9 +322,9 @@ class AccountServiceTest {
 
 	@Test
 	void 계정_상세_조회() {
-		AbstractAccountEntity savedMember = accountService.getAccountDetail(member1.getId());
+		AccountResponse.AccountDetail savedMember = accountService.getAccountDetail(member1.getId());
 		assertThat(savedMember).isNotNull();
-		assertThat(savedMember.getName()).isEqualTo("회원");
+		assertThat(savedMember.name()).isEqualTo("회원");
 	}
 
 }
