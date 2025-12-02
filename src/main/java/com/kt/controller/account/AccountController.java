@@ -18,15 +18,27 @@ import com.kt.domain.dto.request.AccountRequest;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+
+@Tag(name = "계정컨트롤러", description = "계정(유저, 관리자, 배송기사) API")
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
 	private final AccountService accountService;
 
+	@Operation(
+		summary = "비밀번호 변경",
+		description = "계정의 비밀번호를 변경하는 API입니다."
+		, parameters = {
+			@Parameter(name = "accountId" , description = "계정 ID")
+		}
+	)
 	@PatchMapping("/{accountId}/password")
 	public ResponseEntity<ApiResult<Void>> updatePassword(
 		@PathVariable UUID accountId,
@@ -40,9 +52,13 @@ public class AccountController {
 		return empty();
 	}
 
+	@Operation(
+		summary = "계정 탈퇴",
+		description = "로그인한 계정을 탈퇴하는 API입니다."
+	)
 	@DeleteMapping("/retire")
 	public ResponseEntity<ApiResult<Void>> delete(
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
+		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser
 	) {
 		UUID accountId = defaultCurrentUser.getId();
 		accountService.deleteAccount(accountId);

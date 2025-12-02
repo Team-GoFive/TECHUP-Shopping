@@ -14,25 +14,46 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import static com.kt.common.api.ApiResult.*;
 
+
+@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	}
+)
+@Tag(name = "유저컨트롤러", description = "유저(일반회원, 관리자) API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
 
+
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "403", description = "접근권한 없음"),
+			@ApiResponse(responseCode = "404", description = "해당 정보가 존재하지 않음")
+		}
+	)
+	@Operation(
+		summary = "내 정보 상세 조회",
+		description = "로그인한 유저의 상세정보를 조회하는 API입니다."
+	)
 	@GetMapping
 	public ResponseEntity<ApiResult<UserResponse.UserDetail>> me(
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
+		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser
 	){
 		return wrap(
 			userService.getUserDetail(defaultCurrentUser.getId())
@@ -40,8 +61,15 @@ public class UserController {
 	}
 
 	@PutMapping
+	@Operation(
+		summary = "내 정보 수정",
+		description = "로그인한 유저의 정보를 수정하는 API입니다."
+		, parameters = {
+		@Parameter(name = "UserRequest.UpdateDetails" , description = "유저 정보를 수정하는 필드를 포함하는 DTO")
+		}
+	)
 	public ResponseEntity<ApiResult<Void>> updateUserBySelf(
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@RequestBody @Valid UserRequest.UpdateDetails request
 	){
 		userService.updateUserDetail(
@@ -52,9 +80,16 @@ public class UserController {
 	}
 
 	@GetMapping("/reviewable-products")
+	@Operation(
+		summary = "내가 작성하지 않은 리뷰를 조회",
+		description = "내가 작성하지 않은 리뷰를 조회하는 API입니다."
+		, parameters = {
+		@Parameter(name = "Paging" , description = "페이징 처리에 필요한 정보 (page, size)를 포함하는 DTO")
+	}
+	)
 	public ResponseEntity<ApiResult<PageResponse<OrderProductResponse.SearchReviewable>>> searchReviewables(
 		@ModelAttribute Paging paging,
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
+		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser
 	){
 		return page(
 			userService.getReviewableOrderProducts(

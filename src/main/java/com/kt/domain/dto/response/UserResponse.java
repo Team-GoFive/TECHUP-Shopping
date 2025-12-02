@@ -10,12 +10,13 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.querydsl.core.annotations.QueryProjection;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserResponse {
-
+	@Schema(name = "UserResponse.Search")
 	public record Search(
 		UUID id,
 		String name,
@@ -29,7 +30,7 @@ public class UserResponse {
 		public Search {
 		}
 	}
-
+	@Schema(name = "UserResponse.UserDetail")
 	public record UserDetail(
 		UUID id,
 		String name,
@@ -39,9 +40,8 @@ public class UserResponse {
 		LocalDate birth,
 		String mobile
 	) {
-
 	}
-
+	@Schema(name = "UserResponse.Orders")
 	public record Orders(
 		UUID userId,
 		List<OrderItem> orders
@@ -55,7 +55,7 @@ public class UserResponse {
 			);
 		}
 	}
-
+	@Schema(name = "UserResponse.OrderItem")
 	public record OrderItem(
 		UUID orderId,
 		ReceiverVO receiver
