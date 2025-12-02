@@ -57,7 +57,7 @@ public class AdminCreateTest extends MockMvcTest {
 		);
 
 		MvcResult result = mockMvc.perform(
-				post("/api/admins")
+				post("/api/admin")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
 					.with(user(userDetails))

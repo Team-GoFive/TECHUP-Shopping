@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 import static com.kt.common.api.ApiResult.*;
 
 @RestController
-@RequestMapping("/api/admins")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
 

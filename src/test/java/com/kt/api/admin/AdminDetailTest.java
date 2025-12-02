@@ -46,7 +46,7 @@ public class AdminDetailTest extends MockMvcTest {
 
 		// when
 		ResultActions actions = mockMvc.perform(get(
-				"/api/admins/{adminId}", testAdmin.getId()
+				"/api/admin/{adminId}", testAdmin.getId()
 			).with(user(userDetails))
 		);
 

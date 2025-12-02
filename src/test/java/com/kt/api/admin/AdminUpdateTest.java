@@ -92,7 +92,7 @@ public class AdminUpdateTest extends MockMvcTest {
 		);
 
 		// when
-		ResultActions actions = mockMvc.perform(put("/api/admins/{adminId}", UUID.randomUUID())
+		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", UUID.randomUUID())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
 			.with(user(userDetails))

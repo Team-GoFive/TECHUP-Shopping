@@ -45,7 +45,7 @@ public class AdminReadTest extends MockMvcTest {
 	void 관리자_목록_조회_성공() throws Exception {
 
 		ResultActions actions = mockMvc.perform(
-			get("/api/admins")
+			get("/api/admin")
 				.param("page", "1")
 				.param("size", "10")
 				.param("role", UserRole.ADMIN.name())
@@ -65,7 +65,7 @@ public class AdminReadTest extends MockMvcTest {
 				jsonPath("$.data.totalCount").value(1),
 				jsonPath("$.data.totalPages").value(1)
 			).andReturn();
-		
+
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 

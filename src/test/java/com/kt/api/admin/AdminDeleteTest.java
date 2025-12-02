@@ -49,7 +49,7 @@ public class AdminDeleteTest extends MockMvcTest {
 	void 관리자_삭제_성공() throws Exception {
 
 		// when
-		ResultActions actions = mockMvc.perform(delete("/api/admins/{adminId}", testAdmin.getId())
+		ResultActions actions = mockMvc.perform(delete("/api/admin/{adminId}", testAdmin.getId())
 			.with(user(userDetails))
 		);
 
@@ -72,7 +72,7 @@ public class AdminDeleteTest extends MockMvcTest {
 	@Test
 	void 관리자_삭제_실패__404_NotFound() throws Exception {
 
-		mockMvc.perform(delete("/api/admins/{adminId}", UUID.randomUUID())
+		mockMvc.perform(delete("/api/admin/{adminId}", UUID.randomUUID())
 				.with(user(userDetails))
 			)
 			.andDo(print())
