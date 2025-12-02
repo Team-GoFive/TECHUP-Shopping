@@ -48,4 +48,12 @@ public class CourierEntity extends AbstractAccountEntity {
 	) {
 		return new CourierEntity(name, email, password, gender);
 	}
+
+	public void updateDetails(
+		String name,
+		Gender gender
+	){
+		this.name = name;
+		this.gender = gender;
+	}
 }
