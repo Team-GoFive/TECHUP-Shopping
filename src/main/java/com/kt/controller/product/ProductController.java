@@ -2,9 +2,9 @@ package com.kt.controller.product;
 
 import static com.kt.common.api.ApiResult.*;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,29 +16,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
-import com.kt.service.ReviewService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-public class ProductController {
+public class ProductController extends SwaggerAssistance {
 
 	private final ProductService productService;
-	private final ReviewService reviewService;
 
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<ProductResponse.Search>>> search(
 		@AuthenticationPrincipal CurrentUser user,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) ProductSearchType type,
-		Paging paging
+		@Valid @ParameterObject Paging paging
 	) {
 		return page(
 			productService.search(
@@ -60,12 +59,4 @@ public class ProductController {
 		);
 	}
 
-	@GetMapping("/{productId}/reviews")
-	public ResponseEntity<ApiResult<List<ReviewResponse.Search>>> productReviews(
-		@PathVariable UUID productId
-	) {
-		return wrap(
-			reviewService.getReviewByProductId(productId)
-		);
-	}
 }
