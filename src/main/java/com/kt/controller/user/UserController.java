@@ -51,25 +51,13 @@ public class UserController {
 		return empty();
 	}
 
-	@GetMapping("/orderproducts/reviewable")
+	@GetMapping("/reviewable-products")
 	public ResponseEntity<ApiResult<PageResponse<OrderProductResponse.SearchReviewable>>> searchReviewables(
 		@ModelAttribute Paging paging,
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
 		return page(
 			userService.getReviewableOrderProducts(
-				paging.toPageable(),
-				defaultCurrentUser.getId())
-		);
-	}
-
-	@GetMapping("/reviews")
-	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> searchReviews(
-		@ModelAttribute Paging paging,
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
-	){
-		return page(
-			userService.getReviewsByUserId(
 				paging.toPageable(),
 				defaultCurrentUser.getId())
 		);
