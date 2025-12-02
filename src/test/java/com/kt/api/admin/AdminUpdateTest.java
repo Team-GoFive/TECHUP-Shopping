@@ -15,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -23,7 +22,6 @@ import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
@@ -32,7 +30,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admins/{adminsId}")
+@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admin/{adminsId}")
 public class AdminUpdateTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "admin12345";
@@ -60,7 +58,7 @@ public class AdminUpdateTest extends MockMvcTest {
 		);
 
 		// when
-		ResultActions actions = mockMvc.perform(put("/api/admins/{adminId}", testAdmin.getId())
+		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", testAdmin.getId())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
 			.with(user(userDetails))

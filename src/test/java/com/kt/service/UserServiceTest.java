@@ -25,7 +25,6 @@ import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -388,25 +387,6 @@ class UserServiceTest {
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
 
-	}
-
-	@Test
-	void 내리뷰조회_성공() {
-		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
-		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.saveAndFlush(review);
-
-		PageRequest pageRequest = PageRequest.of(0, 10);
-		Page<ReviewResponse.Search> savedPage = userService.getReviewsByUserId(pageRequest, testUser.getId());
-
-		ReviewResponse.Search savedReviewResponse = savedPage
-			.stream()
-			.findFirst()
-			.orElse(null);
-
-		Assertions.assertNotNull(savedReviewResponse);
-		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
-		Assertions.assertEquals(review.getContent(), savedReviewResponse.content());
 	}
 
 	@Test

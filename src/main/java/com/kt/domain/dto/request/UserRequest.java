@@ -3,11 +3,13 @@ import java.time.LocalDate;
 
 import com.kt.constant.Gender;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class UserRequest {
+	@Schema(name = "UserUpdateDetailsRequest")
 	public record UpdateDetails(
 		@NotBlank(message = "이름은 필수항목입니다.")
 		String name,

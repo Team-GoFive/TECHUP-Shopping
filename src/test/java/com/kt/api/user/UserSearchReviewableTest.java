@@ -33,7 +33,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-@DisplayName("내 리뷰 가능한 주문상품 조회 - GET /api/users/orderproducts/reviewable")
+@DisplayName("내 리뷰 가능한 주문상품 조회 - GET /api/users/reviewable-products")
 public class UserSearchReviewableTest extends MockMvcTest {
 	@Autowired
 	ReviewRepository reviewRepository;
@@ -82,7 +82,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 
 		// when
 		ResultActions Actions = mockMvc.perform(
-			get("/api/users/orderproducts/reviewable")
+			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
@@ -106,7 +106,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 
 		// when
 		ResultActions Actions = mockMvc.perform(
-			get("/api/users/orderproducts/reviewable")
+			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
@@ -126,7 +126,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 
 		// when
 		ResultActions Actions = mockMvc.perform(
-			get("/api/users/orderproducts/reviewable")
+			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")

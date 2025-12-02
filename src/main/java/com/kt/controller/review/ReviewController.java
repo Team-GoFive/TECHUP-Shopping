@@ -5,6 +5,7 @@ import static com.kt.common.api.ApiResult.*;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +21,9 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.security.DefaultCurrentUser;
 import com.kt.service.ReviewService;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,6 +31,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewController {
 	private final ReviewService reviewService;
+
+	@GetMapping("/mine")
+	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> searchMines(
+		@ModelAttribute Paging paging,
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
+	){
+		return page(
+			reviewService.getReviewsByUserId(
+				paging.toPageable(),
+				defaultCurrentUser.getId())
+		);
+	}
 
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> search(

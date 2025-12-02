@@ -58,6 +58,7 @@ class ReviewServiceTest {
 	CategoryRepository categoryRepository;
 
 	OrderProductEntity testOrderProduct;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -67,7 +68,7 @@ class ReviewServiceTest {
 		orderRepository.deleteAll();
 		reviewRepository.deleteAll();
 
-		UserEntity user = UserEntity.create(
+		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
@@ -76,7 +77,7 @@ class ReviewServiceTest {
 			LocalDate.now(),
 			"010-1234-5678"
 		);
-		userRepository.save(user);
+		userRepository.save(testUser);
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -89,7 +90,7 @@ class ReviewServiceTest {
 
 		OrderEntity order = OrderEntity.create(
 			receiver,
-			user
+			testUser
 		);
 		orderRepository.save(order);
 
@@ -203,4 +204,24 @@ class ReviewServiceTest {
 		Assertions.assertNotNull(savedReviewResponse);
 		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
 	}
+
+	@Test
+	void 내리뷰조회_성공() {
+		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
+		review.mapToOrderProduct(testOrderProduct);
+		reviewRepository.saveAndFlush(review);
+
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		Page<ReviewResponse.Search> savedPage = reviewService.getReviewsByUserId(pageRequest, testUser.getId());
+
+		ReviewResponse.Search savedReviewResponse = savedPage
+			.stream()
+			.findFirst()
+			.orElse(null);
+
+		Assertions.assertNotNull(savedReviewResponse);
+		Assertions.assertEquals(review.getId(), savedReviewResponse.reviewId());
+		Assertions.assertEquals(review.getContent(), savedReviewResponse.content());
+	}
+
 }
