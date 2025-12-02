@@ -10,7 +10,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 
-import com.kt.domain.dto.request.ResetPasswordRequest;
+import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
@@ -26,6 +26,7 @@ import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
+import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
@@ -147,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void resetPassword(ResetPasswordRequest request) {
+	public void resetPassword(PasswordManagementRequest.PasswordReset request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(email);
@@ -162,7 +163,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void requestResetPassword(ResetPasswordRequest request) {
+	public void requestResetPassword(PasswordManagementRequest.PasswordReset request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
 
@@ -179,6 +180,28 @@ public class AuthServiceImpl implements AuthService {
 			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
 
 		passwordRequestRepository.save(passwordRequest);
+	}
+
+	@Override
+	public void requestUpdatePassword(PasswordManagementRequest.PasswordUpdate request) {
+		AbstractAccountEntity account = accountRepository
+			.findByEmailOrThrow(request.email());
+
+		passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				account,
+				PasswordRequestStatus.PENDING,
+				PasswordRequestType.UPDATE
+			).ifPresent(passwordRequestRepository::delete);
+
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			account,
+			request.password(),
+			PasswordRequestType.UPDATE
+		);
+
+		passwordRequestRepository.save(passwordRequest);
+
 	}
 
 	private String getRandomPassword() {

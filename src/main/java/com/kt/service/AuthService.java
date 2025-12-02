@@ -1,7 +1,7 @@
 package com.kt.service;
 
 import com.kt.domain.dto.request.LoginRequest;
-import com.kt.domain.dto.request.ResetPasswordRequest;
+import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.mysema.commons.lang.Pair;
 
@@ -17,7 +17,9 @@ public interface AuthService {
 
 	void verifySignupCode(SignupRequest.VerifySignupCode request);
 
-	void resetPassword(ResetPasswordRequest request);
+	void resetPassword(PasswordManagementRequest.PasswordReset request);
 
-	void requestResetPassword(ResetPasswordRequest request);
+	void requestResetPassword(PasswordManagementRequest.PasswordReset request);
+
+	void requestUpdatePassword(PasswordManagementRequest.PasswordUpdate request);
 }
