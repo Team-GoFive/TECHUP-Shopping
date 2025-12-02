@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.DefaultCurrentUser;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
-public class ReviewController {
+public class ReviewController extends SwaggerAssistance {
 	private final ReviewService reviewService;
 
 	@GetMapping("/mine")
@@ -46,9 +47,9 @@ public class ReviewController {
 
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> search(
-		@ModelAttribute Paging paging,
-		@RequestParam UUID productId
-	){
+		@RequestParam UUID productId,
+		@ModelAttribute Paging paging
+	) {
 		return page(
 			reviewService.getReviewByProductId(
 				productId,
@@ -59,18 +60,24 @@ public class ReviewController {
 
 	@PatchMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> update(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId,
 		@RequestBody ReviewRequest.Update request
-	){
-		reviewService.update(reviewId, request.content());
+	) {
+		reviewService.update(
+			currentUser.getEmail(),
+			reviewId,
+			request.content()
+		);
 		return empty();
 	}
 
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> delete(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
-	){
-		reviewService.delete(reviewId);
+	) {
+		reviewService.delete(currentUser.getEmail(), reviewId);
 		return empty();
 	}
 }

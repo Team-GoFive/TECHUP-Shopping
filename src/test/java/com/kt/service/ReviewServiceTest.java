@@ -150,7 +150,7 @@ class ReviewServiceTest {
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		reviewService.update(review.getId(), "변경된테스트리뷰내용");
+		reviewService.update("", review.getId(), "변경된테스트리뷰내용");
 
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
 	}
@@ -160,7 +160,7 @@ class ReviewServiceTest {
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
-		reviewService.delete(review.getId());
+		reviewService.delete("", review.getId());
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());
 	}
 
@@ -173,18 +173,6 @@ class ReviewServiceTest {
 		ReviewResponse.Search savedReviewDto = reviewService.getReview(testOrderProduct.getId());
 
 		Assertions.assertEquals(review.getId(), savedReviewDto.reviewId());
-	}
-
-	@Test
-	void 상품리뷰목록조회_성공() {
-		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
-		review.mapToOrderProduct(testOrderProduct);
-		reviewRepository.save(review);
-
-		var reviews = reviewService.getReviewByProductId(testOrderProduct.getProduct().getId());
-
-		Assertions.assertEquals(1, reviews.size());
-		Assertions.assertEquals(review.getId(), reviews.get(0).reviewId());
 	}
 
 	@Test

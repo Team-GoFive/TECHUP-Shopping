@@ -5,6 +5,7 @@ import static com.kt.common.api.ApiResult.*;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +19,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.security.DefaultCurrentUser;
 import com.kt.service.ReviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -45,9 +47,10 @@ public class AdminReviewController {
 
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> delete(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	) {
-		reviewService.delete(reviewId);
+		reviewService.delete(currentUser.getEmail(), reviewId);
 		return empty();
 	}
 }
