@@ -31,20 +31,6 @@ public class ReviewServiceImpl implements ReviewService {
 	private final OrderProductRepository orderProductRepository;
 	private final AccountRepository accountRepository;
 
-	private boolean hasReviewAccessPermission(String email, ReviewEntity review) {
-		AbstractAccountEntity reviewEditor = accountRepository.findByEmailOrThrow(email);
-
-		UserEntity reviewOwner = review
-			.getOrderProduct()
-			.getOrder()
-			.getOrderBy();
-
-		if (!reviewEditor.getEmail().equals(reviewOwner.getEmail())) {
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	public void create(UUID orderProductId, String content) {
 		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
@@ -108,5 +94,19 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId) {
 		return reviewRepository.searchReviewsByUserId(pageable, userId);
+	}
+
+	private boolean hasReviewAccessPermission(String email, ReviewEntity review) {
+		AbstractAccountEntity reviewEditor = accountRepository.findByEmailOrThrow(email);
+
+		UserEntity reviewOwner = review
+			.getOrderProduct()
+			.getOrder()
+			.getOrderBy();
+
+		if (!reviewEditor.getEmail().equals(reviewOwner.getEmail())) {
+			return false;
+		}
+		return true;
 	}
 }
