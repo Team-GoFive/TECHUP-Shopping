@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.kt.domain.dto.request.AccountRequest;
 
 import com.kt.domain.dto.response.AccountResponse;
-import com.kt.domain.entity.AbstractAccountEntity;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -104,6 +104,11 @@ public class AccountServiceImpl implements AccountService {
 		);
 	}
 
+	@Override
+	public AbstractAccountEntity getAccountDetail(UUID accountId) {
+		return accountRepository.findByIdOrThrow(accountId);
+	}
+
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;
 		return String.valueOf(code);
