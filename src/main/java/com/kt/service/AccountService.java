@@ -24,4 +24,6 @@ public interface AccountService {
 	);
 
 	void deleteAccount(UUID accountId);
+
+	void deleteAccountPermanently(UUID accountId);
 }
