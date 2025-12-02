@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@DisplayName("계정 조회 - DELETE /api/admin/accounts/retire")
+@DisplayName("계정 조회 - GET /api/admin/accounts/{accountId}")
 public class AccountDetailTest extends MockMvcTest {
 
 	private final DefaultCurrentUser userDetail = CurrentUserCreator.getAdminUserDetails();
