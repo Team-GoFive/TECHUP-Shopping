@@ -18,4 +18,6 @@ public interface AuthService {
 	void verifySignupCode(SignupRequest.VerifySignupCode request);
 
 	void resetPassword(ResetPasswordRequest request);
+
+	void requestResetPassword(ResetPasswordRequest request);
 }

@@ -16,6 +16,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter

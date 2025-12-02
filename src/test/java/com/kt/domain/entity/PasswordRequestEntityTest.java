@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @ActiveProfiles("test")

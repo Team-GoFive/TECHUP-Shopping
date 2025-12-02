@@ -1,6 +1,8 @@
 package com.kt.service;
 
 import com.kt.constant.Gender;
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.redis.RedisKey;
@@ -8,10 +10,12 @@ import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.CourierEntity;
+import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.CustomException;
 import com.kt.infra.redis.RedisCache;
+import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -21,7 +25,6 @@ import com.mysema.commons.lang.Pair;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,13 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @SpringBootTest
 public class AuthServiceTest {
-
-	final static String SUCCESS_USER_LOGIN = "유저 로그인 성공";
-	final static String FAIL_USER_LOGIN_INVALID_PASSWORD = "유저 로그인 실패 비밀번호 틀림";
-	final static String FAIL_USER_LOGIN_STATUS_DISABLED = "유저 로그인 실패 비활성화 상태";
-	final static String FAIL_USER_LOGIN_STATUS_DELETED = "유저 로그인 실패 삭제 상태";
-	final static String FAIL_USER_LOGIN_STATUS_RETIRED = "유저 로그인 실패 탈퇴 상태";
-	final static String FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL = "계정 비밀 번호 초기화 실패 이메일 미존재";
 
 	@Autowired
 	AuthServiceImpl authService;
@@ -58,6 +56,8 @@ public class AuthServiceTest {
 	AccountRepository accountRepository;
 	@Autowired
 	CourierRepository courierRepository;
+	@Autowired
+	PasswordRequestRepository passwordRequestRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@Autowired
@@ -74,15 +74,7 @@ public class AuthServiceTest {
 		accountRepository.deleteAll();
 		var connection = redisTemplate.getConnectionFactory().getConnection();
 		connection.flushAll();
-		switch (testInfo.getDisplayName()) {
-			case SUCCESS_USER_LOGIN,
-					 FAIL_USER_LOGIN_INVALID_PASSWORD,
-					 FAIL_USER_LOGIN_STATUS_DISABLED,
-					 FAIL_USER_LOGIN_STATUS_DELETED,
-					 FAIL_USER_LOGIN_STATUS_RETIRED,
-					 FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL -> saveMember();
-		}
-
+		saveMember();
 	}
 
 	void saveMember() {
@@ -211,7 +203,6 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	@DisplayName(SUCCESS_USER_LOGIN)
 	void 유저_로그인_성공() {
 		LoginRequest login = new LoginRequest(
 			user.getEmail(),
@@ -228,7 +219,6 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	@DisplayName(FAIL_USER_LOGIN_INVALID_PASSWORD)
 	void 유저_로그인_실패_비밀번호_틀림() {
 		LoginRequest login = new LoginRequest(
 			user.getEmail(),
@@ -243,7 +233,6 @@ public class AuthServiceTest {
 
 	@Test
 	@Transactional
-	@DisplayName(FAIL_USER_LOGIN_STATUS_DISABLED)
 	void 유저_로그인_실패_비활성화_상태() {
 		user.disabled();
 		assertEquals(UserStatus.DISABLED, user.getStatus());
@@ -260,7 +249,6 @@ public class AuthServiceTest {
 
 	@Test
 	@Transactional
-	@DisplayName(FAIL_USER_LOGIN_STATUS_DELETED)
 	void 유저_로그인_실패_삭제_상태() {
 		user.delete();
 		assertEquals(UserStatus.DELETED, user.getStatus());
@@ -277,7 +265,6 @@ public class AuthServiceTest {
 
 	@Test
 	@Transactional
-	@DisplayName(FAIL_USER_LOGIN_STATUS_DELETED)
 	void 유저_로그인_실패_탈퇴_상태() {
 		user.retired();
 		assertEquals(UserStatus.RETIRED, user.getStatus());
@@ -389,7 +376,6 @@ public class AuthServiceTest {
 
 	@Test
 	@Transactional
-	@DisplayName(FAIL_RESET_PASSWORD_NOT_FOUND_EMAIL)
 	void 유저_비밀번호_초기화_성공() {
 		ResetPasswordRequest resetRequest = new ResetPasswordRequest(
 			user.getEmail()
@@ -483,6 +469,47 @@ public class AuthServiceTest {
 			CustomException.class, () ->
 				authService.signupCourier(secondSignup)
 		);
+	}
+
+	@Test
+	void 비밀번호_초기화_요청_성공() {
+		ResetPasswordRequest request = new ResetPasswordRequest(
+			user.getEmail()
+		);
+
+		authService.requestResetPassword(request);
+
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+			).orElse(null);
+
+		assertNotNull(passwordRequest);
+		assertEquals(passwordRequest.getAccount().getId(), user.getId());
+		assertEquals(passwordRequest.getStatus(), PasswordRequestStatus.PENDING);
+
+		log.info("request account email : {}", passwordRequest.getAccount().getEmail());
+	}
+
+	@Test
+	void 비밀번호_초기화_요청_실패_데이터_존재() {
+		ResetPasswordRequest request = new ResetPasswordRequest(
+			user.getEmail()
+		);
+
+		authService.requestResetPassword(request);
+
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+			).orElse(null);
+
+		assertNotNull(passwordRequest);
+
+		assertThatThrownBy(
+			() -> authService.requestResetPassword(request))
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining("PASSWORD_RESET_ALREADY_REQUESTED");
 	}
 
 }

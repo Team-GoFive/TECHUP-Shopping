@@ -1,6 +1,8 @@
 package com.kt.service;
 
 import com.kt.config.jwt.JwtTokenProvider;
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.TokenType;
 import com.kt.constant.UserRole;
 import com.kt.constant.mail.MailTemplate;
@@ -12,6 +14,7 @@ import com.kt.domain.dto.request.ResetPasswordRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
+import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
 
 import com.kt.exception.CustomException;
@@ -19,6 +22,7 @@ import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
 
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -40,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
 	private final UserRepository userRepository;
 	private final CourierRepository courierRepository;
 	private final AccountRepository accountRepository;
-
+	private final PasswordRequestRepository passwordRequestRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -143,7 +147,6 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	@Transactional
 	public void resetPassword(ResetPasswordRequest request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
@@ -156,6 +159,26 @@ public class AuthServiceImpl implements AuthService {
 			MailTemplate.RESET_PASSWORD,
 			reset
 		);
+	}
+
+	@Override
+	public void requestResetPassword(ResetPasswordRequest request) {
+		AbstractAccountEntity account = accountRepository
+			.findByEmailOrThrow(request.email());
+
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				account, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+			).orElseGet(() ->
+				PasswordRequestEntity.create(
+					account, null, PasswordRequestType.RESET
+				)
+			);
+
+		if (!passwordRequest.isNew())
+			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
+
+		passwordRequestRepository.save(passwordRequest);
 	}
 
 	private String getRandomPassword() {
