@@ -24,6 +24,7 @@ public enum ErrorCode {
 	AUTH_ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, "해당 계정은 비활성화된 계정입니다."),
 	AUTH_ACCOUNT_RETIRED(HttpStatus.FORBIDDEN, "해당 계정은 탈퇴한 계정입니다."),
 	EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패하였습니다."),
+	PASSWORD_RESET_ALREADY_REQUESTED(HttpStatus.CONFLICT, "비밀번호 초기화 요청이 이미 접수되어 처리 중입니다."),
 	DUPLICATED_EMAIL(HttpStatus.CONFLICT, "해당 이메일로 등록된 계정이 이미 존재합니다."),
 	DUPLICATED_CATEGORY(HttpStatus.CONFLICT, "중복된 카테고리명 입니다."),
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 존재하지 않습니다."),

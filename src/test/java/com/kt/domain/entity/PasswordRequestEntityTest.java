@@ -65,26 +65,8 @@ public class PasswordRequestEntityTest {
 		);
 
 		assertNotNull(passwordRequest);
-		assertNull(passwordRequest.getLastRequestedAt());
 		assertNull(passwordRequest.getEncryptedPassword());
 		log.info("getEncryptedPassword :: {}", passwordRequest.getEncryptedPassword());
-	}
-
-	@Test
-	void 객체_생성_성공_후_재요청_시간_갱신() {
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			user,
-			"1234",
-			PasswordRequestType.RESET
-		);
-		assertNotNull(passwordRequest);
-		assertNull(passwordRequest.getLastRequestedAt());
-		log.info("Before Update LastRequestedAt : {}",
-			passwordRequest.getLastRequestedAt());
-		passwordRequest.updateLastRequestedAt();
-		assertNotNull(passwordRequest.getLastRequestedAt());
-		log.info("After Update LastRequestedAt : {}",
-			passwordRequest.getLastRequestedAt());
 	}
 
 	@ParameterizedTest

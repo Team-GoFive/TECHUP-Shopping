@@ -165,24 +165,21 @@ public class AuthServiceImpl implements AuthService {
 	public void requestResetPassword(ResetPasswordRequest request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
+
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
-			.findByAccountAndStatus(
-				account,
-				PasswordRequestStatus.PENDING
-			).orElseGet(
-				() -> PasswordRequestEntity.create(
+			.findByAccountAndStatusAndRequestType(
+				account, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+			).orElseGet(() ->
+				PasswordRequestEntity.create(
 					account, null, PasswordRequestType.RESET
 				)
 			);
 
-		if (!passwordRequest.isNew()) {
-			passwordRequest.updateLastRequestedAt();
-			return;
-		}
+		if (!passwordRequest.isNew())
+			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
+
 		passwordRequestRepository.save(passwordRequest);
 	}
-
-
 
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;

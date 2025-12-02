@@ -39,18 +39,12 @@ public class PasswordRequestEntity extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private PasswordRequestStatus status;
 
-	private Instant lastRequestedAt;
-
 	public void updateStatus(PasswordRequestStatus status) {
 		this.status = status;
 	}
 
 	public void updatePassword(String resetPassword) {
 		this.encryptedPassword = EncryptUtil.encrypt(resetPassword);
-	}
-
-	public void updateLastRequestedAt() {
-		this.lastRequestedAt = Instant.now();
 	}
 
 	protected PasswordRequestEntity(
@@ -62,7 +56,6 @@ public class PasswordRequestEntity extends BaseEntity {
 		this.encryptedPassword = encryptedPassword;
 		this.requestType = requestType;
 		this.status = PasswordRequestStatus.PENDING;
-		this.lastRequestedAt = null;
 	}
 
 	public static PasswordRequestEntity create(

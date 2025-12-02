@@ -2,6 +2,7 @@ package com.kt.service;
 
 import com.kt.constant.Gender;
 import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.redis.RedisKey;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -478,12 +480,11 @@ public class AuthServiceTest {
 		authService.requestResetPassword(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
-			.findByAccountAndStatus(
-				user, PasswordRequestStatus.PENDING)
-			.orElse(null);
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+			).orElse(null);
 
 		assertNotNull(passwordRequest);
-		assertNull(passwordRequest.getLastRequestedAt());
 		assertEquals(passwordRequest.getAccount().getId(), user.getId());
 		assertEquals(passwordRequest.getStatus(), PasswordRequestStatus.PENDING);
 
@@ -491,7 +492,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void 비밀번호_초기화_재요청_성공() {
+	void 비밀번호_초기화_요청_실패_데이터_존재() {
 		ResetPasswordRequest request = new ResetPasswordRequest(
 			user.getEmail()
 		);
@@ -499,26 +500,16 @@ public class AuthServiceTest {
 		authService.requestResetPassword(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
-			.findByAccountAndStatus(
-				user, PasswordRequestStatus.PENDING
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
 			).orElse(null);
 
 		assertNotNull(passwordRequest);
-		assertNull(passwordRequest.getLastRequestedAt());
 
-		log.info("Before Re-request lastRequestedAt : {}", passwordRequest.getLastRequestedAt());
-
-		authService.requestResetPassword(request);
-		PasswordRequestEntity savedPasswordRequest = passwordRequestRepository
-			.findByAccountAndStatus(
-				user, PasswordRequestStatus.PENDING
-			).orElse(null);
-
-		assertNotNull(savedPasswordRequest.getLastRequestedAt());
-		log.info("After Re-request lastRequestedAt : {}", savedPasswordRequest.getLastRequestedAt());
-		assertEquals(passwordRequest.getAccount().getId(), user.getId());
-
-		log.info("request account email : {}", passwordRequest.getAccount().getEmail());
+		assertThatThrownBy(
+			() -> authService.requestResetPassword(request))
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining("PASSWORD_RESET_ALREADY_REQUESTED");
 	}
 
 }
