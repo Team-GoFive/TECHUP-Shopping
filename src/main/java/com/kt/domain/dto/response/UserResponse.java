@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserResponse {
-	@Schema(name = "UserResponse.Search")
+	@Schema(name = "UserSearchResponse")
 	public record Search(
 		UUID id,
 		String name,
@@ -30,7 +30,7 @@ public class UserResponse {
 		public Search {
 		}
 	}
-	@Schema(name = "UserResponse.UserDetail")
+	@Schema(name = "UserUserDetailResponse")
 	public record UserDetail(
 		UUID id,
 		String name,
@@ -41,7 +41,7 @@ public class UserResponse {
 		String mobile
 	) {
 	}
-	@Schema(name = "UserResponse.Orders")
+	@Schema(name = "UserOrdersResponse")
 	public record Orders(
 		UUID userId,
 		List<OrderItem> orders
@@ -55,7 +55,7 @@ public class UserResponse {
 			);
 		}
 	}
-	@Schema(name = "UserResponse.OrderItem")
+	@Schema(name = "UserOrderItemResponse")
 	public record OrderItem(
 		UUID orderId,
 		ReceiverVO receiver

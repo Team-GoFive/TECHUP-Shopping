@@ -34,7 +34,7 @@ import static com.kt.common.api.ApiResult.*;
 		@ApiResponse(responseCode = "500", description = "서버 에러")
 	}
 )
-@Tag(name = "유저컨트롤러", description = "유저(일반회원, 관리자) API")
+@Tag(name = "User", description = "User API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class UserController {
 	)
 	@Operation(
 		summary = "내 정보 상세 조회",
-		description = "로그인한 유저의 상세정보를 조회하는 API입니다."
+		description = "로그인한 유저의 상세정보 조회 관련 API"
 	)
 	@GetMapping
 	public ResponseEntity<ApiResult<UserResponse.UserDetail>> me(
@@ -63,7 +63,7 @@ public class UserController {
 	@PutMapping
 	@Operation(
 		summary = "내 정보 수정",
-		description = "로그인한 유저의 정보를 수정하는 API입니다."
+		description = "로그인한 유저의 정보 수정 관련 API"
 		, parameters = {
 		@Parameter(name = "UserRequest.UpdateDetails" , description = "유저 정보를 수정하는 필드를 포함하는 DTO")
 		}
@@ -82,7 +82,7 @@ public class UserController {
 	@GetMapping("/reviewable-products")
 	@Operation(
 		summary = "내가 작성하지 않은 리뷰를 조회",
-		description = "내가 작성하지 않은 리뷰를 조회하는 API입니다."
+		description = "로그인한 유저의 작성하지 않은 리뷰 조회 관련 API"
 		, parameters = {
 		@Parameter(name = "Paging" , description = "페이징 처리에 필요한 정보 (page, size)를 포함하는 DTO")
 	}

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class UserRequest {
-	@Schema(name = "UserRequest.UpdateDetails")
+	@Schema(name = "UserUpdateDetailsRequest")
 	public record UpdateDetails(
 		@NotBlank(message = "이름은 필수항목입니다.")
 		String name,
