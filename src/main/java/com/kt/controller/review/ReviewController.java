@@ -25,19 +25,27 @@ import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.ReviewService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "review", description = "리뷰 관련 API")
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewController extends SwaggerAssistance {
 	private final ReviewService reviewService;
 
+	@Operation(
+		summary = "내가 작성한 리뷰 목록 조회",
+		description = "내가 작성한 리뷰 목록을 조회하는 API"
+	)
 	@GetMapping("/mine")
 	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> searchMines(
 		@ModelAttribute Paging paging,
-		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
-	){
+		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser
+	) {
 		return page(
 			reviewService.getReviewsByUserId(
 				paging.toPageable(),
@@ -45,6 +53,13 @@ public class ReviewController extends SwaggerAssistance {
 		);
 	}
 
+	@Operation(
+		summary = "상품 리뷰 목록 조회",
+		description = "특정 상품에 대한 리뷰 목록을 조회하는 API",
+		parameters = {
+			@Parameter(name = "productId", description = "상품 ID")
+		}
+	)
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> search(
 		@RequestParam UUID productId,
@@ -58,9 +73,16 @@ public class ReviewController extends SwaggerAssistance {
 		);
 	}
 
+	@Operation(
+		summary = "리뷰 수정",
+		description = "리뷰 수정 API",
+		parameters = {
+			@Parameter(name = "reviewId", description = "리뷰 ID")
+		}
+	)
 	@PatchMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> update(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@Parameter(hidden = true) @AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId,
 		@RequestBody ReviewRequest.Update request
 	) {
@@ -72,9 +94,16 @@ public class ReviewController extends SwaggerAssistance {
 		return empty();
 	}
 
+	@Operation(
+		summary = "리뷰 삭제",
+		description = "리뷰 삭제 API",
+		parameters = {
+			@Parameter(name = "reviewId", description = "리뷰 ID")
+		}
+	)
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> delete(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@Parameter(hidden = true) @AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	) {
 		reviewService.delete(currentUser.getEmail(), reviewId);
