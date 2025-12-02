@@ -20,6 +20,7 @@ import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
+import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +76,9 @@ public class AuthServiceTest {
 		var connection = redisTemplate.getConnectionFactory().getConnection();
 		connection.flushAll();
 		saveMember();
+
+		String testKey = "techup-shopping-encrypt-test-key";
+		EncryptUtil.loadKey(testKey);
 	}
 
 	void saveMember() {
@@ -514,6 +518,76 @@ public class AuthServiceTest {
 			() -> authService.requestResetPassword(request))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PASSWORD_RESET_ALREADY_REQUESTED");
+	}
+
+	@Test
+	void 비밀번호_변경_요청_성공() {
+		String updatePassword = "123123@";
+		PasswordManagementRequest.PasswordUpdate request =
+			new PasswordManagementRequest.PasswordUpdate(
+				user.getEmail(), updatePassword
+			);
+
+		authService.requestUpdatePassword(request);
+
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.UPDATE
+			).orElse(null);
+
+		assertNotNull(passwordRequest);
+
+		assertEquals(passwordRequest.getAccount().getId(), user.getId());
+		assertEquals(passwordRequest.getStatus(), PasswordRequestStatus.PENDING);
+
+		log.info("request account email : {}", passwordRequest.getAccount().getEmail());
+	}
+
+	@Test
+	void 비밀번호_변경_요청_성공_데이터_존재시_삭제후_저장() {
+		String firstUpdatePassword = "111111@";
+		String secondUpdatePassword = "222222@!";
+		PasswordManagementRequest.PasswordUpdate firstRequest =
+			new PasswordManagementRequest.PasswordUpdate(
+				user.getEmail(), firstUpdatePassword
+			);
+
+		authService.requestUpdatePassword(firstRequest);
+
+		PasswordRequestEntity firstSavePasswordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.UPDATE
+			).orElse(null);
+
+		assertNotNull(firstSavePasswordRequest);
+		log.info("firstUpdatePassword : {}", firstUpdatePassword);
+		log.info("firstSavePasswordRequest password : {}", firstSavePasswordRequest.getEncryptedPassword());
+		assertEquals(
+			firstUpdatePassword,
+			EncryptUtil.decrypt(firstSavePasswordRequest.getEncryptedPassword())
+		);
+
+		PasswordManagementRequest.PasswordUpdate secondRequest =
+			new PasswordManagementRequest.PasswordUpdate(
+				user.getEmail(), secondUpdatePassword
+			);
+
+		authService.requestUpdatePassword(secondRequest);
+
+		PasswordRequestEntity secondSavePasswordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				user, PasswordRequestStatus.PENDING, PasswordRequestType.UPDATE
+			).orElse(null);
+
+		assertNotNull(secondSavePasswordRequest);
+		assertEquals(
+			secondUpdatePassword,
+			EncryptUtil.decrypt(secondSavePasswordRequest.getEncryptedPassword())
+		);
+		log.info(
+			"final rawPassword : {}",
+			EncryptUtil.decrypt(secondSavePasswordRequest.getEncryptedPassword())
+		);
 	}
 
 }

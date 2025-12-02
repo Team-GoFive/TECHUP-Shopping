@@ -26,6 +26,7 @@ import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
+import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
@@ -183,6 +184,23 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public void requestUpdatePassword(PasswordManagementRequest.PasswordUpdate request) {
+		AbstractAccountEntity account = accountRepository
+			.findByEmailOrThrow(request.email());
+
+		passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				account,
+				PasswordRequestStatus.PENDING,
+				PasswordRequestType.UPDATE
+			).ifPresent(passwordRequestRepository::delete);
+
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			account,
+			request.password(),
+			PasswordRequestType.UPDATE
+		);
+
+		passwordRequestRepository.save(passwordRequest);
 
 	}
 
