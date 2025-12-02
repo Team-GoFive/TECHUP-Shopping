@@ -381,12 +381,12 @@ public class AuthServiceTest {
 	@Test
 	@Transactional
 	void 계정_비밀번호_초기화_성공() {
-		PasswordManagementRequest.PasswordReset resetRequest =
-			new PasswordManagementRequest.PasswordReset(
+		PasswordManagementRequest.PasswordInit resetRequest =
+			new PasswordManagementRequest.PasswordInit(
 				user.getEmail()
 			);
 
-		authService.resetPassword(resetRequest);
+		authService.initPassword(resetRequest);
 
 		assertEquals(false, passwordEncoder.matches(rawPassword, user.getPassword()));
 
@@ -395,13 +395,13 @@ public class AuthServiceTest {
 	@Test
 	void 계정_비밀번호_초기화_실패_계정_없음() {
 		String notExistsEmail = "test@email.com";
-		PasswordManagementRequest.PasswordReset resetRequest =
-			new PasswordManagementRequest.PasswordReset(
+		PasswordManagementRequest.PasswordInit resetRequest =
+			new PasswordManagementRequest.PasswordInit(
 				notExistsEmail
 			);
 		assertThrowsExactly(
 			CustomException.class, () ->
-				authService.resetPassword(resetRequest)
+				authService.initPassword(resetRequest)
 		);
 	}
 
@@ -479,12 +479,12 @@ public class AuthServiceTest {
 
 	@Test
 	void 비밀번호_초기화_요청_성공() {
-		PasswordManagementRequest.PasswordReset request =
-			new PasswordManagementRequest.PasswordReset(
+		PasswordManagementRequest.PasswordInit request =
+			new PasswordManagementRequest.PasswordInit(
 				user.getEmail()
 			);
 
-		authService.requestResetPassword(request);
+		authService.requestPasswordInit(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
 			.findByAccountAndStatusAndRequestType(
@@ -500,12 +500,12 @@ public class AuthServiceTest {
 
 	@Test
 	void 비밀번호_초기화_요청_실패_데이터_존재() {
-		PasswordManagementRequest.PasswordReset request =
-			new PasswordManagementRequest.PasswordReset(
+		PasswordManagementRequest.PasswordInit request =
+			new PasswordManagementRequest.PasswordInit(
 				user.getEmail()
 			);
 
-		authService.requestResetPassword(request);
+		authService.requestPasswordInit(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
 			.findByAccountAndStatusAndRequestType(
@@ -515,9 +515,9 @@ public class AuthServiceTest {
 		assertNotNull(passwordRequest);
 
 		assertThatThrownBy(
-			() -> authService.requestResetPassword(request))
+			() -> authService.requestPasswordInit(request))
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining("PASSWORD_RESET_ALREADY_REQUESTED");
+			.hasMessageContaining("PASSWORD_INIT_ALREADY_REQUESTED");
 	}
 
 	@Test
@@ -528,7 +528,7 @@ public class AuthServiceTest {
 				user.getEmail(), updatePassword
 			);
 
-		authService.requestUpdatePassword(request);
+		authService.requestPasswordUpdate(request);
 
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
 			.findByAccountAndStatusAndRequestType(
@@ -552,7 +552,7 @@ public class AuthServiceTest {
 				user.getEmail(), firstUpdatePassword
 			);
 
-		authService.requestUpdatePassword(firstRequest);
+		authService.requestPasswordUpdate(firstRequest);
 
 		PasswordRequestEntity firstSavePasswordRequest = passwordRequestRepository
 			.findByAccountAndStatusAndRequestType(
@@ -572,7 +572,7 @@ public class AuthServiceTest {
 				user.getEmail(), secondUpdatePassword
 			);
 
-		authService.requestUpdatePassword(secondRequest);
+		authService.requestPasswordUpdate(secondRequest);
 
 		PasswordRequestEntity secondSavePasswordRequest = passwordRequestRepository
 			.findByAccountAndStatusAndRequestType(
