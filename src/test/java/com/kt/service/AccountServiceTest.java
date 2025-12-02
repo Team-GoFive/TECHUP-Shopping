@@ -348,9 +348,9 @@ class AccountServiceTest {
 
 	@Test
 	void 계정_상세_조회() {
-		AbstractAccountEntity savedMember = accountService.getAccountDetail(member1.getId());
+		AccountResponse.AccountDetail savedMember = accountService.getAccountDetail(member1.getId());
 		assertThat(savedMember).isNotNull();
-		assertThat(savedMember.getName()).isEqualTo("회원");
+		assertThat(savedMember.name()).isEqualTo("회원");
 	}
 
 }
