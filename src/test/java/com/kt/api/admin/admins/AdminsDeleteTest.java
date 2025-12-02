@@ -52,11 +52,6 @@ public class AdminsDeleteTest extends MockMvcTest {
 		userRepository.save(testAdmin);
 	}
 
-	@AfterEach
-	void tearDown() {
-		userRepository.deleteAll();
-	}
-
 	private DefaultCurrentUser adminPrincipal() {
 		return new DefaultCurrentUser(
 			testAdmin.getId(),

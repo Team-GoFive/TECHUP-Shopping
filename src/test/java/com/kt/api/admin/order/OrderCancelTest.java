@@ -41,11 +41,6 @@ public class OrderCancelTest extends MockMvcTest {
 	@Autowired
 	private UserRepository userRepository;
 
-	@AfterEach
-	public void tearDown() {
-		orderRepository.deleteAll();
-	}
-
 	@Test
 	void 주문_취소__성공_200() throws Exception {
 		UserEntity user = UserEntityCreator.createMember();

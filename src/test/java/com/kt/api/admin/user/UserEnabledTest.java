@@ -69,11 +69,6 @@ public class UserEnabledTest extends MockMvcTest {
 		userRepository.save(testUser);
 	}
 
-	@AfterEach
-	void tearDown() {
-		userRepository.deleteAll();
-	}
-
 	@Test
 	void 회원_활성화_성공_200() throws Exception {
 		// given

@@ -65,11 +65,6 @@ public class UserDetailTest extends MockMvcTest {
 		userRepository.save(testAdmin);
 	}
 
-	@AfterEach
-	void tearDown() {
-		userRepository.deleteAll();
-	}
-
 	@Test
 	void 회원_상세_조회_성공() throws Exception {
 		DefaultCurrentUser admin = new DefaultCurrentUser(

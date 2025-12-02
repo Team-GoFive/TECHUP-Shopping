@@ -41,11 +41,6 @@ public class OrderListTest extends MockMvcTest {
 	@Autowired
 	private UserRepository userRepository;
 
-	@AfterEach
-	void tearDown() {
-		orderRepository.deleteAll();
-	}
-
 	@Test
 	void 주문_리스트_조회_성공_200() throws Exception {
 		// given
