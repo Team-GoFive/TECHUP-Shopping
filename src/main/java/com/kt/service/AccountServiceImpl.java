@@ -44,7 +44,6 @@ public class AccountServiceImpl implements AccountService {
 		return accountRepository.searchAccounts(request, pageable);
 	}
 
-
 	@Override
 	public void updatePassword(
 		UUID accountId,
@@ -84,6 +83,11 @@ public class AccountServiceImpl implements AccountService {
 			MailTemplate.RESET_PASSWORD,
 			resetPassword
 		);
+	}
+
+	@Override
+	public AbstractAccountEntity getAccountDetail(UUID accountId) {
+		return accountRepository.findByIdOrThrow(accountId);
 	}
 
 	private String getRandomPassword() {

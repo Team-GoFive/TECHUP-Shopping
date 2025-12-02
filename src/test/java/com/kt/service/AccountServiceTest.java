@@ -169,7 +169,6 @@ class AccountServiceTest {
 		assertThat(result.getContent()).hasSize(2);
 	}
 
-
 	@Test
 	void 회원계정_비밀번호변경_성공() {
 		UserEntity user = UserEntity.create(
@@ -318,6 +317,13 @@ class AccountServiceTest {
 			)
 		);
 
+	}
+
+	@Test
+	void 계정_상세_조회() {
+		AbstractAccountEntity savedMember = accountService.getAccountDetail(member1.getId());
+		assertThat(savedMember).isNotNull();
+		assertThat(savedMember.getName()).isEqualTo("회원");
 	}
 
 }
