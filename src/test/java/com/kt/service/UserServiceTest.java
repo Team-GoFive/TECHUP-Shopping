@@ -41,9 +41,6 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -64,9 +61,6 @@ class UserServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-	@PersistenceContext
-	EntityManager em;
-
 	UserEntity testUser;
 	UserEntity testUser2;
 	UserEntity testAdmin;
@@ -78,12 +72,12 @@ class UserServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		userRepository.deleteAll();
-		orderRepository.deleteAll();
-		orderProductRepository.deleteAll();
 		reviewRepository.deleteAll();
+		orderProductRepository.deleteAll();
+		orderRepository.deleteAll();
+		userRepository.deleteAll();
 		productRepository.deleteAll();
-		em.clear();
+		categoryRepository.deleteAll();
 
 		testUser = UserEntity.create(
 			"주문자테스터1",

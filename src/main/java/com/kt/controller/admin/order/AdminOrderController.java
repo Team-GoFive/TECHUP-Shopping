@@ -1,4 +1,4 @@
-package com.kt.controller.adminorder;
+package com.kt.controller.admin.order;
 
 import static com.kt.common.api.ApiResult.*;
 

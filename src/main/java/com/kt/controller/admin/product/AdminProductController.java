@@ -1,4 +1,4 @@
-package com.kt.controller.product;
+package com.kt.controller.admin.product;
 
 import static com.kt.common.api.ApiResult.*;
 
@@ -35,8 +35,6 @@ import lombok.RequiredArgsConstructor;
 public class AdminProductController {
 
 	private final ProductService productService;
-
-	// TODO: 상품 삭제
 
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> create(
