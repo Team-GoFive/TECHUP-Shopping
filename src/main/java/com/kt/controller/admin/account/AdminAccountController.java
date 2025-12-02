@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.service.AccountService;
-import com.kt.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +28,6 @@ import static com.kt.common.api.ApiResult.*;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminAccountController {
-	private final UserService userService;
 	private final AccountService accountService;
 
 	@GetMapping("/accounts")
