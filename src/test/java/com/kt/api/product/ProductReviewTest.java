@@ -1,10 +1,9 @@
-package com.kt.api.order;
+package com.kt.api.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -18,75 +17,93 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
+import com.kt.service.ReviewService;
 
-@DisplayName("상품 상세 조회 - GET /api/orders/{orderId}")
-public class OrderDetailTest extends MockMvcTest {
+@DisplayName("상품 리뷰 조회 - GET /api/products/{productId}/reviews")
+public class ProductReviewTest extends MockMvcTest {
+
+	@Autowired
+	UserRepository userRepository;
 
 	@Autowired
 	CategoryRepository categoryRepository;
+
 	@Autowired
 	ProductRepository productRepository;
-	@Autowired
-	OrderService orderService;
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	OrderRepository orderRepository;
+
 	@Autowired
 	AddressRepository addressRepository;
 
+	@Autowired
+	OrderService orderService;
+
+	@Autowired
+	ReviewService reviewService;
+
 	UserEntity testMember;
-
+	CategoryEntity testCategory;
 	ProductEntity testProduct;
+	AddressEntity address;
 
-	AddressEntity testAddress;
+	@Autowired
+	OrderProductRepository orderProductRepository;
+
+	@Autowired
+	OrderRepository orderRepository;
 
 	@BeforeEach
 	void setUp() {
 		testMember = createMember();
 		userRepository.save(testMember);
 
-		CategoryEntity category = createCategory();
-		categoryRepository.save(category);
+		testCategory = createCategory();
+		categoryRepository.save(testCategory);
 
-		testProduct = createProduct(category);
+		testProduct = createProduct(testCategory);
+
+		address = addressRepository.save(AddressCreator.create(testMember));
+
 		productRepository.save(testProduct);
+		for (int i = 0; i < 3; i++) {
+			List<OrderRequest.Item> items = List.of(
+				new OrderRequest.Item(testProduct.getId(), 1L)
+			);
+			orderService.createOrder(testMember.getEmail(), items, address.getId());
+		}
 
-		testAddress = addressRepository.save(AddressCreator.create(testMember));
+		orderRepository.findAll().forEach(order -> order.updateStatus(OrderStatus.PURCHASE_CONFIRMED));
 
-		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(testProduct.getId(), 1L)
-		);
-		orderService.createOrder(testMember.getEmail(), items, testAddress.getId());
+		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
+		for (int i = 0; i < 3; i++) {
+			OrderProductEntity orderProduct = list.get(i);
+			reviewService.create(orderProduct.getId(), "리뷰 내용: 리뷰" + i);
+		}
 	}
 
 	@Test
-	void 주문_상세_조회_성공__200_OK() throws Exception {
+	void 상품_id를_통해_리뷰_조회_성공__200_OK() throws Exception {
 		// when
-		OrderEntity orderEntity = orderRepository.findAll().stream().findFirst().orElseThrow();
-
 		ResultActions actions = mockMvc.perform(
-			get("/api/orders/{orderId}", orderEntity.getId())
+			get("/api/products/{productId}/reviews", testProduct.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(testMember.getEmail()))
 		);
 
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isOk());
-		actions.andExpect(jsonPath("$.data.orderId").value(orderEntity.getId().toString()));
-		actions.andExpect(jsonPath("$.data.orderProducts.length()").value(1));
-		actions.andExpect(jsonPath("$.data.orderProducts[0].productId").value(testProduct.getId().toString()));
+		actions.andExpect(jsonPath("$.data.length()").value(3));
 	}
 }

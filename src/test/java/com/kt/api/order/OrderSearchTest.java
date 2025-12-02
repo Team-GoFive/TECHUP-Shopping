@@ -19,11 +19,14 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -42,10 +45,14 @@ public class OrderSearchTest extends MockMvcTest {
 	OrderService orderService;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AddressRepository addressRepository;
 
 	UserEntity testMember;
 
 	ProductEntity testProduct;
+
+	AddressEntity testAddress;
 
 	@BeforeEach
 	void setUp() {
@@ -58,11 +65,13 @@ public class OrderSearchTest extends MockMvcTest {
 		testProduct = createProduct(category);
 		productRepository.save(testProduct);
 
+		testAddress = addressRepository.save(AddressCreator.create(testMember));
+
 		for (int i = 0; i < 2; i++) {
 			List<OrderRequest.Item> items = List.of(
 				new OrderRequest.Item(testProduct.getId(), 1L)
 			);
-			orderService.createOrder(testMember.getEmail(), items);
+			orderService.createOrder(testMember.getEmail(), items, testAddress.getId());
 		}
 	}
 

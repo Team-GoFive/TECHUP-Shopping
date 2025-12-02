@@ -15,6 +15,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
+import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -22,6 +23,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
+import com.kt.repository.AddressRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -40,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
+	private final AddressRepository addressRepository;
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -48,18 +51,19 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void createOrder(String email, List<OrderRequest.Item> items) {
+	public void createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
 
 		UserEntity user = userRepository.findByEmailOrThrow(email);
 
-		// TODO: 컨트롤러 구현
+		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
+
 		ReceiverVO receiverVO = ReceiverVO.create(
-			"홍길동",
-			"010-1234-5678",
-			"서울특별시",
-			"강남구",
-			"테헤란로",
-			"111호"
+			address.getReceiverName(),
+			address.getReceiverMobile(),
+			address.getCity(),
+			address.getDistrict(),
+			address.getRoadAddress(),
+			address.getDetail()
 		);
 
 		OrderEntity order = OrderEntity.create(receiverVO, user);

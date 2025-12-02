@@ -11,7 +11,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record OrderRequest(
 	@NotNull
-	List<Item> items
+	List<Item> items,
+
+	@NotNull
+	UUID addressId
 ) {
 	public record Item(
 		@NotNull

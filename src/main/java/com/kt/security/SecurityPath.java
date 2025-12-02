@@ -14,7 +14,8 @@ public final class SecurityPath {
 		"/api/matches/**"
 	};
 	public static final String[] MEMBER = {
-		"api/orders/**"
+		"api/orders/**",
+		"api/addresses/**"
 	};
 	public static final String[] ADMIN = {
 		"/api/admin/**"
