@@ -8,14 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.review.ReviewRepository;
 
@@ -28,20 +29,20 @@ public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewRepository reviewRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final AccountRepository accountRepository;
 
-	private static boolean hasReviewUpdatePermission(String email, ReviewEntity review) {
-		UserEntity orderBy = review
+	private boolean hasReviewAccessPermission(String email, ReviewEntity review) {
+		AbstractAccountEntity reviewEditor = accountRepository.findByEmailOrThrow(email);
+
+		UserEntity reviewOwner = review
 			.getOrderProduct()
 			.getOrder()
 			.getOrderBy();
 
-		if (orderBy.getRole() == UserRole.ADMIN) {
-			return true;
+		if (!reviewEditor.getEmail().equals(reviewOwner.getEmail())) {
+			return false;
 		}
-		if (email.equals(orderBy.getEmail())) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class ReviewServiceImpl implements ReviewService {
 		String content
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (!hasReviewUpdatePermission(email, review))
+		if (hasReviewAccessPermission(email, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.update(content);
 	}
@@ -73,7 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
 		UUID reviewId
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (!hasReviewUpdatePermission(email, review))
+		if (hasReviewAccessPermission(email, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.delete();
 	}
