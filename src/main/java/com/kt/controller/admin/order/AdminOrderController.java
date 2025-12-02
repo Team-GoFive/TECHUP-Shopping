@@ -16,18 +16,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/orders")
-public class AdminOrderController {
+public class AdminOrderController extends SwaggerAssistance implements AdminOrderSwaggerSupporter {
 	public final OrderService orderService;
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrder(
 		@ModelAttribute Paging paging
@@ -37,6 +42,7 @@ public class AdminOrderController {
 		));
 	}
 
+	@Override
 	@GetMapping("/{orderId}")
 	public ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
@@ -44,6 +50,7 @@ public class AdminOrderController {
 		return wrap(orderService.getOrderDetail(orderId));
 	}
 
+	@Override
 	@PatchMapping("/{orderId}/change-status")
 	public ResponseEntity<ApiResult<Void>> updateOrderStatus(
 		@PathVariable UUID orderId,
@@ -53,6 +60,7 @@ public class AdminOrderController {
 		return empty();
 	}
 
+	@Override
 	@PatchMapping("/{orderId}/cancel")
 	public ResponseEntity<ApiResult<Void>> cancelOrder(
 		@PathVariable UUID orderId
