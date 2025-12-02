@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
@@ -29,23 +30,13 @@ import lombok.RequiredArgsConstructor;
 import static com.kt.common.api.ApiResult.*;
 
 
-@ApiResponses(value = {
-		@ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
-		@ApiResponse(responseCode = "500", description = "서버 에러")
-	}
-)
 @Tag(name = "User", description = "유저 관련 API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController extends SwaggerAssistance {
 	private final UserService userService;
 
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "403", description = "접근권한 없음"),
-			@ApiResponse(responseCode = "404", description = "해당 정보가 존재하지 않음")
-		}
-	)
 	@Operation(
 		summary = "내 정보 상세 조회",
 		description = "로그인한 유저의 상세정보 조회 관련 API"

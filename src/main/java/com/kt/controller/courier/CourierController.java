@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.service.CourierService;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/couriers")
 @RequiredArgsConstructor
-public class CourierController {
+public class CourierController extends SwaggerAssistance {
 	private final CourierService courierService;
 
 	@Operation(

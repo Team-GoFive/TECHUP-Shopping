@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
-public class AccountController {
+public class AccountController extends SwaggerAssistance {
 	private final AccountService accountService;
 
 	@Operation(
