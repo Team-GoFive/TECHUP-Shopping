@@ -1,5 +1,11 @@
 package com.kt.domain.dto.response;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kt.constant.CourierWorkStatus;
+import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.querydsl.core.annotations.QueryProjection;
@@ -17,5 +23,18 @@ public class AccountResponse {
 		@QueryProjection
 		public Search {
 		}
+	}
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public record AccountDetail(
+		UUID id,
+		String name,
+		String email,
+		Gender gender,
+		UserStatus status,
+		LocalDate birth,
+		String mobile,
+		CourierWorkStatus workStatus
+	) {
 	}
 }

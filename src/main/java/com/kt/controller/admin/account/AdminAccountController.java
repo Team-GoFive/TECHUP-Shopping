@@ -55,6 +55,13 @@ public class AdminAccountController {
 		return empty();
 	}
 
+	@GetMapping("accounts/{accountId}")
+	public ResponseEntity<ApiResult<AccountResponse.AccountDetail>> getAccountDetail(
+		@PathVariable UUID accountId
+	) {
+		return wrap(accountService.getAccountDetail(accountId));
+	}
+
 }
 
 
