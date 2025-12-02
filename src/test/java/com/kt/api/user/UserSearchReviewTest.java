@@ -39,7 +39,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
-@DisplayName("내가 작성한 리뷰 조회 - GET /api/users/reviews")
+@DisplayName("내가 작성한 리뷰 조회 - GET /api/reviews/mine")
 public class UserSearchReviewTest extends MockMvcTest {
 
 	@Autowired
@@ -58,7 +58,6 @@ public class UserSearchReviewTest extends MockMvcTest {
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
-	DefaultCurrentUser testMemberDetails;
 	UserEntity testUser;
 
 	@BeforeEach
@@ -89,7 +88,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 
 		// when
 		ResultActions Actions = mockMvc.perform(
-			get("/api/users/reviews")
+			get("/api/reviews/mine")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 				.param("page","1")
 				.param("size","10")
@@ -111,7 +110,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 
 		// when
 		ResultActions Actions = mockMvc.perform(
-			get("/api/users/reviews")
+			get("/api/reviews/mine")
 				.with(user(CurrentUserCreator.getMemberUserDetails()))
 				.param("page","1")
 				.param("size","10")

@@ -3,8 +3,6 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.domain.dto.response.ReviewResponse;
-import com.kt.exception.CustomException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.UserRole;
-import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
@@ -147,8 +144,4 @@ public class UserServiceImpl implements UserService {
 		);
 	}
 
-	@Override
-	public Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId) {
-		return reviewRepository.searchReviewsByUserId(pageable, userId);
-	}
 }

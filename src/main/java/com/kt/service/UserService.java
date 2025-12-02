@@ -1,6 +1,5 @@
 package com.kt.service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -10,7 +9,6 @@ import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface UserService {
@@ -37,8 +35,6 @@ public interface UserService {
 	void createAdmin(SignupRequest.SignupMember request);
 
 	void deleteAdmin(UUID adminId);
-
-	Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId);
 
 	void updateUserDetail(UUID userId, UserRequest.UpdateDetails details);
 }

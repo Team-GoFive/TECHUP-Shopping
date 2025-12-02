@@ -12,7 +12,6 @@ import com.kt.constant.OrderStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
-import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.exception.CustomException;
@@ -82,5 +81,10 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public Page<ReviewResponse.Search> getReviewsByAdmin(Pageable pageable, String keyword, ProductSearchType type){
 		return reviewRepository.searchReviews(pageable,keyword,type);
+	}
+
+	@Override
+	public Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId) {
+		return reviewRepository.searchReviewsByUserId(pageable, userId);
 	}
 }
