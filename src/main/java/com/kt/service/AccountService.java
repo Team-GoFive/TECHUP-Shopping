@@ -25,6 +25,8 @@ public interface AccountService {
 
 	void deleteAccount(UUID accountId);
 
+	AccountResponse.AccountDetail getAccountDetail(UUID accountId);
+
 	void deleteAccountPermanently(UUID accountId);
 
 }

@@ -105,8 +105,35 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public AbstractAccountEntity getAccountDetail(UUID accountId) {
-		return accountRepository.findByIdOrThrow(accountId);
+	public AccountResponse.AccountDetail getAccountDetail(UUID accountId) {
+
+		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(accountId);
+
+		if (foundedAccount instanceof UserEntity user) {
+			return new AccountResponse.AccountDetail(
+				user.getId(),
+				user.getName(),
+				user.getEmail(),
+				user.getGender(),
+				user.getStatus(),
+				user.getBirth(),
+				user.getMobile(),
+				null
+			);
+
+		}
+		if (foundedAccount instanceof CourierEntity courier) {
+			return new AccountResponse.AccountDetail(
+				courier.getId(),
+				courier.getName(),
+				courier.getEmail(),
+				courier.getGender(),
+				courier.getStatus(),
+				null,
+				null,
+				courier.getWorkStatus());
+		}
+		throw new CustomException(ErrorCode.ACCOUNT_NOT_FOUND);
 	}
 
 	private String getRandomPassword() {
