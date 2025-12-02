@@ -3,6 +3,7 @@ package com.kt.api.product;
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
@@ -54,7 +54,7 @@ public class ProductDetailTest extends MockMvcTest {
 		//  when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products/{productId}", activatedProduct.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
+				.with(user(getMemberUserDetails()))
 		).andDo(print());
 
 		// then
@@ -67,7 +67,7 @@ public class ProductDetailTest extends MockMvcTest {
 		//  when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products/{productId}", UUID.randomUUID())
-				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
+				.with(user(getMemberUserDetails()))
 		).andDo(print());
 
 		// then
@@ -79,7 +79,7 @@ public class ProductDetailTest extends MockMvcTest {
 		//  when
 		ResultActions actions = mockMvc.perform(
 			get("/api/products/{productId}", inActivatedProduct.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails()))
+				.with(user(getMemberUserDetails()))
 		).andDo(print());
 
 		// then
