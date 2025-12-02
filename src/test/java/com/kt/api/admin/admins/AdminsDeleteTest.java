@@ -29,7 +29,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 삭제 (어드민) - DELETE /api/admin/admins/{adminId}")
+@DisplayName("관리자 삭제 (어드민) - DELETE /api/admins/{adminId}")
 public class AdminsDeleteTest extends MockMvcTest {
 	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
@@ -68,7 +68,7 @@ public class AdminsDeleteTest extends MockMvcTest {
 	@Test
 	void 관리자_삭제_성공() throws Exception {
 
-		MvcResult result = mockMvc.perform(delete("/api/admin/admins/{adminId}", testAdmin.getId())
+		MvcResult result = mockMvc.perform(delete("/api/admins/{adminId}", testAdmin.getId())
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())
@@ -88,7 +88,7 @@ public class AdminsDeleteTest extends MockMvcTest {
 	@Test
 	void 관리자_삭제_실패__404_NotFound() throws Exception {
 
-		mockMvc.perform(delete("/api/admin/admins/{adminId}", UUID.randomUUID())
+		mockMvc.perform(delete("/api/admins/{adminId}", UUID.randomUUID())
 				.with(user(adminPrincipal()))
 			)
 			.andDo(print())

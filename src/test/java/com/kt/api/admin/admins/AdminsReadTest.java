@@ -26,7 +26,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 목록 조회 (어드민) - GET /api/admin/admins")
+@DisplayName("관리자 목록 조회 (어드민) - GET /api/admins")
 public class AdminsReadTest extends MockMvcTest {
 	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
@@ -66,7 +66,7 @@ public class AdminsReadTest extends MockMvcTest {
 	void 관리자_목록_조회_성공() throws Exception {
 
 		MvcResult result = mockMvc.perform(
-				get("/api/admin/admins")
+				get("/api/admins")
 					.param("page", "1")
 					.param("size", "10")
 					.param("role", UserRole.ADMIN.name())

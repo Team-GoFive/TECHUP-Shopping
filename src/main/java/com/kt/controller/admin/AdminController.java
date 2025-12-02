@@ -1,4 +1,4 @@
-package com.kt.controller.admin.admins;
+package com.kt.controller.admin;
 
 import java.util.UUID;
 
@@ -34,9 +34,9 @@ import lombok.RequiredArgsConstructor;
 import static com.kt.common.api.ApiResult.*;
 
 @RestController
-@RequestMapping("/api/admin/admins")
+@RequestMapping("/api/admins")
 @RequiredArgsConstructor
-public class AdminAdminsController {
+public class AdminController {
 
 	private final UserService userService;
 	private final AccountService accountService;

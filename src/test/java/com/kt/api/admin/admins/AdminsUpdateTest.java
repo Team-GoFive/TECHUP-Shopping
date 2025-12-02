@@ -30,7 +30,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admin/admins/{adminsId}")
+@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admins/{adminsId}")
 public class AdminsUpdateTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "admin12345";
@@ -77,7 +77,7 @@ public class AdminsUpdateTest extends MockMvcTest {
 			Gender.FEMALE
 		);
 
-		MvcResult result = mockMvc.perform(put("/api/admin/admins/{adminId}", testAdmin.getId())
+		MvcResult result = mockMvc.perform(put("/api/admins/{adminId}", testAdmin.getId())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requset))
 				.with(user(adminPrincipal()))
@@ -106,7 +106,7 @@ public class AdminsUpdateTest extends MockMvcTest {
 			Gender.FEMALE
 		);
 
-		mockMvc.perform(put("/api/admin/admins/{adminId}", UUID.randomUUID())
+		mockMvc.perform(put("/api/admins/{adminId}", UUID.randomUUID())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requset))
 				.with(user(adminPrincipal()))

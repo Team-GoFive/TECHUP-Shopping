@@ -29,7 +29,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("유저 생성 (어드민) - POST /api/admin/admins")
+@DisplayName("유저 생성 (어드민) - POST /api/admins")
 public class AdminsCreateTest extends MockMvcTest {
 	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
@@ -78,7 +78,7 @@ public class AdminsCreateTest extends MockMvcTest {
 		);
 
 		MvcResult result = mockMvc.perform(
-				post("/api/admin/admins")
+				post("/api/admins")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
 					.with(user(adminPrincipal()))
