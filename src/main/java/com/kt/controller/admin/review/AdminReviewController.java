@@ -27,9 +27,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/reviews")
 @RequiredArgsConstructor
+
 public class AdminReviewController implements AdminReviewSwaggerSupporter {
 	private final ReviewService reviewService;
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<ReviewResponse.Search>>> search(
 		@ModelAttribute Paging paging,
@@ -45,6 +47,7 @@ public class AdminReviewController implements AdminReviewSwaggerSupporter {
 		);
 	}
 
+	@Override
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ApiResult<Void>> delete(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,

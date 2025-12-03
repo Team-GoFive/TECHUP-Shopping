@@ -104,32 +104,6 @@ public class AccountServiceImpl implements AccountService {
 		);
 	}
 
-	@Override
-	public AccountResponse.CourierDetail getCourierDetail(UUID courierId) {
-		CourierEntity foundCourier = courierRepository.findByIdOrThrow(courierId);
-		return new AccountResponse.CourierDetail(
-			foundCourier.getId(),
-			foundCourier.getName(),
-			foundCourier.getEmail(),
-			foundCourier.getGender(),
-			foundCourier.getStatus(),
-			foundCourier.getWorkStatus());
-	}
-
-	@Override
-	public AccountResponse.UserDetail getUserDetail(UUID userId) {
-		UserEntity foundUser = userRepository.findByIdOrThrow(userId);
-		return new AccountResponse.UserDetail(
-			foundUser.getId(),
-			foundUser.getName(),
-			foundUser.getEmail(),
-			foundUser.getGender(),
-			foundUser.getStatus(),
-			foundUser.getBirth(),
-			foundUser.getMobile()
-		);
-	}
-
 	private String getRandomPassword() {
 		int code = new Random().nextInt(900000) + 100000;
 		return String.valueOf(code);
