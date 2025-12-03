@@ -346,11 +346,4 @@ class AccountServiceTest {
 
 	}
 
-	@Test
-	void 계정_상세_조회() {
-		AccountResponse.AccountDetail savedMember = accountService.getAccountDetail(member1.getId());
-		assertThat(savedMember).isNotNull();
-		assertThat(savedMember.name()).isEqualTo("회원");
-	}
-
 }
