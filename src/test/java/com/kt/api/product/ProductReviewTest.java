@@ -90,7 +90,7 @@ public class ProductReviewTest extends MockMvcTest {
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {
 			OrderProductEntity orderProduct = list.get(i);
-			reviewService.create(orderProduct.getId(), "리뷰 내용: 리뷰" + i);
+			reviewService.create(testMember.getMobile(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
 	}
 
