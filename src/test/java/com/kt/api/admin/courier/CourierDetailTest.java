@@ -17,12 +17,13 @@ import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.repository.courier.CourierRepository;
+import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("배송기사 상세 조회 (어드민) - GET /api/admin/couriers/{courierId}")
 public class CourierDetailTest extends MockMvcTest {
+	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	CourierRepository courierRepository;
-
 	CourierEntity testCourier;
 
 	@BeforeEach
@@ -37,7 +38,7 @@ public class CourierDetailTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/couriers/{courierId}", testCourier.getId())
-				.with(user(CurrentUserCreator.getMemberUserDetails()))
+				.with(user(userDetails))
 		);
 
 		// then
