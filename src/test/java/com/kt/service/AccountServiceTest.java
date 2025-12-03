@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import com.kt.domain.dto.request.AccountRequest;
 
 import org.junit.jupiter.api.Assertions;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -40,6 +42,7 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class AccountServiceTest {
 
+	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	AccountService accountService;
 	@Autowired
@@ -50,8 +53,6 @@ class AccountServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	static final String TEST_PASSWORD = "1234567891011";
-
 	UserEntity member1;
 	UserEntity admin1;
 	CourierEntity courier1;
@@ -169,7 +170,6 @@ class AccountServiceTest {
 		assertThat(result.getContent()).hasSize(2);
 	}
 
-
 	@Test
 	void 회원계정_비밀번호변경_성공() {
 		UserEntity user = UserEntity.create(
@@ -267,7 +267,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 계정삭제_성공_soft(){
+	void 계정삭제_성공_soft() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",
@@ -283,7 +283,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 계정삭제_성공_hard(){
+	void 계정삭제_성공_hard() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",

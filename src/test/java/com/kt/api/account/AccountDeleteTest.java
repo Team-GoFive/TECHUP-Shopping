@@ -3,7 +3,6 @@ package com.kt.api.account;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,6 +54,6 @@ public class AccountDeleteTest extends MockMvcTest {
 
 		// then
 		actions.andExpect(status().isOk());
-		Assertions.assertEquals(UserStatus.DELETED,savedAccount.getStatus());
+		Assertions.assertEquals(UserStatus.DELETED, savedAccount.getStatus());
 	}
 }

@@ -40,9 +40,11 @@ public enum ErrorCode {
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저가 존재하지 않습니다."),
 	ORDER_ALREADY_SHIPPED(HttpStatus.BAD_REQUEST, "배송이 시작되어 취소할 수 없습니다."),
 	ORDER_ALREADY_CONFIRMED(HttpStatus.BAD_REQUEST, "주문이 구매확정 상태이므로 취소할 수 없습니다."),
-	ORDER_NOT_CONFIRMED(HttpStatus.BAD_REQUEST, "주문이 구매확정 상태가 아니므로 리뷰작성이 불가능합니다."),
 	REVIEW_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰에 대한 접근 권한이 없습니다."),
-	REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 주문상품에 대한 리뷰가 이미 존재합니다.");
+	REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 주문상품에 대한 리뷰가 이미 존재합니다."),
+	ORDER_NOT_CONFIRMED(HttpStatus.BAD_REQUEST, "주문이 구매확정 상태가 아니므로 리뷰작성이 불가능합니다."),
+	Courier_NOT_FOUND(HttpStatus.NOT_FOUND, "배송기사가 존재하지 않습니다."),
+	;
 
 	private final HttpStatus status;
 	private final String message;

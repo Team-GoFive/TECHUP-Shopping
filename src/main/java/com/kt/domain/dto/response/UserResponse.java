@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.querydsl.core.annotations.QueryProjection;

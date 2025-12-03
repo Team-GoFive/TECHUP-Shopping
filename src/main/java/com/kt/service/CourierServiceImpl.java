@@ -21,8 +21,8 @@ public class CourierServiceImpl implements CourierService {
 
 	@Override
 	public CourierResponse.Detail getDetail(UUID courierId) {
-		CourierEntity courierEntity = courierRepository.findByCourierIdOrThrow(courierId);
-		return  new CourierResponse.Detail(
+		CourierEntity courierEntity = courierRepository.findByIdOrThrow(courierId);
+		return new CourierResponse.Detail(
 			courierEntity.getId(),
 			courierEntity.getName(),
 			courierEntity.getEmail(),
@@ -32,8 +32,21 @@ public class CourierServiceImpl implements CourierService {
 	}
 
 	@Override
+	public CourierResponse.DetailAdmin getDetailForAdmin(UUID courierId) {
+		CourierEntity courierEntity = courierRepository.findByIdOrThrow(courierId);
+		return new CourierResponse.DetailAdmin(
+			courierEntity.getId(),
+			courierEntity.getName(),
+			courierEntity.getEmail(),
+			courierEntity.getGender(),
+			courierEntity.getStatus(),
+			courierEntity.getWorkStatus()
+		);
+	}
+
+	@Override
 	public void updateDetail(UUID courierId, CourierRequest.UpdateDetails details) {
-		CourierEntity courier = courierRepository.findByCourierIdOrThrow(courierId);
+		CourierEntity courier = courierRepository.findByIdOrThrow(courierId);
 		courier.updateDetails(
 			details.name(),
 			details.gender()
