@@ -336,4 +336,14 @@ class AccountServiceTest {
 		log.info("passwordRequest status : {}", passwordRequest.getStatus());
 	}
 
+	@Test
+	void 관리자_다른_계정_비밀번호_초기화_실패_요청사항_없음() {
+
+		assertThatThrownBy(
+			() -> accountService.resetAccountPassword(member1.getId())
+		).isInstanceOf(CustomException.class);
+
+
+	}
+
 }
