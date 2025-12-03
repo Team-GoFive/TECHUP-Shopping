@@ -36,11 +36,12 @@ import static com.kt.common.api.ApiResult.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-public class AdminController {
+public class AdminController implements AdminSwaggerSupporter {
 
 	private final UserService userService;
 	private final AccountService accountService;
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
 		@ParameterObject AccountRequest.Search request,
@@ -55,6 +56,7 @@ public class AdminController {
 		);
 	}
 
+	@Override
 	@GetMapping("/{adminId}")
 	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(@PathVariable UUID adminId) {
 		return wrap(
@@ -62,6 +64,7 @@ public class AdminController {
 		);
 	}
 
+	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
 		@RequestBody @Valid SignupRequest.SignupMember request
@@ -70,6 +73,7 @@ public class AdminController {
 		return empty();
 	}
 
+	@Override
 	@PutMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> updateAdmin(
 		@RequestBody @Valid UserRequest.UpdateDetails request,
@@ -79,6 +83,7 @@ public class AdminController {
 		return empty();
 	}
 
+	@Override
 	@DeleteMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> deleteAdmin(@PathVariable UUID adminId) {
 		userService.deleteUser(adminId);
