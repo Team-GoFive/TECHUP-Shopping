@@ -1,5 +1,6 @@
 package com.kt.api.review;
 
+import static com.kt.common.CurrentUserCreator.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,14 +54,16 @@ public class ReviewCreateTest extends MockMvcTest {
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
+	UserEntity testMember;
+
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
-		userRepository.save(user);
+		testMember = UserEntityCreator.createMember();
+		userRepository.save(testMember);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(receiver, user);
+		OrderEntity order = OrderEntity.create(receiver, testMember);
 		orderRepository.save(order);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
@@ -85,8 +88,8 @@ public class ReviewCreateTest extends MockMvcTest {
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
-				.with(user("wjd123@naver.com"))
+			post("/api/reviews", testOrderProduct.getId())
+				.with(user(getMemberUserDetails(testMember.getEmail())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json)
 		);

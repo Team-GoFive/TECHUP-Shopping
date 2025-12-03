@@ -2,6 +2,7 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kt.constant.OrderStatus;
@@ -38,7 +39,7 @@ public class OrderEntity extends BaseEntity {
 	private OrderStatus status;
 
 	@OneToMany(mappedBy = "order")
-	private List<OrderProductEntity> orderProducts;
+	private List<OrderProductEntity> orderProducts = new ArrayList<>();
 
 	protected OrderEntity(
 		ReceiverVO receiverVO,

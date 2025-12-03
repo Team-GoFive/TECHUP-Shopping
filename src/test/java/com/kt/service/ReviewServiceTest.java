@@ -1,6 +1,13 @@
 package com.kt.service;
 
-import java.time.LocalDate;
+import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.OrderEntityCreator.*;
+import static com.kt.common.OrderProductCreator.*;
+import static com.kt.common.ProductCreator.*;
+import static com.kt.common.UserEntityCreator.*;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,18 +21,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.Gender;
-import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.ReviewStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
@@ -37,7 +40,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 class ReviewServiceTest {
 
@@ -62,71 +65,42 @@ class ReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		orderProductRepository.deleteAll();
-		userRepository.deleteAll();
-		productRepository.deleteAll();
-		orderRepository.deleteAll();
-		reviewRepository.deleteAll();
+		// orderProductRepository.deleteAll();
+		// userRepository.deleteAll();
+		// productRepository.deleteAll();
+		// orderRepository.deleteAll();
+		// reviewRepository.deleteAll();
 
-		testUser = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			"1234",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1234-5678"
-		);
+		testUser = createMember();
 		userRepository.save(testUser);
 
-		ReceiverVO receiver = new ReceiverVO(
-			"수신자테스터1",
-			"010-1234-5678",
-			"강원도",
-			"원주시",
-			"행구로",
-			"주소설명"
-		);
-
-		OrderEntity order = OrderEntity.create(
-			receiver,
-			testUser
-		);
-		orderRepository.save(order);
-
-		CategoryEntity category = CategoryEntity.create("카테고리", null);
+		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
 
-		ProductEntity product = ProductEntity.create(
-			"테스트상품명",
-			1000L,
-			5L,
-			category
-		);
+		OrderEntity order = createOrderEntity(testUser);
+		orderRepository.save(order);
+
+		ProductEntity product = createProduct(category);
 		productRepository.save(product);
 
-		testOrderProduct = new OrderProductEntity(
-			5L,
-			5000L,
-			OrderProductStatus.CREATED,
-			order,
-			product
-		);
+		testOrderProduct = createOrderProduct(order, product);
 		orderProductRepository.save(testOrderProduct);
 	}
 
 	@Test
 	void 리뷰생성_성공() {
+		// given
 		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		// when
 		reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용");
-
-		ReviewEntity savedReview = reviewRepository
+		// // then
+		Optional<ReviewEntity> saved = reviewRepository
 			.findAll()
 			.stream()
-			.findFirst()
-			.orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+			.findFirst();
 
-		Assertions.assertEquals(testOrderProduct.getId(), savedReview.getOrderProduct().getId());
+		assertThat(saved.isPresent()).isTrue();
+		assertThat(saved.get().getContent()).isEqualTo("테스트리뷰내용");
 	}
 
 	@ParameterizedTest
@@ -136,31 +110,46 @@ class ReviewServiceTest {
 		mode = EnumSource.Mode.EXCLUDE
 	)
 	void 리뷰생성_실패__주문_구매확정_아님(OrderStatus orderStatus) {
+		// given
 		testOrderProduct.getOrder().updateStatus(orderStatus);
 
-		Assertions.assertThrowsExactly(
-			CustomException.class,
-			() -> reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용")
-		);
+		// when and then
+		assertThatThrownBy(
+			() -> reviewService.create(
+				testUser.getEmail(),
+				testOrderProduct.getId(),
+				"테스트리뷰내용"
+			)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ORDER_NOT_CONFIRMED.name());
 	}
 
 	@Test
 	void 리뷰변경_성공() {
+		// given
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
 
-		reviewService.update("", review.getId(), "변경된테스트리뷰내용");
+		// when
+		reviewService.update(testUser.getEmail(), review.getId(), "변경된테스트리뷰내용");
 
+		// then
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
 	}
 
 	@Test
 	void 리뷰삭제_성공() {
+		// given
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.save(review);
-		reviewService.delete("", review.getId());
+
+		// when
+		reviewService.delete(testUser.getEmail(), review.getId());
+
+		// then
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());
 	}
 
