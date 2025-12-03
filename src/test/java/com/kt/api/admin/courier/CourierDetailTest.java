@@ -24,6 +24,7 @@ public class CourierDetailTest extends MockMvcTest {
 	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	CourierRepository courierRepository;
+
 	CourierEntity testCourier;
 
 	@BeforeEach
