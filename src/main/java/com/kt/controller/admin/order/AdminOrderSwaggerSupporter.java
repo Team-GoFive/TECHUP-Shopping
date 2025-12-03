@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 
@@ -14,8 +15,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "주문", description = "주문 관련 API")
-public interface AdminOrderSwaggerSupporter {
+@Tag(name = "admin order", description = "관리자 주문 관련 API")
+public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
 		summary = "전체 주문 조회",
@@ -39,7 +40,7 @@ public interface AdminOrderSwaggerSupporter {
 			@Parameter(name = "orderId" , description = "주문 ID")
 		}
 	)
-	public ResponseEntity<ApiResult<Void>> updateOrderStatus(
+	ResponseEntity<ApiResult<Void>> updateOrderStatus(
 		UUID orderId,
 		OrderRequest.ChangeStatus request
 	);
