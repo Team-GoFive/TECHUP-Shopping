@@ -118,7 +118,7 @@ class ReviewServiceTest {
 	@Test
 	void 리뷰생성_성공() {
 		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
-		reviewService.create(testOrderProduct.getId(), "테스트리뷰내용");
+		reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용");
 
 		ReviewEntity savedReview = reviewRepository
 			.findAll()
@@ -140,7 +140,7 @@ class ReviewServiceTest {
 
 		Assertions.assertThrowsExactly(
 			CustomException.class,
-			() -> reviewService.create(testOrderProduct.getId(), "테스트리뷰내용")
+			() -> reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용")
 		);
 	}
 

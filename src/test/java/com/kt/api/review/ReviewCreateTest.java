@@ -78,21 +78,23 @@ public class ReviewCreateTest extends MockMvcTest {
 		// given
 		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
+			testOrderProduct.getId(),
 			"생성한테스트리뷰내용"
 		);
 		String json = objectMapper.writeValueAsString(reviewCreate);
 
 		// when
-		ResultActions actions = mockMvc.perform(post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
-			.with(user("wjd123@naver.com"))
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(json)
+		ResultActions actions = mockMvc.perform(
+			post("/api/orderproducts/{orderProductId}/reviews", testOrderProduct.getId())
+				.with(user("wjd123@naver.com"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
 		);
 
 		// then
 		actions.andExpect(status().isOk());
 		ReviewEntity savedReview = reviewRepository.findByOrderProductIdOrThrow(testOrderProduct.getId());
 		Assertions.assertNotNull(savedReview);
-		Assertions.assertEquals(savedReview.getContent(),reviewCreate.content());
+		Assertions.assertEquals(savedReview.getContent(), reviewCreate.content());
 	}
 }
