@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
-public class AdminProductController {
+public class AdminProductController implements AdminProductSwaggerSupporter {
 
 	private final ProductService productService;
 
