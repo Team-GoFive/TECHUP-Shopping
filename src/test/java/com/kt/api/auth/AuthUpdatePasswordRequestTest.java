@@ -77,17 +77,14 @@ public class AuthUpdatePasswordRequestTest extends MockMvcTest {
 			).orElse(null);
 
 		assertNotNull(passwordRequest);
-		assertEquals(
-			testUser.getId(),
-			passwordRequest.getAccount().getId()
-		);
-		assertEquals(
-			updatePassword,
-			EncryptUtil.decrypt(passwordRequest.getEncryptedPassword())
-		);
 
-		log.info("decrypt key :: {}",
-			EncryptUtil.decrypt(passwordRequest.getEncryptedPassword())
+		assertEquals(testUser.getId(), passwordRequest.getAccount().getId());
+
+		String decryptPassword = EncryptUtil.decrypt(
+			passwordRequest.getEncryptedPassword()
 		);
+		assertEquals(updatePassword, decryptPassword);
+
+		log.info("decrypt password :: {}", decryptPassword);
 	}
 }
