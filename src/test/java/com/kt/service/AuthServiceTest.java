@@ -517,7 +517,7 @@ public class AuthServiceTest {
 		assertThatThrownBy(
 			() -> authService.requestPasswordInit(request))
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining("PASSWORD_INIT_ALREADY_REQUESTED");
+			.hasMessageContaining("PASSWORD_RESET_ALREADY_REQUESTED");
 	}
 
 	@Test

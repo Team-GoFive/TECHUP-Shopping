@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
 			);
 
 		if (!passwordRequest.isNew())
-			throw new CustomException(ErrorCode.PASSWORD_INIT_ALREADY_REQUESTED);
+			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
 
 		passwordRequestRepository.save(passwordRequest);
 	}
