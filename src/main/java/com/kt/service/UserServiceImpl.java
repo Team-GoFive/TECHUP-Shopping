@@ -160,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteAdmin(UUID currentId, UUID adminId) {
+		verifyAdmin(adminId);
 		verifyAccess(currentId, adminId);
 
 		UserEntity user = userRepository.findByIdOrThrow(adminId);
@@ -203,7 +204,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
 			user.getRole() == UserRole.ADMIN,
-			ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
+			ErrorCode.NOT_ADMIN
 		);
 	}
 
@@ -218,7 +219,7 @@ public class UserServiceImpl implements UserService {
 		} else {
 			UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 			Preconditions.validate(
-				currentUser.getRole().equals(UserRole.ADMIN) || currentId.equals(subjectId),
+				currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 			);
 		}
