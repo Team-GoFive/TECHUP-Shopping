@@ -1,6 +1,5 @@
 package com.kt.service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -10,15 +9,13 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 
 public interface ReviewService {
-	void create(UUID orderProductId, String content);
+	void create(String email, UUID orderProductId, String content);
 
-	void update(UUID reviewId, String content);
+	void update(String email, UUID reviewId, String content);
 
-	void delete(UUID reviewId);
+	void delete(String email, UUID reviewId);
 
 	ReviewResponse.Search getReview(UUID orderProductId);
-
-	List<ReviewResponse.Search> getReviewByProductId(UUID productId);
 
 	Page<ReviewResponse.Search> getReviewByProductId(UUID productId, Pageable pageable);
 
