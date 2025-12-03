@@ -65,7 +65,7 @@ public class OrderSearchTest extends MockMvcTest {
 		testProduct = createProduct(category);
 		productRepository.save(testProduct);
 
-		testAddress = addressRepository.save(AddressCreator.create(testMember));
+		testAddress = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		for (int i = 0; i < 2; i++) {
 			List<OrderRequest.Item> items = List.of(

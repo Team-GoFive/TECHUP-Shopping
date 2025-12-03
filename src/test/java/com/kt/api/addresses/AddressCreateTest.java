@@ -1,17 +1,8 @@
 package com.kt.api.addresses;
 
 import static com.kt.common.UserEntityCreator.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.common.AddressCreator;
-import com.kt.common.CurrentUserCreator;
-import com.kt.domain.dto.request.AddressRequest;
-import com.kt.domain.entity.AddressEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.repository.AddressRepository;
-import com.kt.repository.user.UserRepository;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +16,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.AddressCreator;
+import com.kt.common.CurrentUserCreator;
+import com.kt.domain.dto.request.AddressRequest;
+import com.kt.domain.entity.AddressEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.AddressRepository;
+import com.kt.repository.user.UserRepository;
+
 import jakarta.transaction.Transactional;
 
 @Transactional
@@ -33,6 +33,7 @@ import jakarta.transaction.Transactional;
 @DisplayName("주소 생성 - POST /api/addresses")
 class AddressCreateTest {
 
+	private final String URL = "/api/addresses";
 	@Autowired
 	MockMvc mockMvc;
 	@Autowired
@@ -41,9 +42,6 @@ class AddressCreateTest {
 	AddressRepository addressRepository;
 	@Autowired
 	UserRepository userRepository;
-
-	private final String URL = "/api/addresses";
-
 	UserEntity testMember;
 	AddressEntity address;
 	AddressRequest validRequest;
@@ -53,7 +51,7 @@ class AddressCreateTest {
 		testMember = createMember();
 		userRepository.save(testMember);
 
-		address = addressRepository.save(AddressCreator.create(testMember));
+		address = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		validRequest = new AddressRequest(
 			address.getReceiverName(),
@@ -99,6 +97,5 @@ class AddressCreateTest {
 				)))
 			.andExpect(status().isBadRequest());
 	}
-
 
 }

@@ -1,54 +1,42 @@
 package com.kt.api.addresses;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+
 import com.kt.common.AddressCreator;
 import com.kt.common.CurrentUserCreator;
+import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.user.UserRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import jakarta.transaction.Transactional;
-
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
 @DisplayName("주소 수정 - PUT /api/addresses/{addressId}")
-class AddressModifyTest {
+class AddressModifyTest extends MockMvcTest {
 
-	@Autowired
-	MockMvc mockMvc;
+	private static final String URL = "/api/addresses/{addressId}";
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	AddressRepository addressRepository;
-	@Autowired
-	ObjectMapper objectMapper;
-
-	private static final String URL = "/api/addresses/{addressId}";
 
 	@Test
 	@DisplayName("주소_수정_성공__정상입력")
 	void 주소_수정_성공__정상입력() throws Exception {
 
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.create(user));
+		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
 		var currentUser = CurrentUserCreator.getMemberUserDetails(user.getId());
 
 		AddressRequest request = new AddressRequest(

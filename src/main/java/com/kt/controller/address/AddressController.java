@@ -7,7 +7,14 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.AddressRequest;
@@ -28,7 +35,7 @@ public class AddressController {
 	@PostMapping
 	ResponseEntity<ApiResult<UUID>> createAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@Valid @RequestBody AddressRequest request
+		@RequestBody @Valid AddressRequest request
 	) {
 		return wrap(addressService.create(currentUser.getUsername(), request));
 	}
@@ -52,7 +59,7 @@ public class AddressController {
 	ResponseEntity<ApiResult<Void>> updateAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId,
-		@Valid @RequestBody AddressRequest request
+		@RequestBody @Valid AddressRequest request
 	) {
 		addressService.update(currentUser.getUsername(), addressId, request);
 		return empty();

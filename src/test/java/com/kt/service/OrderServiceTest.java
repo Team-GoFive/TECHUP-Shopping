@@ -5,16 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.common.AddressCreator;
-import com.kt.common.CategoryEntityCreator;
-import com.kt.common.ProductEntityCreator;
-import com.kt.common.ReceiverCreator;
-import com.kt.common.UserEntityCreator;
-import com.kt.constant.message.ErrorCode;
-import com.kt.domain.dto.response.AdminOrderResponse;
-import com.kt.domain.entity.AddressEntity;
-import com.kt.exception.CustomException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +14,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.AddressCreator;
+import com.kt.common.CategoryEntityCreator;
+import com.kt.common.ProductEntityCreator;
+import com.kt.common.ReceiverCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
+import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
@@ -109,7 +108,7 @@ class OrderServiceTest {
 	void 주문_생성_성공() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.create(user));
+		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
 
 		ProductEntity product1 = productRepository.save(ProductEntityCreator.createProduct(category));
 		ProductEntity product2 = productRepository.save(ProductEntityCreator.createProduct(category));
@@ -127,15 +126,14 @@ class OrderServiceTest {
 
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAllByOrderId(savedOrder.getId());
-			assertThat(orderProducts).hasSize(2);
+		assertThat(orderProducts).hasSize(2);
 	}
-
 
 	@Test
 	void 주문_생성_실패__상품없음() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.create(user));
+		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
 
 		UUID invalidId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 		List<OrderRequest.Item> items = List.of(
@@ -152,7 +150,7 @@ class OrderServiceTest {
 
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.create(user));
+		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
 		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
 
 		List<OrderRequest.Item> items = List.of(
@@ -362,6 +360,7 @@ class OrderServiceTest {
 		OrderEntity updated = orderRepository.findById(order.getId()).get();
 		assertThat(updated.getStatus()).isEqualTo(newStatus);
 	}
+
 	@Test
 	void 주문_상태_변경_실패__현재배송중() {
 		// given
@@ -390,7 +389,5 @@ class OrderServiceTest {
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
 	}
-
-
 
 }

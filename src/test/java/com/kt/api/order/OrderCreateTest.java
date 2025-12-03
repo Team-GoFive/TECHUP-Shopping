@@ -75,7 +75,7 @@ public class OrderCreateTest extends MockMvcTest {
 		products.add(testProduct1);
 		products.add(testProduct2);
 
-		address = addressRepository.save(AddressCreator.create(testMember));
+		address = addressRepository.save(AddressCreator.createAddress(testMember));
 	}
 
 	@Test

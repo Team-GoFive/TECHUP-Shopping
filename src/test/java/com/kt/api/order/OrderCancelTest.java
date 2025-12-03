@@ -66,7 +66,7 @@ public class OrderCancelTest extends MockMvcTest {
 		testProduct = createProduct(category);
 		productRepository.save(testProduct);
 
-		testAddress = addressRepository.save(AddressCreator.create(testMember));
+		testAddress = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(testProduct.getId(), 1L)

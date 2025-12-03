@@ -75,7 +75,7 @@ public class ProductReviewTest extends MockMvcTest {
 
 		testProduct = createProduct(testCategory);
 
-		address = addressRepository.save(AddressCreator.create(testMember));
+		address = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		productRepository.save(testProduct);
 		for (int i = 0; i < 3; i++) {

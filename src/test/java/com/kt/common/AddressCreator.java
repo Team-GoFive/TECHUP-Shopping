@@ -4,7 +4,7 @@ import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
 
 public class AddressCreator {
-	public static AddressEntity create(UserEntity user) {
+	public static AddressEntity createAddress(UserEntity user) {
 		return AddressEntity.create(
 			"수령인",
 			"01012345678",
