@@ -11,5 +11,4 @@ public interface CourierService {
 	CourierResponse.DetailAdmin getDetailForAdmin(UUID courierId);
 
 	void updateDetail(UUID courierId, CourierRequest.UpdateDetails updateDetail);
-	CourierResponse.CourierDetail getCourierDetail(UUID courierId);
 }
