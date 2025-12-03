@@ -2,6 +2,8 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import java.util.List;
+
 import com.kt.constant.OrderStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
@@ -12,6 +14,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +36,9 @@ public class OrderEntity extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
+
+	@OneToMany(mappedBy = "order")
+	private List<OrderProductEntity> orderProducts;
 
 	protected OrderEntity(
 		ReceiverVO receiverVO,

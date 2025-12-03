@@ -9,7 +9,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 
 public interface ReviewService {
-	void create(UUID orderProductId, String content);
+	void create(String email, UUID orderProductId, String content);
 
 	void update(String email, UUID reviewId, String content);
 
