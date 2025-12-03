@@ -19,6 +19,7 @@ public class CourierServiceImpl implements CourierService {
 
 	private final CourierRepository courierRepository;
 
+	@Override
 	public CourierResponse.Detail getDetail(UUID courierId) {
 		CourierEntity courierEntity = courierRepository.findByIdOrThrow(courierId);
 		return new CourierResponse.Detail(
