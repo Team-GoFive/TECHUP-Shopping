@@ -7,7 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.domain.dto.request.AccountRequest;
+
+import com.kt.domain.entity.PasswordRequestEntity;
+
+import com.kt.repository.PasswordRequestRepository;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -53,10 +59,14 @@ class AccountServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
+	@Autowired
+	PasswordRequestRepository passwordRequestRepository;
+
 	UserEntity member1;
 	UserEntity admin1;
 	CourierEntity courier1;
 	CourierEntity courier2;
+
 
 	@BeforeEach
 	void setUp() {
@@ -301,9 +311,15 @@ class AccountServiceTest {
 
 	@Test
 	void 관리자_다른_계정_비밀번호_초기화_성공() {
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			member1,
+			null,
+			PasswordRequestType.RESET
+		);
+		passwordRequestRepository.save(passwordRequest);
 		String originPassword = "1234";
 
-		accountService.adminResetAccountPassword(member1.getId());
+		accountService.resetAccountPassword(member1.getId());
 
 		log.info(
 			"isMatch :: {}", passwordEncoder.matches(
@@ -317,6 +333,16 @@ class AccountServiceTest {
 				member1.getPassword()
 			)
 		);
+		log.info("passwordRequest status : {}", passwordRequest.getStatus());
+	}
+
+	@Test
+	void 관리자_다른_계정_비밀번호_초기화_실패_요청사항_없음() {
+
+		assertThatThrownBy(
+			() -> accountService.resetAccountPassword(member1.getId())
+		).isInstanceOf(CustomException.class);
+
 
 	}
 

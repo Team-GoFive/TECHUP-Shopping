@@ -2,6 +2,8 @@ package com.kt.service;
 
 import java.util.UUID;
 
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.mail.MailTemplate;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.response.AccountResponse;
@@ -9,7 +11,9 @@ import com.kt.domain.entity.AbstractAccountEntity;
 
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.infra.mail.EmailClient;
+import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
 
 import org.springframework.data.domain.Page;
@@ -36,6 +40,7 @@ public class AccountServiceImpl implements AccountService {
 	private final CourierRepository courierRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AccountRepository accountRepository;
+	private final PasswordRequestRepository passwordRequestRepository;
 	private final EmailClient emailClient;
 
 	@Override
@@ -76,9 +81,21 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void adminResetAccountPassword(UUID accountId) {
+	public void resetAccountPassword(UUID accountId) {
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+		PasswordRequestEntity passwordRequest = passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				account,
+				PasswordRequestStatus.PENDING,
+				PasswordRequestType.RESET
+			).orElseThrow(
+				() -> new CustomException(ErrorCode.PASSWORD_RESET_REQUESTS_NOT_FOUND)
+			);
+
 		String resetPassword = getRandomPassword();
+		passwordRequest.updateStatus(
+			PasswordRequestStatus.COMPLETED
+		);
 		account.resetPassword(passwordEncoder.encode(resetPassword));
 		emailClient.sendMail(
 			account.getEmail(),

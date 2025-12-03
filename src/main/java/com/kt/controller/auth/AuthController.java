@@ -102,9 +102,9 @@ public class AuthController extends SwaggerAssistance {
 		summary = "비밀번호 초기화",
 		description = "비밀번호 초기화 API"
 	)
-	@PatchMapping("/password-init")
-	public ResponseEntity<ApiResult<Void>> initPassword(
-		@RequestBody @Valid PasswordManagementRequest.PasswordInit request
+	@PatchMapping("/password/reset")
+	public ResponseEntity<ApiResult<Void>> resetPassword(
+		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
 	) {
 		authService.initPassword(request);
 		return empty();
@@ -114,9 +114,9 @@ public class AuthController extends SwaggerAssistance {
 		summary = "비밀번호 초기화 요청",
 		description = "비밀번호 초기화 요청 API"
 	)
-	@PostMapping("/password-init/requests")
-	public ResponseEntity<ApiResult<Void>> requestPasswordInit(
-		@RequestBody @Valid PasswordManagementRequest.PasswordInit request
+	@PostMapping("/password/reset-requests")
+	public ResponseEntity<ApiResult<Void>> requestPasswordReset(
+		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
 	) {
 		authService.requestPasswordInit(request);
 		return empty();

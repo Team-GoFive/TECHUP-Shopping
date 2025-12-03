@@ -147,7 +147,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void initPassword(PasswordManagementRequest.PasswordInit request) {
+	public void initPassword(PasswordManagementRequest.PasswordReset request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(email);
@@ -162,7 +162,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void requestPasswordInit(PasswordManagementRequest.PasswordInit request) {
+	public void requestPasswordInit(PasswordManagementRequest.PasswordReset request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
 
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
 			);
 
 		if (!passwordRequest.isNew())
-			throw new CustomException(ErrorCode.PASSWORD_INIT_ALREADY_REQUESTED);
+			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
 
 		passwordRequestRepository.save(passwordRequest);
 	}

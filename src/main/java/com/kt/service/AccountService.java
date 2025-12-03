@@ -16,7 +16,7 @@ public interface AccountService {
 		Pageable pageable
 	);
 
-	void adminResetAccountPassword(UUID accountId);
+	void resetAccountPassword(UUID accountId);
 
 	void updatePassword(
 		UUID accountId,
