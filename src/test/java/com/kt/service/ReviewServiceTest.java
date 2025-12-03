@@ -65,12 +65,6 @@ class ReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		// orderProductRepository.deleteAll();
-		// userRepository.deleteAll();
-		// productRepository.deleteAll();
-		// orderRepository.deleteAll();
-		// reviewRepository.deleteAll();
-
 		testUser = createMember();
 		userRepository.save(testUser);
 
