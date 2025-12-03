@@ -76,5 +76,21 @@ public class AddressEntity extends BaseEntity {
 		);
 	}
 
+	public void update(
+		String receiverName,
+		String receiverMobile,
+		String city,
+		String district,
+		String roadAddress,
+		String detail
+	) {
+		this.receiverName = receiverName;
+		this.receiverMobile = receiverMobile;
+		this.city = city;
+		this.district = district;
+		this.roadAddress = roadAddress;
+		this.detail = detail;
+	}
+
 
 }

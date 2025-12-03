@@ -26,7 +26,7 @@ public class CurrentUserCreator {
 	public static DefaultCurrentUser getMemberUserDetails() {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
-			"admin@naver.com",
+			"member@naver.com",
 			UserRole.MEMBER
 		);
 	}
@@ -34,7 +34,7 @@ public class CurrentUserCreator {
 	public static DefaultCurrentUser getMemberUserDetails(UUID userId) {
 		return new DefaultCurrentUser(
 			userId,
-			"admin@naver.com",
+			"member@naver.com",
 			UserRole.MEMBER
 		);
 	}
