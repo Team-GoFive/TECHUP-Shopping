@@ -48,7 +48,6 @@ public class AdminController implements AdminSwaggerSupporter {
 	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
 		@ParameterObject AccountRequest.Search request,
 		@ModelAttribute Paging paging
-
 	) {
 		return page(
 			accountService.searchAccounts(
@@ -60,18 +59,22 @@ public class AdminController implements AdminSwaggerSupporter {
 
 	@Override
 	@GetMapping("/{adminId}")
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(@PathVariable UUID adminId) {
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@PathVariable UUID adminId
+	) {
 		return wrap(
-			userService.getUserDetail(adminId)
+			userService.getUserDetail(currentUser.getId(), adminId)
 		);
 	}
 
 	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid SignupRequest.SignupMember request
 	) {
-		userService.createAdmin(request);
+		userService.createAdmin(currentUser.getId(), request);
 		return empty();
 	}
 
@@ -88,8 +91,11 @@ public class AdminController implements AdminSwaggerSupporter {
 
 	@Override
 	@DeleteMapping("/{adminId}")
-	public ResponseEntity<ApiResult<Void>> deleteAdmin(@PathVariable UUID adminId) {
-		userService.deleteUser(adminId);
+	public ResponseEntity<ApiResult<Void>> deleteAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@PathVariable UUID adminId
+	) {
+		userService.deleteUser(defaultCurrentUser.getId(), adminId);
 		return empty();
 	}
 
