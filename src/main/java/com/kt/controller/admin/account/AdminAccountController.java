@@ -55,20 +55,6 @@ public class AdminAccountController {
 		return empty();
 	}
 
-	@GetMapping("accounts/courier/{courierId}")
-	public ResponseEntity<ApiResult<AccountResponse.CourierDetail>> getCourierDetail(
-		@PathVariable UUID courierId
-	) {
-		return wrap(accountService.getAccountDetail(courierId));
-	}
-
-	@GetMapping("accounts/user/{userId}")
-	public ResponseEntity<ApiResult<AccountResponse.UserDetail>> getUserDetail(
-		@PathVariable UUID userId
-	) {
-		return wrap(accountService.getAccountDetail(userId));
-	}
-
 }
 
 
