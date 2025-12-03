@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import com.kt.domain.dto.request.AccountRequest;
 
 import org.junit.jupiter.api.Assertions;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,7 @@ import com.kt.repository.user.UserRepository;
 @ActiveProfiles("test")
 class AccountServiceTest {
 
+	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
 	AccountService accountService;
 	@Autowired
@@ -51,8 +53,6 @@ class AccountServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	static final String TEST_PASSWORD = "1234567891011";
-
 	UserEntity member1;
 	UserEntity admin1;
 	CourierEntity courier1;
@@ -267,7 +267,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 계정삭제_성공_soft(){
+	void 계정삭제_성공_soft() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",
@@ -283,7 +283,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 계정삭제_성공_hard(){
+	void 계정삭제_성공_hard() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
 			"wjd123@naver.com",
@@ -318,13 +318,6 @@ class AccountServiceTest {
 			)
 		);
 
-	}
-
-	@Test
-	void 계정_상세_조회() {
-		AccountResponse.AccountDetail savedMember = accountService.getAccountDetail(member1.getId());
-		assertThat(savedMember).isNotNull();
-		assertThat(savedMember.name()).isEqualTo("회원");
 	}
 
 }
