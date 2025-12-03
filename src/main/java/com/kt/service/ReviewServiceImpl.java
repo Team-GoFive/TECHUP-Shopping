@@ -49,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
 		String content
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (hasReviewAccessPermission(email, review))
+		if (!hasReviewAccessPermission(email, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.update(content);
 	}
@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 		UUID reviewId
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (hasReviewAccessPermission(email, review))
+		if (!hasReviewAccessPermission(email, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.delete();
 	}
@@ -104,9 +104,6 @@ public class ReviewServiceImpl implements ReviewService {
 			.getOrder()
 			.getOrderBy();
 
-		if (!reviewEditor.getEmail().equals(reviewOwner.getEmail())) {
-			return false;
-		}
-		return true;
+		return reviewEditor.getEmail().equals(reviewOwner.getEmail());
 	}
 }
