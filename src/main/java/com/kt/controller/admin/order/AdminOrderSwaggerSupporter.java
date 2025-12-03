@@ -1,3 +1,4 @@
+
 package com.kt.controller.admin.order;
 
 import java.util.UUID;
@@ -15,7 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "admin order", description = "관리자 주문 관련 API")
+@Tag(name = "Admin Order", description = "관리자 주문 관련 API")
 public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
