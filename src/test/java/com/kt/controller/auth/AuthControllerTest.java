@@ -81,8 +81,8 @@ class AuthControllerTest {
 			"010-3333-2222"
 		);
 		UserEntity savedUser = userRepository.save(user);
-		PasswordManagementRequest.PasswordReset resetPasswordRequest =
-			new PasswordManagementRequest.PasswordReset(
+		PasswordManagementRequest.PasswordInit resetPasswordRequest =
+			new PasswordManagementRequest.PasswordInit(
 				savedUser.getEmail()
 			);
 

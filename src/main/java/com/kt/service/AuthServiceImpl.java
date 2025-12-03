@@ -26,7 +26,6 @@ import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
-import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
 import lombok.RequiredArgsConstructor;
@@ -148,7 +147,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void resetPassword(PasswordManagementRequest.PasswordReset request) {
+	public void initPassword(PasswordManagementRequest.PasswordInit request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(email);
@@ -163,7 +162,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void requestResetPassword(PasswordManagementRequest.PasswordReset request) {
+	public void requestPasswordInit(PasswordManagementRequest.PasswordInit request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
 
@@ -177,13 +176,13 @@ public class AuthServiceImpl implements AuthService {
 			);
 
 		if (!passwordRequest.isNew())
-			throw new CustomException(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED);
+			throw new CustomException(ErrorCode.PASSWORD_INIT_ALREADY_REQUESTED);
 
 		passwordRequestRepository.save(passwordRequest);
 	}
 
 	@Override
-	public void requestUpdatePassword(PasswordManagementRequest.PasswordUpdate request) {
+	public void requestPasswordUpdate(PasswordManagementRequest.PasswordUpdate request) {
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(request.email());
 

@@ -18,11 +18,9 @@ import com.mysema.commons.lang.Pair;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import static com.kt.common.api.ApiResult.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -75,11 +73,20 @@ public class AuthController {
 		);
 	}
 
-	@PatchMapping("/init-password")
-	public ResponseEntity<ApiResult<Void>> resetPassword(
-		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
+	@PatchMapping("/password-init")
+	public ResponseEntity<ApiResult<Void>> initPassword(
+		@RequestBody @Valid PasswordManagementRequest.PasswordInit request
 	) {
-		authService.resetPassword(request);
+		authService.initPassword(request);
 		return empty();
 	}
+
+	@PostMapping("/password-init/requests")
+	public ResponseEntity<ApiResult<Void>> requestPasswordInit(
+		@RequestBody @Valid PasswordManagementRequest.PasswordInit request
+	) {
+		authService.requestPasswordInit(request);
+		return empty();
+	}
+
 }
