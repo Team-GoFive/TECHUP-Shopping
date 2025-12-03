@@ -33,20 +33,20 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("유저 상세 조회 (어드민) - GET /api/admin/users/{userId}")
 public class UserDetailTest extends MockMvcTest {
 
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
-	UserEntity testUser;
-	UserEntity testAdmin;
+	DefaultCurrentUser adminDetails;
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+
+	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-
-		testAdmin = UserEntityCreator.createAdmin();
 		testUser = UserEntityCreator.createMember();
-
 		userRepository.save(testUser);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class UserDetailTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/users/{userId}", testUser.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(adminDetails))
 		);
 
 		// then
@@ -78,11 +78,23 @@ public class UserDetailTest extends MockMvcTest {
 
 		mockMvc.perform(
 				get("/api/admin/users/{userId}", UUID.randomUUID())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+					.with(SecurityMockMvcRequestPostProcessors.user(adminDetails))
 			)
 			.andDo(print())
 			.andExpectAll(
 				status().isNotFound());
+	}
+
+	@Test
+	void 회원_상세_조회__실패_일반계정_403() throws Exception {
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+		mockMvc.perform(
+				get("/api/admin/users/{userId}", testUser.getId())
+					.with(SecurityMockMvcRequestPostProcessors.user(memberDetails))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isForbidden());
 	}
 
 }

@@ -34,16 +34,19 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminUpdateTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "admin12345";
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	UserRepository userRepository;
-
+	DefaultCurrentUser adminsDetails;
 	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
@@ -61,7 +64,7 @@ public class AdminUpdateTest extends MockMvcTest {
 		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", testAdmin.getId())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
-			.with(user(userDetails))
+			.with(user(adminsDetails))
 		);
 
 		MvcResult result = actions.andDo(print())
@@ -93,13 +96,32 @@ public class AdminUpdateTest extends MockMvcTest {
 		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", UUID.randomUUID())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
-			.with(user(userDetails))
+			.with(user(adminsDetails))
 		);
 
 		// then
 		actions.andDo(print())
 			.andExpectAll(
 				status().isNotFound());
+	}
+
+	@Test
+	void 관리자_업데이트_실패__일반_유저계정_403() throws Exception {
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+		// given
+		var requset = new UserRequest.UpdateDetails(
+			"김도현",
+			"010-1234-1234",
+			LocalDate.now(),
+			Gender.FEMALE
+		);
+
+		// then
+		mockMvc.perform(put("/api/admin/{adminId}", testAdmin.getId())
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(requset))
+			.with(user(memberDetails))
+		).andExpect(status().isForbidden());
 	}
 
 }

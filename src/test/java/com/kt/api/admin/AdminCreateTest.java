@@ -31,17 +31,21 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("유저 생성 (어드민) - POST /api/admins")
+@DisplayName("유저 생성 (어드민) - POST /api/admin")
 public class AdminCreateTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 	UserEntity testAdmin;
-	DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
+	UserEntity testUser;
+	DefaultCurrentUser adminDetails;
 
 	@BeforeEach
 	void setUp() {
 		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 	}
 
 	@Test
@@ -60,7 +64,7 @@ public class AdminCreateTest extends MockMvcTest {
 				post("/api/admin")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
-					.with(user(userDetails))
+					.with(user(adminDetails))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -74,4 +78,27 @@ public class AdminCreateTest extends MockMvcTest {
 		log.info("response : {}", responseJson);
 	}
 
+	@Test
+	void 관리자_생성_실패__일반계정_403() throws Exception {
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+		var request = new MemberRequest.SignupMember(
+			"테스트어드민",
+			"test@examlple.com",
+			"1234",
+			Gender.MALE,
+			LocalDate.now(),
+			"010-1111-1111"
+		);
+
+		mockMvc.perform(
+				post("/api/admin")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+					.with(user(memberDetails))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isForbidden()
+			);
+	}
 }

@@ -28,11 +28,14 @@ public class CourierUpdateDetailTest extends MockMvcTest {
 	CourierRepository courierRepository;
 
 	CourierEntity testCourier;
+	CourierEntity testCourier2;
 	@BeforeEach
 	void setUp() throws Exception {
 		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
+		testCourier2 = CourierEntityCreator.createCourierEntity();
+		courierRepository.save(testCourier2);
 	}
 
 	@Test
@@ -48,7 +51,7 @@ public class CourierUpdateDetailTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			put("/api/couriers/{courierId}", testCourier.getId())
-				.with(user(CurrentUserCreator.getMemberUserDetails()))
+				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson)
 		);
@@ -56,5 +59,24 @@ public class CourierUpdateDetailTest extends MockMvcTest {
 		// then
 		actions.andExpect(status().isOk());
 		Assertions.assertEquals(testCourier.getName(),update.name());
+	}
+
+	@Test
+	void 배송기사수정_실패__403_다른계정() throws Exception {
+		// given
+		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
+			"변경된 테스터명",
+			Gender.FEMALE
+		);
+
+		String updateJson = objectMapper.writeValueAsString(update);
+
+		// when
+		mockMvc.perform(
+			put("/api/couriers/{courierId}", testCourier.getId())
+				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier2.getId())))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(updateJson)
+		).andExpect(status().isForbidden());
 	}
 }

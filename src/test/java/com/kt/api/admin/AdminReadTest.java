@@ -30,15 +30,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("관리자 목록 조회 (어드민) - GET /api/admins")
 public class AdminReadTest extends MockMvcTest {
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
+	DefaultCurrentUser adminsDetails;
 	@Autowired
 	UserRepository userRepository;
+
 	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
@@ -52,7 +57,7 @@ public class AdminReadTest extends MockMvcTest {
 				.param("userStatus", "")
 				.param("courierWorkStatus", "")
 				.param("searchKeyword", "")
-				.with(user(userDetails))
+				.with(user(adminsDetails))
 		);
 
 		MvcResult result = actions
@@ -69,6 +74,23 @@ public class AdminReadTest extends MockMvcTest {
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 
+	}
+
+	@Test
+	void 관리자_목록_조회_실패__어드민_아님_403() throws Exception {
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+
+		mockMvc.perform(
+			get("/api/admin")
+				.param("page", "1")
+				.param("size", "10")
+				.param("role", UserRole.ADMIN.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "")
+				.with(user(memberDetails))
+		).andExpectAll(
+			status().isForbidden());
 	}
 
 }

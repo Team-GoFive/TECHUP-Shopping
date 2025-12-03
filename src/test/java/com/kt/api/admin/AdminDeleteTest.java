@@ -31,26 +31,33 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 삭제 (어드민) - DELETE /api/admins/{adminId}")
+@DisplayName("관리자 삭제 (어드민) - DELETE /api/admin/{adminId}")
 public class AdminDeleteTest extends MockMvcTest {
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
+	DefaultCurrentUser adminDetails;
 	@Autowired
 	UserRepository userRepository;
 
 	UserEntity testAdmin;
+	UserEntity testAdmin2;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		testAdmin2 = UserEntityCreator.createAdmin();
+		userRepository.save(testAdmin2);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
-	void 관리자_삭제_성공() throws Exception {
+	void 관리자_본인_삭제_성공() throws Exception {
 
 		// when
 		ResultActions actions = mockMvc.perform(delete("/api/admin/{adminId}", testAdmin.getId())
-			.with(user(userDetails))
+			.with(user(adminDetails))
 		);
 
 		// then
@@ -73,10 +80,32 @@ public class AdminDeleteTest extends MockMvcTest {
 	void 관리자_삭제_실패__404_NotFound() throws Exception {
 
 		mockMvc.perform(delete("/api/admin/{adminId}", UUID.randomUUID())
-				.with(user(userDetails))
+				.with(user(adminDetails))
 			)
 			.andDo(print())
 			.andExpectAll(
 				status().isNotFound());
+	}
+
+	@Test
+	void 관리자_삭제_실패__다른_관리자_계정__403() throws Exception {
+		mockMvc.perform(delete("/api/admin/{adminId}", testAdmin2.getId())
+				.with(user(adminDetails))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isForbidden());
+	}
+
+	@Test
+	void 관리자_삭제_실패__일반계정__403() throws Exception {
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+
+		mockMvc.perform(delete("/api/admin/{adminId}", testAdmin2.getId())
+				.with(user(memberDetails))
+			)
+			.andDo(print())
+			.andExpectAll(
+				status().isForbidden());
 	}
 }

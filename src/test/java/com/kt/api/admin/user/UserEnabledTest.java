@@ -35,22 +35,20 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("유저 활성화 (어드민)  - PATCH /api/admin/users{userId}/enabled")
 public class UserEnabledTest extends MockMvcTest {
 
-	UserEntity testUser;
-	UserEntity testAdmin;
-
-	DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
-
+	DefaultCurrentUser adminDetails;
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+
+	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-
-		testAdmin = UserEntityCreator.createAdmin();
 		testUser = UserEntityCreator.createMember();
-
 		userRepository.save(testUser);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
@@ -61,7 +59,7 @@ public class UserEnabledTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/admin/users/{userId}/enabled", testUser.getId())
-				.with(user(userDetails))
+				.with(user(adminDetails))
 		);
 
 		// then
@@ -84,10 +82,23 @@ public class UserEnabledTest extends MockMvcTest {
 
 		mockMvc.perform(
 				patch("/api/admin/users/{userId}/enabled", UUID.randomUUID())
-					.with(user(userDetails))
+					.with(user(adminDetails))
 			)
 			.andDo(print())
 			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void 회원_활성화_실패__일반유저_403() throws Exception {
+		// given
+		testUser.disabled();
+		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+
+		// when
+		mockMvc.perform(
+			patch("/api/admin/users/{userId}/enabled", testUser.getId())
+				.with(user(memberDetails))
+		).andExpect(status().isForbidden());
 	}
 
 }
