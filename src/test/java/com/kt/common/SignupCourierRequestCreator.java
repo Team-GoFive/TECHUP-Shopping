@@ -7,10 +7,12 @@ import com.kt.domain.dto.request.SignupRequest;
 
 public class SignupCourierRequestCreator {
 
+	public static final String EMAIL_DOMAIN = "@test.com";
+
 	public static SignupRequest.SignupCourier createSignupCourierRequest() {
 		return new SignupRequest.SignupCourier(
 			"테스트기사",
-			randomUUID() + "@test.com",
+			randomUUID() + EMAIL_DOMAIN,
 			"1231231!",
 			Gender.MALE
 		);
