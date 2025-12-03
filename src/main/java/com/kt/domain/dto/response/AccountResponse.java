@@ -36,4 +36,14 @@ public class AccountResponse {
 	) {
 	}
 
+	public record CourierDetail(
+		UUID id,
+		String name,
+		String email,
+		Gender gender,
+		UserStatus status,
+		CourierWorkStatus workStatus
+	) {
+	}
+
 }
