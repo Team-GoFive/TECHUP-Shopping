@@ -25,15 +25,23 @@ public class AccountResponse {
 		}
 	}
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public record AccountDetail(
+	public record UserDetail(
 		UUID id,
 		String name,
 		String email,
 		Gender gender,
 		UserStatus status,
 		LocalDate birth,
-		String mobile,
+		String mobile
+	) {
+	}
+
+	public record CourierDetail(
+		UUID id,
+		String name,
+		String email,
+		Gender gender,
+		UserStatus status,
 		CourierWorkStatus workStatus
 	) {
 	}

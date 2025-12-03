@@ -19,4 +19,9 @@ public interface CourierRepository extends JpaRepository<CourierEntity, UUID>, C
 				()-> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND)
 			);
 	}
+
+	default CourierEntity findByIdOrThrow(UUID courierId) {
+		return findById(courierId).orElseThrow(() -> new CustomException(ErrorCode.Courier_NOT_FOUND));
+	}
+
 }

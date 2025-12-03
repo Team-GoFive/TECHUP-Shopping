@@ -88,35 +88,29 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public AccountResponse.AccountDetail getAccountDetail(UUID accountId) {
+	public AccountResponse.CourierDetail getCourierDetail(UUID courierId) {
+		CourierEntity foundCourier = courierRepository.findByIdOrThrow(courierId);
+		return new AccountResponse.CourierDetail(
+			foundCourier.getId(),
+			foundCourier.getName(),
+			foundCourier.getEmail(),
+			foundCourier.getGender(),
+			foundCourier.getStatus(),
+			foundCourier.getWorkStatus());
+	}
 
-		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(accountId);
-
-		if (foundedAccount instanceof UserEntity user) {
-			return new AccountResponse.AccountDetail(
-				user.getId(),
-				user.getName(),
-				user.getEmail(),
-				user.getGender(),
-				user.getStatus(),
-				user.getBirth(),
-				user.getMobile(),
-				null
-			);
-
-		}
-		if (foundedAccount instanceof CourierEntity courier) {
-			return new AccountResponse.AccountDetail(
-				courier.getId(),
-				courier.getName(),
-				courier.getEmail(),
-				courier.getGender(),
-				courier.getStatus(),
-				null,
-				null,
-				courier.getWorkStatus());
-		}
-		throw new CustomException(ErrorCode.ACCOUNT_NOT_FOUND);
+	@Override
+	public AccountResponse.UserDetail getUserDetail(UUID userId) {
+		UserEntity foundUser = userRepository.findByIdOrThrow(userId);
+		return new AccountResponse.UserDetail(
+			foundUser.getId(),
+			foundUser.getName(),
+			foundUser.getEmail(),
+			foundUser.getGender(),
+			foundUser.getStatus(),
+			foundUser.getBirth(),
+			foundUser.getMobile()
+		);
 	}
 
 	private String getRandomPassword() {
