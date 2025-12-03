@@ -43,7 +43,7 @@ public interface AdminSwaggerSupporter extends SwaggerAssistanceInterface {
 	ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(@PathVariable UUID adminId);
 
 	@Operation(
-		summary = "관리자 생성", description = "관리자 생성합니다."
+		summary = "관리자 생성", description = "관리자를 생성합니다."
 	)
 	ResponseEntity<ApiResult<Void>> createAdmin(
 		@RequestBody @Valid SignupRequest.SignupMember request

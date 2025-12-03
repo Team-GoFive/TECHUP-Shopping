@@ -29,14 +29,14 @@ public interface AdminAccountSwaggerSupporter extends SwaggerAssistanceInterface
 		@ModelAttribute Paging paging
 	);
 
-	@Operation(summary = "계정 삭제 - soft", description = "회원, 배송기사 soft delete",
+	@Operation(summary = "계정 삭제 - soft", description = "회원과 배송기사를 soft delete 합니다.",
 		parameters = {
 			@Parameter(name = "accountId", description = "계정 Id")
 		})
 	@DeleteMapping("/accounts/{accountId}")
 	ResponseEntity<ApiResult<Void>> deleteAccount(@PathVariable UUID accountId);
 
-	@Operation(summary = "계정 삭제 - hard", description = "회원, 배송기사 hard delete", parameters = {
+	@Operation(summary = "계정 삭제 - hard", description = "회원과 배송기사를 hard delete 합니다.", parameters = {
 		@Parameter(name = "accountId", description = "계정 Id")
 	})
 	@DeleteMapping("/accounts/{accountId}/force")

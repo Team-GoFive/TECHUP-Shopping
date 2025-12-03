@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/reviews")
 @RequiredArgsConstructor
-public class AdminReviewController {
+public class AdminReviewController implements AdminReviewSwaggerSupporter {
 	private final ReviewService reviewService;
 
 	@GetMapping

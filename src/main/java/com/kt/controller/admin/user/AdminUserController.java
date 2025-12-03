@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/users")
-public class AdminUserController {
+public class AdminUserController implements AdminUserSwaggerSupporter {
 
 	private final UserService userService;
 

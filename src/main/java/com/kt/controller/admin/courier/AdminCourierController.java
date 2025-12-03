@@ -19,10 +19,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/couriers")
-public class AdminCourierController {
+public class AdminCourierController implements AdminCourierSwaggerSupporter {
 
 	private final CourierService courierService;
 
+	@Override
 	@GetMapping("/{courierId}")
 	public ResponseEntity<ApiResult<CourierResponse.DetailAdmin>> getCourierDetail(
 		@PathVariable UUID courierId
