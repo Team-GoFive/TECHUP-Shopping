@@ -14,12 +14,6 @@ import com.kt.exception.CustomException;
 public interface CourierRepository extends JpaRepository<CourierEntity, UUID>, CourierRepositoryCustom {
 	Optional<CourierEntity> findByEmail(String email);
 
-	default CourierEntity findByCourierIdOrThrow(UUID courierId) {
-		return findById(courierId).orElseThrow(
-				()-> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND)
-			);
-	}
-
 	default CourierEntity findByIdOrThrow(UUID courierId) {
 		return findById(courierId).orElseThrow(() -> new CustomException(ErrorCode.Courier_NOT_FOUND));
 	}
