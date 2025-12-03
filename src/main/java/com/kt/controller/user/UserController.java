@@ -49,6 +49,7 @@ public class UserController implements UserSwaggerSupporter {
 		@RequestBody @Valid UserRequest.UpdateDetails request
 	){
 		userService.updateUserDetail(
+			defaultCurrentUser.getEmail(),
 			defaultCurrentUser.getId(),
 			request
 		);

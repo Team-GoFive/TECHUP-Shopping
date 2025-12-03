@@ -11,16 +11,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.UserRole;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.util.Preconditions;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +37,8 @@ public class UserServiceImpl implements UserService {
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final ReviewRepository reviewRepository;
+	private final AccountRepository accountRepository;
+
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID id) {
@@ -132,10 +137,12 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserDetail(
+		String email,
 		UUID userId,
 		UserRequest.UpdateDetails details
 	) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
+		hasUserAccessPermission(email, user);
 		user.updateDetails(
 			details.name(),
 			details.mobile(),
@@ -144,4 +151,11 @@ public class UserServiceImpl implements UserService {
 		);
 	}
 
+	private void hasUserAccessPermission(String email, UserEntity user){
+		AbstractAccountEntity userEditor = accountRepository.findByEmailOrThrow(email);
+		Preconditions.validate(
+			userEditor.getEmail().equals(user.getEmail()),
+			ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
+		);
+	}
 }

@@ -10,6 +10,7 @@ import com.kt.domain.dto.response.AccountResponse;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,6 +26,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
 import com.kt.service.UserService;
 
@@ -76,10 +78,11 @@ public class AdminController implements AdminSwaggerSupporter {
 	@Override
 	@PutMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> updateAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
 	) {
-		userService.updateUserDetail(adminId, request);
+		userService.updateUserDetail(currentUser.getEmail(), adminId, request);
 		return empty();
 	}
 
