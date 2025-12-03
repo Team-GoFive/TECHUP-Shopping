@@ -22,11 +22,14 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.product.ProductRepository;
@@ -49,8 +52,11 @@ public class OrderCreateTest extends MockMvcTest {
 	ArrayList<ProductEntity> products = new ArrayList<>();
 
 	UserEntity testMember;
+	AddressEntity address;
 	ProductEntity testProduct1;
 	ProductEntity testProduct2;
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -68,13 +74,15 @@ public class OrderCreateTest extends MockMvcTest {
 
 		products.add(testProduct1);
 		products.add(testProduct2);
+
+		address = addressRepository.save(AddressCreator.createAddress(testMember));
 	}
 
 	@Test
 	void 주문_생성_성공__200_OK() throws Exception {
 		// when
 		OrderRequest request = new OrderRequest(
-			List.of(new OrderRequest.Item(testProduct1.getId(), 1L))
+			List.of(new OrderRequest.Item(testProduct1.getId(), 1L)), address.getId()
 		);
 
 		ResultActions actions = mockMvc.perform(
@@ -96,8 +104,8 @@ public class OrderCreateTest extends MockMvcTest {
 		OrderRequest request = new OrderRequest(
 			List.of(
 				new OrderRequest.Item(testProduct1.getId(), 1L),
-				new OrderRequest.Item(testProduct2.getId(), 2L)
-			)
+				new OrderRequest.Item(testProduct2.getId(), 2L)),
+			address.getId()
 		);
 
 		ResultActions actions = mockMvc.perform(

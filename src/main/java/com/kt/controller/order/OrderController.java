@@ -60,7 +60,8 @@ public class OrderController {
 	) {
 		orderService.createOrder(
 			currentUser.getUsername(),
-			request.items()
+			request.items(),
+			request.addressId()
 		);
 		return empty();
 	}
