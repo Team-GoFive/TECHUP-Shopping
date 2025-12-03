@@ -29,7 +29,7 @@ import static com.kt.common.CurrentUserCreator.getAdminUserDetails;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-init/requests")
+@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password/reset-requests")
 public class AuthResetPasswordRequestTest extends MockMvcTest {
 
 	@Autowired
@@ -48,18 +48,19 @@ public class AuthResetPasswordRequestTest extends MockMvcTest {
 
 	void saveTestUser() {
 		testUser = createMember();
+		currentUser = getAdminUserDetails();
 		userRepository.save(testUser);
 	}
 
 	@Test
 	void 계정_비밀번호_초기화_요청_성공__200_OK() throws Exception {
-		PasswordManagementRequest.PasswordInit request =
-			new PasswordManagementRequest.PasswordInit(
+		PasswordManagementRequest.PasswordReset request =
+			new PasswordManagementRequest.PasswordReset(
 				testUser.getEmail()
 			);
 
 		ResultActions actions = mockMvc.perform(
-			post("/api/auth/password-init/requests")
+			post("/api/auth/password/reset-requests")
 				.with(user(getAdminUserDetails()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
