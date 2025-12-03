@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-init/requests")
-public class AuthInitPasswordRequestTest extends MockMvcTest {
+public class AuthResetPasswordRequestTest extends MockMvcTest {
 
 	@Autowired
 	UserRepository userRepository;
