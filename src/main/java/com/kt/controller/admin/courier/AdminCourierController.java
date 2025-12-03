@@ -20,9 +20,9 @@ public class AdminCourierController {
 	private final CourierService courierService;
 
 	@GetMapping("/{courierId}")
-	public CourierResponse.CourierDetail getCourierDetail(
+	public CourierResponse.DetailAdmin getCourierDetail(
 		@PathVariable UUID courierId
 	) {
-		return courierService.getCourierDetail(courierId);
+		return courierService.getDetailForAdmin(courierId);
 	}
 }

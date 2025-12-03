@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CourierResponse {
-	@Schema(name="CourierSearchResponse")
+	@Schema(name = "CourierSearchResponse")
 	public record Search(
 		UUID id,
 		String name,
@@ -25,20 +25,22 @@ public class CourierResponse {
 		public Search {
 		}
 	}
-	@Schema(name="CourierDetailResponse")
+
+	@Schema(name = "CourierDetailResponse")
 	public record Detail(
 		UUID id,
 		String name,
 		String email,
 		Gender gender,
 		CourierWorkStatus status
-	){
+	) {
 		@QueryProjection
-		public Detail{
+		public Detail {
 		}
 	}
 
-	public record CourierDetail(
+	@Schema(name = "CourierDetailAdminResponse")
+	public record DetailAdmin(
 		UUID id,
 		String name,
 		String email,

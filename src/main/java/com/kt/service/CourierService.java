@@ -8,6 +8,7 @@ import com.kt.domain.dto.response.CourierResponse;
 public interface CourierService {
 	CourierResponse.Detail getDetail(UUID courierId);
 
+	CourierResponse.DetailAdmin getDetailForAdmin(UUID courierId);
+
 	void updateDetail(UUID courierId, CourierRequest.UpdateDetails updateDetail);
-	CourierResponse.CourierDetail getCourierDetail(UUID courierId);
 }
