@@ -410,7 +410,7 @@ class UserServiceTest {
 		);
 
 		userService.updateUserDetail(
-			testUser.getEmail(),
+			testUser.getId(),
 			testUser.getId(),
 			updateDetails
 		);

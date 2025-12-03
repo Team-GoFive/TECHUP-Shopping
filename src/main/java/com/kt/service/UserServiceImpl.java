@@ -137,12 +137,12 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserDetail(
-		String email,
+		UUID currentUserId,
 		UUID userId,
 		UserRequest.UpdateDetails details
 	) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
-		hasUserAccessPermission(email, user);
+		hasUserAccessPermission(currentUserId, user);
 		user.updateDetails(
 			details.name(),
 			details.mobile(),
@@ -151,8 +151,8 @@ public class UserServiceImpl implements UserService {
 		);
 	}
 
-	private void hasUserAccessPermission(String email, UserEntity user){
-		AbstractAccountEntity userEditor = accountRepository.findByEmailOrThrow(email);
+	private void hasUserAccessPermission(UUID currentUserId, UserEntity user){
+		AbstractAccountEntity userEditor = accountRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
 			userEditor.getEmail().equals(user.getEmail()),
 			ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED

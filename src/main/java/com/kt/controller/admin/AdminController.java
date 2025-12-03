@@ -82,7 +82,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
 	) {
-		userService.updateUserDetail(currentUser.getEmail(), adminId, request);
+		userService.updateUserDetail(currentUser.getId(), adminId, request);
 		return empty();
 	}
 

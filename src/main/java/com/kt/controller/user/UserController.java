@@ -18,6 +18,9 @@ import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -49,7 +52,7 @@ public class UserController implements UserSwaggerSupporter {
 		@RequestBody @Valid UserRequest.UpdateDetails request
 	){
 		userService.updateUserDetail(
-			defaultCurrentUser.getEmail(),
+			defaultCurrentUser.getId(),
 			defaultCurrentUser.getId(),
 			request
 		);

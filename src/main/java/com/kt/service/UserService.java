@@ -36,5 +36,5 @@ public interface UserService {
 
 	void deleteAdmin(UUID adminId);
 
-	void updateUserDetail(String email, UUID userId, UserRequest.UpdateDetails details);
+	void updateUserDetail(UUID currentUserId, UUID userId, UserRequest.UpdateDetails details);
 }
