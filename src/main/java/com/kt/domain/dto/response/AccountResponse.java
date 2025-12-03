@@ -12,7 +12,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class AccountResponse {
-	@Schema(name="AccountSearchResponse")
+	@Schema(name = "AccountSearchResponse")
 	public record Search(
 		String name,
 		String email,
