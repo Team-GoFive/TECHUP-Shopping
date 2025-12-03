@@ -122,4 +122,16 @@ public class AuthController extends SwaggerAssistance {
 		return empty();
 	}
 
+	@Operation(
+		summary = "비밀번호 변경 요청",
+		description = "비밀번호 변경 요청 API"
+	)
+	@PostMapping("/password-update/requests")
+	public ResponseEntity<ApiResult<Void>> requestPasswordUpdate(
+		@RequestBody @Valid PasswordManagementRequest.PasswordUpdate request
+	) {
+		authService.requestPasswordUpdate(request);
+		return empty();
+	}
+
 }

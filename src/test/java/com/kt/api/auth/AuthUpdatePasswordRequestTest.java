@@ -11,26 +11,28 @@ import com.kt.repository.user.UserRepository;
 
 import com.kt.security.CurrentUser;
 
+import com.kt.util.EncryptUtil;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static com.kt.common.UserEntityCreator.createMember;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static com.kt.common.CurrentUserCreator.getAdminUserDetails;
+import static com.kt.common.CurrentUserCreator.*;
+import static com.kt.common.UserEntityCreator.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @Slf4j
-@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-init/requests")
-public class AuthInitPasswordRequestTest extends MockMvcTest {
+@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-update/requests")
+public class AuthUpdatePasswordRequestTest extends MockMvcTest {
 
 	@Autowired
 	UserRepository userRepository;
@@ -40,10 +42,12 @@ public class AuthInitPasswordRequestTest extends MockMvcTest {
 
 	UserEntity testUser;
 	CurrentUser currentUser;
+	static final String TEST_KEY = "techup-shopping-encrypt-test-key";
 	@BeforeEach
 	void setUp() {
 		saveTestUser();
 		currentUser = getAdminUserDetails();
+		EncryptUtil.loadKey(TEST_KEY);
 	}
 
 	void saveTestUser() {
@@ -52,14 +56,15 @@ public class AuthInitPasswordRequestTest extends MockMvcTest {
 	}
 
 	@Test
-	void 계정_비밀번호_초기화_요청_성공__200_OK() throws Exception {
-		PasswordManagementRequest.PasswordInit request =
-			new PasswordManagementRequest.PasswordInit(
-				testUser.getEmail()
+	void 계정_비밀번호_변경_요청_성공__200_OK() throws Exception {
+		String updatePassword = "123123!!";
+		PasswordManagementRequest.PasswordUpdate request =
+			new PasswordManagementRequest.PasswordUpdate(
+				testUser.getEmail(), updatePassword
 			);
 
 		ResultActions actions = mockMvc.perform(
-			post("/api/auth/password-init/requests")
+			post("/api/auth/password-update/requests")
 				.with(user(getAdminUserDetails()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
@@ -68,7 +73,7 @@ public class AuthInitPasswordRequestTest extends MockMvcTest {
 
 		PasswordRequestEntity passwordRequest =
 			passwordRequestRepository.findByAccountAndStatusAndRequestType(
-				testUser, PasswordRequestStatus.PENDING, PasswordRequestType.RESET
+				testUser, PasswordRequestStatus.PENDING, PasswordRequestType.UPDATE
 			).orElse(null);
 
 		assertNotNull(passwordRequest);
@@ -76,7 +81,13 @@ public class AuthInitPasswordRequestTest extends MockMvcTest {
 			testUser.getId(),
 			passwordRequest.getAccount().getId()
 		);
-		log.info("passRequest account id : {}", passwordRequest.getAccount().getId());
+		assertEquals(
+			updatePassword,
+			EncryptUtil.decrypt(passwordRequest.getEncryptedPassword())
+		);
 
+		log.info("decrypt key :: {}",
+			EncryptUtil.decrypt(passwordRequest.getEncryptedPassword())
+		);
 	}
 }
