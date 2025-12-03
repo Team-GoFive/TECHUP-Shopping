@@ -9,4 +9,5 @@ public interface CourierService {
 	CourierResponse.Detail getDetail(UUID courierId);
 
 	void updateDetail(UUID courierId, CourierRequest.UpdateDetails updateDetail);
+	CourierResponse.CourierDetail getCourierDetail(UUID courierId);
 }

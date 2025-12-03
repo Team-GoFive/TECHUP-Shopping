@@ -10,6 +10,7 @@ import com.kt.domain.dto.response.CourierResponse;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.repository.courier.CourierRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +21,17 @@ public class CourierServiceImpl implements CourierService {
 	private final CourierRepository courierRepository;
 
 	@Override
+	public CourierResponse.CourierDetail getCourierDetail(UUID courierId) {
+		CourierEntity foundCourier = courierRepository.findByIdOrThrow(courierId);
+		return new CourierResponse.CourierDetail(
+			foundCourier.getId(),
+			foundCourier.getName(),
+			foundCourier.getEmail(),
+			foundCourier.getGender(),
+			foundCourier.getStatus(),
+			foundCourier.getWorkStatus());
+		}
+
 	public CourierResponse.Detail getDetail(UUID courierId) {
 		CourierEntity courierEntity = courierRepository.findByCourierIdOrThrow(courierId);
 		return  new CourierResponse.Detail(
