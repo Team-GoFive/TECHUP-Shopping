@@ -67,7 +67,7 @@ public class CourierServiceImpl implements CourierService {
 	}
 
 	private void verifyAccess(UUID currentId, UUID subjectId) {
-		AbstractAccountEntity currentUser = accountRepository.findByIdOrThrow(subjectId);
+		AbstractAccountEntity currentUser = accountRepository.findByIdOrThrow(currentId);
 
 		if (currentUser.getRole() != UserRole.ADMIN) {
 			Preconditions.validate(
