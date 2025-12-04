@@ -15,15 +15,20 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.kt.common.CourierEntityCreator;
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.CourierEntity;
+import com.kt.domain.entity.UserEntity;
 import com.kt.repository.courier.CourierRepository;
+import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("배송기사 상세 조회 (어드민) - GET /api/admin/couriers/{courierId}")
 public class CourierDetailTest extends MockMvcTest {
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
+	DefaultCurrentUser adminDetails;
 	@Autowired
 	CourierRepository courierRepository;
+	@Autowired
+	UserRepository userRepository;
 	CourierEntity testCourier;
 
 	@BeforeEach
@@ -31,6 +36,9 @@ public class CourierDetailTest extends MockMvcTest {
 		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
+		UserEntity testAdmin = UserEntityCreator.createAdmin();
+		userRepository.save(testAdmin);
+		adminDetails  = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
@@ -38,7 +46,7 @@ public class CourierDetailTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/couriers/{courierId}", testCourier.getId())
-				.with(user(userDetails))
+				.with(user(adminDetails))
 		);
 
 		// then
@@ -46,5 +54,17 @@ public class CourierDetailTest extends MockMvcTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.id").value(testCourier.getId().toString()))
 			.andExpect(jsonPath("$.data.email").value(testCourier.getEmail().toString()));
+	}
+
+	@Test
+	void 배송기사조회_실패__관리자_아님_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/admin/couriers/{courierId}", testCourier.getId())
+				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier.getId())))
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

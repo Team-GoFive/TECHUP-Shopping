@@ -23,6 +23,14 @@ public class CurrentUserCreator {
 		);
 	}
 
+	public static DefaultCurrentUser getAdminUserDetails(UUID adminId) {
+		return new DefaultCurrentUser(
+			adminId,
+			"admin@naver.com",
+			UserRole.ADMIN
+		);
+	}
+
 	public static DefaultCurrentUser getMemberUserDetails() {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
@@ -44,6 +52,14 @@ public class CurrentUserCreator {
 			UUID.randomUUID(),
 			email,
 			UserRole.MEMBER
+		);
+	}
+
+	public static DefaultCurrentUser getCourierUserDetails(UUID courierId) {
+		return new DefaultCurrentUser(
+			courierId,
+			"courier@naver.com",
+			UserRole.COURIER
 		);
 	}
 }

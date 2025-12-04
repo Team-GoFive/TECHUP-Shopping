@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import com.kt.common.api.ApiResult;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.response.CourierResponse;
+import com.kt.security.DefaultCurrentUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,5 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface AdminCourierSwaggerSupporter extends SwaggerSupporter {
 	@Operation(summary = "배송기사 상세 조회", description = "배송기사 정보를 상세 조회 합니다.", parameters = {
 		@Parameter(name = "courierId", description = "계정 Id")})
-	ResponseEntity<ApiResult<CourierResponse.DetailAdmin>> getCourierDetail(UUID courierId);
+	ResponseEntity<ApiResult<CourierResponse.DetailAdmin>> getCourierDetail(
+		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
+		UUID courierId
+	);
 }

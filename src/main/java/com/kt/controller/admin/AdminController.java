@@ -10,6 +10,7 @@ import com.kt.domain.dto.response.AccountResponse;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,6 +26,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
 import com.kt.service.UserService;
 
@@ -46,7 +48,6 @@ public class AdminController implements AdminSwaggerSupporter {
 	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
 		@ParameterObject AccountRequest.Search request,
 		@ModelAttribute Paging paging
-
 	) {
 		return page(
 			accountService.searchAccounts(
@@ -58,35 +59,43 @@ public class AdminController implements AdminSwaggerSupporter {
 
 	@Override
 	@GetMapping("/{adminId}")
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(@PathVariable UUID adminId) {
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@PathVariable UUID adminId
+	) {
 		return wrap(
-			userService.getUserDetail(adminId)
+			userService.getUserDetail(currentUser.getId(), adminId)
 		);
 	}
 
 	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid SignupRequest.SignupMember request
 	) {
-		userService.createAdmin(request);
+		userService.createAdmin(currentUser.getId(), request);
 		return empty();
 	}
 
 	@Override
 	@PutMapping("/{adminId}")
 	public ResponseEntity<ApiResult<Void>> updateAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
 	) {
-		userService.updateUserDetail(adminId, request);
+		userService.updateUserDetail(currentUser.getId(), adminId, request);
 		return empty();
 	}
 
 	@Override
 	@DeleteMapping("/{adminId}")
-	public ResponseEntity<ApiResult<Void>> deleteAdmin(@PathVariable UUID adminId) {
-		userService.deleteUser(adminId);
+	public ResponseEntity<ApiResult<Void>> deleteAdmin(
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@PathVariable UUID adminId
+	) {
+		userService.deleteUser(defaultCurrentUser.getId(), adminId);
 		return empty();
 	}
 

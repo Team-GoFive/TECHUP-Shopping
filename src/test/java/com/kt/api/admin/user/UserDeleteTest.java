@@ -34,31 +34,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("유저 삭제 (어드민) - GET /api/admin/users/{userId}/disabled")
 public class UserDeleteTest extends MockMvcTest {
-
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
-	UserEntity testUser;
-	UserEntity testAdmin;
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+
+	DefaultCurrentUser adminDetails;
+	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-
-		testAdmin = UserEntityCreator.createAdmin();
 		testUser = UserEntityCreator.createMember();
 		userRepository.save(testUser);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
-	void 회원_삭제_성공() throws Exception {
-
+	void 회원_삭제_성공__200_OK() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/admin/users/{userId}/removed", testUser.getId())
-				.with(user(userDetails))
+				.with(user(adminDetails))
 		);
-
 		// then
 		MvcResult result = actions.andDo(print())
 			.andExpectAll(
@@ -76,16 +74,25 @@ public class UserDeleteTest extends MockMvcTest {
 
 	@Test
 	void 회원_삭제_실패__404_NotFound() throws Exception {
-
 		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/admin/users/{userId}/removed", UUID.randomUUID())
-				.with(user(userDetails))
+				.with(user(adminDetails))
 		);
-
 		// then
 		actions.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void 회원_삭제_실패__일반계정에서_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			patch("/api/admin/users/{userId}/removed", testUser.getId())
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+		);
+		// then
+		actions.andDo(print())
+			.andExpect(status().isForbidden());
 	}
 }

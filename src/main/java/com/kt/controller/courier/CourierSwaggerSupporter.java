@@ -8,6 +8,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
+import com.kt.security.DefaultCurrentUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +24,10 @@ public interface CourierSwaggerSupporter extends SwaggerSupporter{
 			@Parameter(name = "courierId" , description = "배송기사 ID")
 		}
 	)
-	ResponseEntity<ApiResult<CourierResponse.Detail>> getCourierDetail(UUID courierId);
+	ResponseEntity<ApiResult<CourierResponse.Detail>> getCourierDetail(
+		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
+		UUID courierId
+	);
 
 	@Operation(
 		summary = "배송기사 정보 수정",
@@ -32,7 +36,11 @@ public interface CourierSwaggerSupporter extends SwaggerSupporter{
 			@Parameter(name = "courierId" , description = "배송기사 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> updateCourier(UUID courierId, CourierRequest.UpdateDetails request);
+	ResponseEntity<ApiResult<Void>> updateCourier(
+		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
+		UUID courierId,
+		CourierRequest.UpdateDetails request
+	);
 
 
 }

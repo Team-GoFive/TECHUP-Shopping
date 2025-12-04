@@ -6,9 +6,9 @@ import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 
 public interface CourierService {
-	CourierResponse.Detail getDetail(UUID courierId);
+	CourierResponse.Detail getDetail(UUID currentId, UUID subjectId);
 
-	CourierResponse.DetailAdmin getDetailForAdmin(UUID courierId);
+	CourierResponse.DetailAdmin getDetailForAdmin(UUID currentId, UUID subjectId);
 
-	void updateDetail(UUID courierId, CourierRequest.UpdateDetails updateDetail);
+	void updateDetail(UUID currentId, UUID subjectId, CourierRequest.UpdateDetails updateDetail);
 }

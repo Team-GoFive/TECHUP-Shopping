@@ -30,20 +30,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("관리자 목록 조회 (어드민) - GET /api/admins")
 public class AdminReadTest extends MockMvcTest {
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
 	@Autowired
 	UserRepository userRepository;
+
 	UserEntity testAdmin;
+	UserEntity testUser;
+	DefaultCurrentUser adminsDetails;
 
 	@BeforeEach
 	void setUp() {
+		testUser = UserEntityCreator.createMember();
+		userRepository.save(testUser);
 		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
-	void 관리자_목록_조회_성공() throws Exception {
-
+	void 관리자_목록_조회_성공__200_OK() throws Exception {
+		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin")
 				.param("page", "1")
@@ -52,9 +57,10 @@ public class AdminReadTest extends MockMvcTest {
 				.param("userStatus", "")
 				.param("courierWorkStatus", "")
 				.param("searchKeyword", "")
-				.with(user(userDetails))
+				.with(user(adminsDetails))
 		);
 
+		// then
 		MvcResult result = actions
 			.andDo(print())
 			.andExpectAll(
@@ -68,7 +74,23 @@ public class AdminReadTest extends MockMvcTest {
 
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
-
 	}
 
+	@Test
+	void 관리자_목록_조회_실패__일반유저계정_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/admin")
+				.param("page", "1")
+				.param("size", "10")
+				.param("role", UserRole.ADMIN.name())
+				.param("userStatus", "")
+				.param("courierWorkStatus", "")
+				.param("searchKeyword", "")
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
+	}
 }
