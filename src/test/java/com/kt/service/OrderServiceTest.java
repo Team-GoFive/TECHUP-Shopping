@@ -192,7 +192,7 @@ class OrderServiceTest {
 		long beforeStock = orderProduct.getProduct().getStock();
 
 		// when
-		orderService.cancelOrder(order.getId());
+		orderService.cancelOrder(user.getId(), order.getId());
 
 		// then
 		long afterStock = productRepository.findById(orderProduct.getProduct().getId()).get().getStock();
@@ -206,7 +206,7 @@ class OrderServiceTest {
 		OrderEntity order = createOrder(user, OrderStatus.PURCHASE_CONFIRMED);
 
 		// when & then
-		assertThatThrownBy(() -> orderService.cancelOrder(order.getId()))
+		assertThatThrownBy(() -> orderService.cancelOrder(user.getId(), order.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}
@@ -229,7 +229,7 @@ class OrderServiceTest {
 		);
 
 		// when
-		orderService.updateOrder(order.getId(), updateRequest);
+		orderService.updateOrder(user.getId(), order.getId(), updateRequest);
 
 		// then
 		assertThat(orderRepository.findById(order.getId()).get()
@@ -252,7 +252,7 @@ class OrderServiceTest {
 		);
 
 		// then
-		assertThatThrownBy(() -> orderService.updateOrder(order.getId(), request))
+		assertThatThrownBy(() -> orderService.updateOrder(user.getId(), order.getId(), request))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
 	}

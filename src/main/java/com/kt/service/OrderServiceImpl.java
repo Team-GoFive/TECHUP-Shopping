@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.ShippingType;
+import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
@@ -103,9 +104,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void cancelOrder(UUID orderId) {
-		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+	public void cancelOrder(UUID userId, UUID orderId) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+
+		hasOrderCancelPermission(user, order);
 
 		if (!isCancelable(order.getStatus())) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
@@ -122,9 +125,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void updateOrder(UUID orderId, OrderRequest.Update request) {
-		OrderEntity order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+	public void updateOrder(UUID userId, UUID orderId, OrderRequest.Update request) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
+		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+
+		hasOrderUpdatePermission(user, order);
 
 		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
@@ -191,4 +196,22 @@ public class OrderServiceImpl implements OrderService {
 		order.updateStatus(newStatus);
 	}
 
+	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
+		UserRole role = order.getOrderBy().getRole();
+		UUID orderId = order.getOrderBy().getId();
+		UUID userId = user.getId();
+
+		if (role != UserRole.ADMIN && !orderId.equals(userId)) {
+			throw new CustomException(ErrorCode.ORDER_ACCESS_NOT_ALLOWED);
+		}
+	}
+
+	private void hasOrderUpdatePermission(UserEntity user, OrderEntity order) {
+		UUID orderId = order.getOrderBy().getId();
+		UUID userId = user.getId();
+
+		if (!orderId.equals(userId)) {
+			throw new CustomException(ErrorCode.ORDER_ACCESS_NOT_ALLOWED);
+		}
+	}
 }

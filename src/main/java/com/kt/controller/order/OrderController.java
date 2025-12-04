@@ -68,18 +68,20 @@ public class OrderController {
 
 	@PatchMapping("/{orderId}/cancel")
 	ResponseEntity<ApiResult<Void>> cancelOrder(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId
 	) {
-		orderService.cancelOrder(orderId);
+		orderService.cancelOrder(currentUser.getId(), orderId);
 		return empty();
 	}
 
 	@PutMapping("/{orderId}")
 	ResponseEntity<ApiResult<Void>> updateOrder(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request
 	) {
-		orderService.updateOrder(orderId, request);
+		orderService.updateOrder(currentUser.getId(), orderId, request);
 		return empty();
 	}
 

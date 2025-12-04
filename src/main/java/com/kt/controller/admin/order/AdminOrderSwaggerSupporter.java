@@ -3,6 +3,7 @@ package com.kt.controller.admin.order;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
@@ -10,6 +11,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
+import com.kt.security.DefaultCurrentUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,5 +54,8 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> cancelOrder(UUID orderId);
+	ResponseEntity<ApiResult<Void>> cancelOrder(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		UUID orderId
+	);
 }

@@ -1,6 +1,7 @@
 package com.kt.api.order;
 
 import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
@@ -88,7 +89,7 @@ public class OrderUpdateTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			put("/api/orders/{orderId}", savedOrder.getId())
-				.with(user(testMember.getEmail()))
+				.with(user(getMemberUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)
 				)
