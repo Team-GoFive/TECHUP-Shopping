@@ -1,8 +1,12 @@
 package com.kt.api.addresses;
 
+import static com.kt.common.CurrentUserCreator.*;
+import static com.kt.common.UserEntityCreator.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,12 +14,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
-import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.common.UserEntityCreator;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
@@ -23,22 +25,28 @@ import com.kt.repository.AddressRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("주소 수정 - PUT /api/addresses/{addressId}")
-class AddressModifyTest extends MockMvcTest {
+class AddressUpdateTest extends MockMvcTest {
 
-	private static final String URL = "/api/addresses/{addressId}";
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	AddressRepository addressRepository;
 
+	UserEntity testMember;
+
+	@BeforeEach
+	void setUp() {
+		testMember = createMember();
+		userRepository.save(testMember);
+	}
+
 	@Test
-	@DisplayName("주소_수정_성공__정상입력")
 	void 주소_수정_성공__정상입력() throws Exception {
+		// given
+		AddressEntity address = AddressCreator.createAddress(testMember);
+		addressRepository.save(address);
 
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
-		var currentUser = CurrentUserCreator.getMemberUserDetails(user.getId());
-
+		//when
 		AddressRequest request = new AddressRequest(
 			"새이름",
 			"01022223333",
@@ -48,13 +56,14 @@ class AddressModifyTest extends MockMvcTest {
 			"202호"
 		);
 
-		mockMvc.perform(
-				put(URL, address.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(currentUser))
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(request))
-			)
-			.andExpect(status().isOk());
+		ResultActions actions = mockMvc.perform(
+			put("/api/addresses/{addressId}", address.getId())
+				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
+		);
+		// then
+		actions.andExpect(status().isOk());
 	}
 
 	@Nested
@@ -91,7 +100,7 @@ class AddressModifyTest extends MockMvcTest {
 
 		private void runInvalidTest(String field, String invalid) throws Exception {
 
-			UserEntity user = userRepository.save(UserEntityCreator.createMember());
+			UserEntity user = userRepository.save(createMember());
 
 			AddressEntity address = addressRepository.save(
 				AddressEntity.create(
@@ -105,7 +114,7 @@ class AddressModifyTest extends MockMvcTest {
 				)
 			);
 
-			var currentUser = CurrentUserCreator.getMemberUserDetails(user.getId());
+			var currentUser = getMemberUserDetails(user.getId());
 
 			AddressRequest addressRequest = new AddressRequest(
 				field.equals("receiverName") ? invalid : "받는사람",
@@ -117,8 +126,8 @@ class AddressModifyTest extends MockMvcTest {
 			);
 
 			mockMvc.perform(
-					put(URL, address.getId())
-						.with(SecurityMockMvcRequestPostProcessors.user(currentUser))
+					put("/api/addresses/{addressId}", address.getId())
+						.with(user(currentUser))
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(addressRequest))
 				)

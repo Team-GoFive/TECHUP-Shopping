@@ -1,66 +1,54 @@
 package com.kt.api.addresses;
 
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.UserEntityCreator.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kt.common.AddressCreator;
-import com.kt.common.CurrentUserCreator;
-import com.kt.common.UserEntityCreator;
-import com.kt.domain.entity.AddressEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.repository.AddressRepository;
-import com.kt.repository.user.UserRepository;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import jakarta.transaction.Transactional;
+import com.kt.common.MockMvcTest;
+import com.kt.domain.entity.AddressEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.AddressRepository;
+import com.kt.repository.user.UserRepository;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
 @DisplayName("주소 조회 - GET /api/addresses")
-class AddressSearchTest {
+class AddressSearchTest extends MockMvcTest {
 
-	@Autowired
-	MockMvc mockMvc;
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	AddressRepository addressRepository;
 
-	UserEntity user;
+	UserEntity testMember;
 
 	@BeforeEach
 	void setUp() {
-		user = createMember();
-		userRepository.save(user);
+		testMember = createMember();
+		userRepository.save(testMember);
 	}
 
 	@Test
-	@DisplayName("주소_목록조회_성공__주소없을때_빈리스트_반환")
-	void 주소_조회_성공__빈리스트() throws Exception {
+	void 주소_목록조회_성공__주소없을때_빈리스트_반환() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(get("/api/addresses")
+			.with(user(getMemberUserDetails(testMember.getEmail())))
+		);
 
-		mockMvc.perform(get("/api/addresses")
-				.with(SecurityMockMvcRequestPostProcessors.user(
-					CurrentUserCreator.getMemberUserDetails(user.getId())
-				)))
+		// then
+		actions
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data").isArray())
 			.andExpect(jsonPath("$.data.length()").value(0));
 	}
 
-	@DisplayName("주소_목록조회_성공__주소2개_반환")
 	@Test
 	void 주소_목록조회_성공__주소2개_정상반환() throws Exception {
 
@@ -72,8 +60,9 @@ class AddressSearchTest {
 			"강남구",
 			"테헤란로 1",
 			"101호",
-			user
+			testMember
 		);
+		addressRepository.save(address1);
 
 		AddressEntity address2 = AddressEntity.create(
 			"받는사람2",
@@ -82,18 +71,18 @@ class AddressSearchTest {
 			"해운대구",
 			"센텀로 2",
 			"202호",
-			user
+			testMember
 		);
-		addressRepository.save(address1);
 		addressRepository.save(address2);
 
-		var currentUser = CurrentUserCreator.getMemberUserDetails(user.getId());
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/addresses")
+				.with(user(getMemberUserDetails(testMember.getEmail())))
+		);
 
-		// when & then
-		mockMvc.perform(
-				get("/api/addresses")
-					.with(SecurityMockMvcRequestPostProcessors.user(currentUser))
-			)
+		// then
+		actions
 			.andExpect(jsonPath("$.data.length()").value(2))
 			.andExpect(jsonPath("$.data[*].receiverName").value(
 				Matchers.containsInAnyOrder("받는사람1", "받는사람2")));
