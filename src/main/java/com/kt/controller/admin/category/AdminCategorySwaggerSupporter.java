@@ -35,7 +35,7 @@ public interface AdminCategorySwaggerSupporter {
 	@Operation(
 		summary = "카테고리 수정", description = "카테고리 이름을 수정합니다.",
 		parameters = {
-			@Parameter(name = "categoryId", description = "관리자 Id")
+			@Parameter(name = "categoryId", description = "카테고리 Id"),
 		}
 	)
 	ResponseEntity<ApiResult<Void>> update(
@@ -44,7 +44,10 @@ public interface AdminCategorySwaggerSupporter {
 	);
 
 	@Operation(
-		summary = "카테고리 삭제", description = "카테고리를 삭제합니다."
+		summary = "카테고리 삭제", description = "카테고리를 삭제합니다.",
+		parameters = {
+			@Parameter(name = "categoryId", description = "카테고리 Id"),
+		}
 	)
 	ResponseEntity<ApiResult<Void>> delete(
 		@PathVariable UUID categoryId
