@@ -71,7 +71,7 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		summary = "계정 비밀번호 변경 및 초기화 요청 목록",
 		description = "계정 비밀번호 변경 및 초기화 요청 목록 API"
 	)
-	ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchAccounts(
+	ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchPasswordRequests(
 		@ParameterObject PasswordRequest.Search request,
 		@ModelAttribute Paging paging
 	);
