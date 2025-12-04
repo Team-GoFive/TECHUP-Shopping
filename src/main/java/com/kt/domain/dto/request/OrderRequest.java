@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import com.kt.constant.OrderStatus;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Schema(name = "OrderRequest")
 public record OrderRequest(
 	@NotNull
 	List<Item> items,
@@ -16,6 +18,7 @@ public record OrderRequest(
 	@NotNull
 	UUID addressId
 ) {
+	@Schema(name = "OrderRequestItem")
 	public record Item(
 		@NotNull
 		UUID productId,
@@ -26,6 +29,7 @@ public record OrderRequest(
 	) {
 	}
 
+	@Schema(name = "OrderUpdateRequest")
 	public record Update(
 		@NotBlank
 		String receiverName,
@@ -45,6 +49,7 @@ public record OrderRequest(
 	) {
 	}
 
+	@Schema(name = "OrderChangeStatusRequest")
 	public record ChangeStatus(
 		@NotNull
 		OrderStatus status

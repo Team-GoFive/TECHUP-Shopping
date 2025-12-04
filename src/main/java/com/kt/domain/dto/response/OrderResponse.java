@@ -5,7 +5,10 @@ import java.util.UUID;
 
 import com.kt.domain.entity.OrderProductEntity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class OrderResponse {
+	@Schema(name = "OrderProductsResponse")
 	public record OrderProducts(
 		UUID orderId,
 		List<OrderProductItem> orderProducts
@@ -23,6 +26,7 @@ public class OrderResponse {
 		}
 	}
 
+	@Schema(name = "OrderProductItemResponse")
 	public record OrderProductItem(
 		UUID orderProductId,
 		UUID productId,
