@@ -287,16 +287,16 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 어드민_상세_본인조회__실패_다른어드민조회() {
-		// given
+	void 어드민_상세_다른어드민조회__성공() {
 		UserEntity someAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(someAdmin);
 
+		// when
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(someAdmin.getId(), AdminId);
+
 		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
-			() -> userService.getAdminDetail(someAdmin.getId(), AdminId)
-		);
+		assertThat(AdminId).isNotNull();
+		assertThat(savedUser.name()).isEqualTo("어드민테스터");
 	}
 
 
