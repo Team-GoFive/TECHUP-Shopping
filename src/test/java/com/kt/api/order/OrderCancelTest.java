@@ -1,6 +1,7 @@
 package com.kt.api.order;
 
 import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
@@ -81,7 +82,7 @@ public class OrderCancelTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			patch("/api/orders/{orderId}/cancel", saved.getId())
-				.with(user(testMember.getEmail()))
+				.with(user(getMemberUserDetails(testMember.getId())))
 		);
 
 		// then

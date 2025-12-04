@@ -1,13 +1,12 @@
 package com.kt.api.admin.order;
 
+import static com.kt.common.CurrentUserCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class OrderCancelTest extends MockMvcTest {
 		savedOrder = orderRepository.save(order);
 		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
 		mockMvc.perform(patch("/api/admin/orders/{orderId}/cancel", order.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails(user.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
 			andDo(print())
@@ -61,9 +60,15 @@ public class OrderCancelTest extends MockMvcTest {
 
 	@Test
 	void 주문_취소__실패_NotFound_404() throws Exception {
+		UserEntity user = UserEntityCreator.createMember();
+
+		savedUser = userRepository.save(user);
+		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
+		savedOrder = orderRepository.save(order);
+		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
 
 		mockMvc.perform(patch("/api/orders/{orderId}/cancel", UUID.randomUUID())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails(user.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
 			andDo(print())

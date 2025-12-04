@@ -1,9 +1,9 @@
-
 package com.kt.controller.admin.order;
 
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
@@ -11,6 +11,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
+import com.kt.security.DefaultCurrentUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +30,7 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문 상세 조회",
 		description = "관리자의 주문상세 조회 관련 API",
 		parameters = {
-			@Parameter(name = "orderId" , description = "주문 ID")
+			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
 	ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(UUID orderId);
@@ -38,7 +39,7 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문 상태 변경",
 		description = "관리자의 주문상태 변경 관련 API",
 		parameters = {
-			@Parameter(name = "orderId" , description = "주문 ID")
+			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> updateOrderStatus(
@@ -50,8 +51,11 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문 취소",
 		description = "관리자의 주문취소 관련 API",
 		parameters = {
-			@Parameter(name = "orderId" , description = "주문 ID")
+			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> cancelOrder(UUID orderId);
+	ResponseEntity<ApiResult<Void>> cancelOrder(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		UUID orderId
+	);
 }
