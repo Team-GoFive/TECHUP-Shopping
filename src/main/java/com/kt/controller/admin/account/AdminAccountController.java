@@ -64,6 +64,12 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 		accountService.resetAccountPassword(accountId);
 		return empty();
 	}
+
+	@PatchMapping("/{accountId}/password/update")
+	public ResponseEntity<ApiResult<Void>> updateAccountPassword(@PathVariable UUID accountId) {
+		accountService.updateAccountPassword(accountId);
+		return empty();
+	}
 }
 
 

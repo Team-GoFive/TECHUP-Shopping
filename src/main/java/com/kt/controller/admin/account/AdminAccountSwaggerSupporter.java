@@ -52,4 +52,13 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		}
 	)
 	ResponseEntity<ApiResult<Void>> resetAccountPassword(UUID accountId);
+
+	@Operation(
+		summary = "계정 비밀번호 변경",
+		description = "관리자의 계정 비밀번호 변경 API",
+		parameters = {
+			@Parameter(name = "accountId" , description = "계정 ID")
+		}
+	)
+	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID accountId);
 }
