@@ -49,7 +49,7 @@ public class OrderCancelTest extends MockMvcTest {
 		savedOrder = orderRepository.save(order);
 		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
 		mockMvc.perform(patch("/api/admin/orders/{orderId}/cancel", order.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails(user.getId())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(user.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
 			andDo(print())
@@ -68,7 +68,7 @@ public class OrderCancelTest extends MockMvcTest {
 		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
 
 		mockMvc.perform(patch("/api/orders/{orderId}/cancel", UUID.randomUUID())
-				.with(SecurityMockMvcRequestPostProcessors.user(getMemberUserDetails(user.getId())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(user.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
 			andDo(print())
