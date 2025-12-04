@@ -75,7 +75,7 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	}
 
 	@Override
-	@GetMapping("/accounts/password-requests")
+	@GetMapping("/password-requests")
 	public ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchAccounts(
 		@ParameterObject PasswordRequest.Search request,
 		@ModelAttribute Paging paging) {
