@@ -1,11 +1,29 @@
 package com.kt.controller.admin;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+
+import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
-
 import com.kt.exception.CustomException;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
@@ -14,54 +32,26 @@ import com.kt.security.DefaultCurrentUser;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.time.LocalDate;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-
 @Slf4j
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
-class AdminAccountControllerTest {
-
-	@Autowired
-	private MockMvc mockMvc;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private CourierRepository courierRepository;
-
-	@Autowired
-	private AccountRepository accountRepository;
+class AdminAccountControllerTest extends MockMvcTest {
 
 	static final String TEST_PASSWORD = "1234561111";
-
 	UserEntity testUser;
 	CourierEntity testCourier;
 	CourierEntity secondTestCourier;
 	CourierEntity thirdTestCourier;
 	UserEntity testAdmin;
 	DefaultCurrentUser authority;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private CourierRepository courierRepository;
+	@Autowired
+	private AccountRepository accountRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -125,32 +115,28 @@ class AdminAccountControllerTest {
 	@Test
 	void 회원_목록_조회_성공() throws Exception {
 
-		MvcResult result = mockMvc.perform(get("/api/admin/accounts")
-				.param("page", "1")
-				.param("size", "10")
-				.param("role", UserRole.MEMBER.name())
-				.param("userStatus", "")
-				.param("courierWorkStatus", "")
-				.param("searchKeyword", "")
-				.with(user(authority))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.code").value("ok"),
-				jsonPath("$.message").value("성공"),
-				jsonPath("$.data").exists(),
-				jsonPath("$.data.totalCount").value(1),
-				jsonPath("$.data.totalPages").value(1)
-			).andReturn();
+		ResultActions actions = mockMvc.perform(get("/api/admin/accounts")
+			.param("page", "1")
+			.param("size", "10")
+			.param("role", UserRole.MEMBER.name())
+			.param("userStatus", "")
+			.param("courierWorkStatus", "")
+			.param("searchKeyword", "")
+			.with(user(authority))
+		).andDo(print());
 
-		String response = result.getResponse().getContentAsString();
-		log.info("response : {}", response);
+		actions.andExpectAll(
+			status().isOk(),
+			jsonPath("$.code").value("ok"),
+			jsonPath("$.message").value("성공"),
+			jsonPath("$.data").exists(),
+			jsonPath("$.data.totalCount").value(1),
+			jsonPath("$.data.totalPages").value(1)
+		);
 	}
 
 	@Test
 	void 기사_목록_조회_성공() throws Exception {
-
 		MvcResult result = mockMvc.perform(get("/api/admin/accounts")
 				.param("page", "1")
 				.param("size", "10")
@@ -175,13 +161,11 @@ class AdminAccountControllerTest {
 		log.info("response : {}", response);
 	}
 
-
-
 	@Test
 	void 회원_상세_조회_성공() throws Exception {
 		MvcResult result = mockMvc.perform(
-			get("/api/admin/users/{userId}", testUser.getId())
-				.with(user(authority))
+				get("/api/admin/users/{userId}", testUser.getId())
+					.with(user(authority))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -204,8 +188,8 @@ class AdminAccountControllerTest {
 
 		// when
 		MvcResult result = mockMvc.perform(
-			patch("/api/admin/users/{userId}/enabled", testUser.getId())
-			.with(user(authority))
+				patch("/api/admin/users/{userId}/enabled", testUser.getId())
+					.with(user(authority))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -227,8 +211,8 @@ class AdminAccountControllerTest {
 
 		// when
 		MvcResult result = mockMvc.perform(
-			patch("/api/admin/users/{userId}/disabled", testUser.getId())
-				.with(user(authority))
+				patch("/api/admin/users/{userId}/disabled", testUser.getId())
+					.with(user(authority))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -245,12 +229,11 @@ class AdminAccountControllerTest {
 		log.info("response : {}", responseJson);
 	}
 
-
 	@Test
 	void 계정_soft_삭제_성공() throws Exception {
 		MvcResult result = mockMvc.perform(
-			delete("/api/admin/accounts/{accountId}", testUser.getId())
-				.with(user(authority))
+				delete("/api/admin/accounts/{accountId}", testUser.getId())
+					.with(user(authority))
 			)
 			.andDo(print())
 			.andExpectAll(
@@ -286,6 +269,5 @@ class AdminAccountControllerTest {
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 	}
-
 
 }
