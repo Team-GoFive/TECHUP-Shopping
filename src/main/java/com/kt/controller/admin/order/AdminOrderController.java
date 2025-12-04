@@ -5,6 +5,7 @@ import static com.kt.common.api.ApiResult.*;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +19,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
+import com.kt.security.DefaultCurrentUser;
 import com.kt.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -59,9 +61,10 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 	@Override
 	@PatchMapping("/{orderId}/cancel")
 	public ResponseEntity<ApiResult<Void>> cancelOrder(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId
 	) {
-		orderService.cancelOrder(orderId);
+		orderService.cancelOrder(currentUser.getId(), orderId);
 		return empty();
 	}
 }
