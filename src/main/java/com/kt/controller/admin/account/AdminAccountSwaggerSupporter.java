@@ -6,7 +6,10 @@ import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
 
 import com.kt.domain.dto.request.AccountRequest;
+import com.kt.domain.dto.request.PasswordRequest;
 import com.kt.domain.dto.response.AccountResponse;
+
+import com.kt.domain.dto.response.PasswordRequestResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -66,4 +69,17 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		}
 	)
 	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID accountId);
+
+
+
+	@Operation(
+		summary = "계정 비밀번호 변경 및 초기화 요청 목록",
+		description = "계정 비밀번호 변경 및 초기화 요청 목록 API"
+	)
+	ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchAccounts(
+		@ParameterObject PasswordRequest.Search request,
+		@ModelAttribute Paging paging
+	);
+
+
 }

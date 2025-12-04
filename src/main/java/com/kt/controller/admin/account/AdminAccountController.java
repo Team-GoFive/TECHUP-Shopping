@@ -6,7 +6,10 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.AccountRequest;
 
+import com.kt.domain.dto.request.PasswordRequest;
 import com.kt.domain.dto.response.AccountResponse;
+
+import com.kt.domain.dto.response.PasswordRequestResponse;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +72,14 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> updateAccountPassword(@PathVariable UUID accountId) {
 		accountService.updateAccountPassword(accountId);
 		return empty();
+	}
+
+	@Override
+	@GetMapping("/password-requests")
+	public ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchAccounts(
+		@ParameterObject PasswordRequest.Search request,
+		@ModelAttribute Paging paging) {
+		return page(accountService.searchPasswordRequests(request, paging.toPageable()));
 	}
 }
 
