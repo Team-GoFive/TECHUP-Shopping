@@ -366,10 +366,7 @@ class AccountServiceTest {
 		);
 
 		assertFalse(
-			passwordEncoder.matches(
-				originPassword,
-				member1.getPassword()
-			)
+			passwordEncoder.matches(originPassword, member1.getPassword())
 		);
 
 		log.info("passwordRequest status : {}", passwordRequest.getStatus());
