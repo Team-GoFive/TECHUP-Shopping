@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 public class ReviewRequest {
 	@Schema(name = "ReviewCreateRequest")
 	public record Create(
-		@NotBlank(message = "상품 아이디는 필수 항목입니다.")
-		UUID productId,
+		@NotBlank(message = "주문 상품 아이디는 필수 항목입니다.")
+		UUID orderProductId,
 		@NotBlank(message = "리뷰내용은 필수 항목입니다.")
 		String content
 	) {

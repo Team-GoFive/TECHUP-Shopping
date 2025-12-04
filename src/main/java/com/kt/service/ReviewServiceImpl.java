@@ -41,7 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
 		UUID orderProductId,
 		String content
 	) {
-		if (isOrderProductOwnedByUser(email, orderProductId))
+		if (!isOrderProductOwnedByUser(email, orderProductId))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 
 		if (reviewRepository.findByOrderProductId(orderProductId).isPresent())

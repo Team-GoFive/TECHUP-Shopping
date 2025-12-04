@@ -79,6 +79,8 @@ class ReviewServiceTest {
 
 		testOrderProduct = createOrderProduct(order, product);
 		orderProductRepository.save(testOrderProduct);
+
+		order.getOrderProducts().add(testOrderProduct);
 	}
 
 	@Test

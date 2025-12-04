@@ -74,6 +74,8 @@ public class ReviewCreateTest extends MockMvcTest {
 
 		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
 		orderProductRepository.save(testOrderProduct);
+
+		order.getOrderProducts().add(testOrderProduct);
 	}
 
 	@Test
@@ -88,7 +90,7 @@ public class ReviewCreateTest extends MockMvcTest {
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			post("/api/reviews", testOrderProduct.getId())
+			post("/api/reviews")
 				.with(user(getMemberUserDetails(testMember.getEmail())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json)

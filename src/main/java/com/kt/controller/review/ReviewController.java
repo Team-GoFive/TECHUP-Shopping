@@ -45,7 +45,7 @@ public class ReviewController extends SwaggerAssistance {
 	) {
 		reviewService.create(
 			currentUser.getEmail(),
-			request.productId(),
+			request.orderProductId(),
 			request.content()
 		);
 		return empty();
