@@ -348,14 +348,12 @@ class UserServiceTest {
 
 	@Test
 	void 유저_상태_변경_delete() {
-
 		// when
 		userService.deleteUser(testUser.getId() , testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 		// then
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
-
 	}
 
 	@Test

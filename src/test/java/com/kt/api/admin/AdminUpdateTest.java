@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("관리자 정보 수정 (어드민) - PUT /api/admin/{adminsId}")
 public class AdminUpdateTest extends MockMvcTest {
 
-	static final String TEST_PASSWORD = "admin12345";
 	@Autowired
 	UserRepository userRepository;
 	DefaultCurrentUser adminsDetails;
@@ -50,7 +49,7 @@ public class AdminUpdateTest extends MockMvcTest {
 	}
 
 	@Test
-	void 관리자_업데이트_성공() throws Exception {
+	void 관리자_업데이트_성공__200_OK() throws Exception {
 
 		// given
 		var requset = new UserRequest.UpdateDetails(
@@ -61,7 +60,8 @@ public class AdminUpdateTest extends MockMvcTest {
 		);
 
 		// when
-		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", testAdmin.getId())
+		ResultActions actions = mockMvc.perform(
+			put("/api/admin/{adminId}", testAdmin.getId())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
 			.with(user(adminsDetails))
@@ -83,7 +83,6 @@ public class AdminUpdateTest extends MockMvcTest {
 
 	@Test
 	void 관리자_업데이트_실패__404_NotFound() throws Exception {
-
 		// given
 		var requset = new UserRequest.UpdateDetails(
 			"김도현",
@@ -93,21 +92,19 @@ public class AdminUpdateTest extends MockMvcTest {
 		);
 
 		// when
-		ResultActions actions = mockMvc.perform(put("/api/admin/{adminId}", UUID.randomUUID())
+		ResultActions actions = mockMvc.perform(
+			put("/api/admin/{adminId}", UUID.randomUUID())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
 			.with(user(adminsDetails))
 		);
 
 		// then
-		actions.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+		actions.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void 관리자_업데이트_실패__일반_유저계정_403() throws Exception {
-		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+	void 관리자_업데이트_실패__일반_유저계정에서_시도_403_FORBIDDEN() throws Exception {
 		// given
 		var requset = new UserRequest.UpdateDetails(
 			"김도현",
@@ -116,12 +113,15 @@ public class AdminUpdateTest extends MockMvcTest {
 			Gender.FEMALE
 		);
 
-		// then
-		mockMvc.perform(put("/api/admin/{adminId}", testAdmin.getId())
+		// when
+		ResultActions actions = mockMvc.perform(
+			put("/api/admin/{adminId}", testAdmin.getId())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
-			.with(user(memberDetails))
-		).andExpect(status().isForbidden());
-	}
+			.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+		);
 
+		// then
+		actions.andExpect(status().isForbidden());
+	}
 }

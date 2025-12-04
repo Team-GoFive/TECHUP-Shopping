@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
@@ -50,7 +51,7 @@ public class AdminCreateTest extends MockMvcTest {
 
 	@Test
 	void 관리자_생성_성공() throws Exception {
-
+		// given
 		var request = new MemberRequest.SignupMember(
 			"테스트어드민",
 			"test@examlple.com",
@@ -60,6 +61,7 @@ public class AdminCreateTest extends MockMvcTest {
 			"010-1111-1111"
 		);
 
+		// when
 		MvcResult result = mockMvc.perform(
 				post("/api/admin")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -73,15 +75,16 @@ public class AdminCreateTest extends MockMvcTest {
 				jsonPath("$.message").value("성공")
 			).andReturn();
 
+		// then
 		assertThat(userRepository.findByEmail("test@examlple.com")).isPresent();
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 	}
 
 	@Test
-	void 관리자_생성_실패__일반계정_403() throws Exception {
-		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
-		var request = new MemberRequest.SignupMember(
+	void 관리자_생성_실패__일반계정에서_시도_403_FORBIDDEN() throws Exception {
+		// given
+		MemberRequest.SignupMember request = new MemberRequest.SignupMember(
 			"테스트어드민",
 			"test@examlple.com",
 			"1234",
@@ -90,15 +93,15 @@ public class AdminCreateTest extends MockMvcTest {
 			"010-1111-1111"
 		);
 
-		mockMvc.perform(
+		// when
+		ResultActions actions = mockMvc.perform(
 				post("/api/admin")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
-					.with(user(memberDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isForbidden()
-			);
+					.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

@@ -50,11 +50,14 @@ public class CourierDetailTest extends MockMvcTest {
 	}
 
 	@Test
-	void 배송기사조회_실패__403_다른계정() throws Exception {
+	void 배송기사조회_실패__다른_배송기사_계정_403_FORBIDDEN() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/couriers/{courierId}", testCourier.getId())
 				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier2.getId())))
-		).andExpect(status().isForbidden());
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

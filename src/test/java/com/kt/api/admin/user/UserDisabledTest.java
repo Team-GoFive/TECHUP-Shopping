@@ -51,8 +51,7 @@ public class UserDisabledTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_비활성화_성공() throws Exception {
-
+	void 회원_비활성화_성공__200_OK() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/admin/users/{userId}/disabled", testUser.getId())
@@ -75,12 +74,14 @@ public class UserDisabledTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_비활성화_실패__일반계정_403() throws Exception {
-		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+	void 회원_비활성화_실패__일반계정에서시도_403_FORBIDDEN() throws Exception {
 		// when
-		mockMvc.perform(
+		ResultActions actions = mockMvc.perform(
 			patch("/api/admin/users/{userId}/disabled", testUser.getId())
-				.with(user(memberDetails))
-		).andExpect(status().isForbidden());
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

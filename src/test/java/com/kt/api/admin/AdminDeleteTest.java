@@ -33,10 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @DisplayName("관리자 삭제 (어드민) - DELETE /api/admin/{adminId}")
 public class AdminDeleteTest extends MockMvcTest {
-	DefaultCurrentUser adminDetails;
 	@Autowired
 	UserRepository userRepository;
 
+	DefaultCurrentUser adminDetails;
 	UserEntity testAdmin;
 	UserEntity testAdmin2;
 	UserEntity testUser;
@@ -53,10 +53,11 @@ public class AdminDeleteTest extends MockMvcTest {
 	}
 
 	@Test
-	void 관리자_본인_삭제_성공() throws Exception {
+	void 관리자_본인_삭제_성공__200_OK() throws Exception {
 
 		// when
-		ResultActions actions = mockMvc.perform(delete("/api/admin/{adminId}", testAdmin.getId())
+		ResultActions actions = mockMvc.perform(
+			delete("/api/admin/{adminId}", testAdmin.getId())
 			.with(user(adminDetails))
 		);
 
@@ -78,34 +79,37 @@ public class AdminDeleteTest extends MockMvcTest {
 
 	@Test
 	void 관리자_삭제_실패__404_NotFound() throws Exception {
-
-		mockMvc.perform(delete("/api/admin/{adminId}", UUID.randomUUID())
+		// when
+		ResultActions actions = mockMvc.perform(
+			delete("/api/admin/{adminId}", UUID.randomUUID())
 				.with(user(adminDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+			);
+
+		// then
+		actions.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void 관리자_삭제_실패__다른_관리자_계정__403() throws Exception {
-		mockMvc.perform(delete("/api/admin/{adminId}", testAdmin2.getId())
+	void 관리자_삭제_실패__다른관리자계정에서_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			delete("/api/admin/{adminId}", testAdmin2.getId())
 				.with(user(adminDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isForbidden());
+			);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 
 	@Test
-	void 관리자_삭제_실패__일반계정__403() throws Exception {
-		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
+	void 관리자_삭제_실패__일반계정에서_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			delete("/api/admin/{adminId}", testAdmin2.getId())
+				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+			);
 
-		mockMvc.perform(delete("/api/admin/{adminId}", testAdmin2.getId())
-				.with(user(memberDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isForbidden());
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

@@ -1,5 +1,6 @@
 package com.kt.api.admin.user;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,12 +51,12 @@ public class UserDetailTest extends MockMvcTest {
 	}
 
 	@Test
-	void 회원_상세_조회_성공() throws Exception {
+	void 회원_상세_조회_성공__200_OK() throws Exception {
 
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/users/{userId}", testUser.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(adminDetails))
+				.with(user(adminDetails))
 		);
 
 		// then
@@ -75,26 +76,25 @@ public class UserDetailTest extends MockMvcTest {
 
 	@Test
 	void 회원_상세_조회_실패__404_NotFound() throws Exception {
-
-		mockMvc.perform(
+		// when
+		ResultActions actions = mockMvc.perform(
 				get("/api/admin/users/{userId}", UUID.randomUUID())
-					.with(SecurityMockMvcRequestPostProcessors.user(adminDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+					.with(user(adminDetails))
+			);
+
+		// then
+		actions.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void 회원_상세_조회__실패_일반계정_403() throws Exception {
-		DefaultCurrentUser memberDetails = CurrentUserCreator.getMemberUserDetails(testUser.getId());
-		mockMvc.perform(
+	void 회원_상세_조회__실패_일반계정에서_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
 				get("/api/admin/users/{userId}", testUser.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(memberDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isForbidden());
-	}
+					.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+			);
 
+		// then
+		actions.andExpect(status().isForbidden());
+	}
 }

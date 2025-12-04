@@ -45,7 +45,6 @@ public class CourierUpdateDetailTest extends MockMvcTest {
 			"변경된 테스터명",
 			Gender.FEMALE
 		);
-
 		String updateJson = objectMapper.writeValueAsString(update);
 
 		// when
@@ -62,21 +61,23 @@ public class CourierUpdateDetailTest extends MockMvcTest {
 	}
 
 	@Test
-	void 배송기사수정_실패__403_다른계정() throws Exception {
+	void 배송기사수정_실패__다른_배송기사_계정_403_FORBIDDEN() throws Exception {
 		// given
 		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
 			"변경된 테스터명",
 			Gender.FEMALE
 		);
-
 		String updateJson = objectMapper.writeValueAsString(update);
 
 		// when
-		mockMvc.perform(
+		ResultActions actions = mockMvc.perform(
 			put("/api/couriers/{courierId}", testCourier.getId())
 				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier2.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson)
-		).andExpect(status().isForbidden());
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }
