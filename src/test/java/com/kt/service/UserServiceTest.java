@@ -23,6 +23,7 @@ import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
@@ -279,11 +280,11 @@ class UserServiceTest {
 
 	@Test
 	void 유저_상세_조회__실패_다른사람조회() {
-		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
+		assertThatThrownBy(
 			() -> userService.getUserDetail(userId, AdminId)
-		);
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
@@ -314,10 +315,11 @@ class UserServiceTest {
 	@Test
 	void 유저_상태_변경__실패_어드민아님() {
 		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
+		assertThatThrownBy(
 			() -> userService.disableUser(testUser2.getId(), testUser.getId())
-		);
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
@@ -395,10 +397,11 @@ class UserServiceTest {
 		);
 
 		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
-			() -> userService.createAdmin(testUser.getId(), request)
-		);
+		assertThatThrownBy(
+			()-> userService.createAdmin(testUser.getId(), request)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
 	}
 
 	@Test
@@ -409,18 +412,20 @@ class UserServiceTest {
 
 	@Test
 	void 어드민_삭제__실패_일반계정() {
-		Assertions.assertThrowsExactly(
-			CustomException.class,
-			() -> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
-		);
+		assertThatThrownBy(
+			()-> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
 	void 어드민_삭제__실패_대상이_어드민아님() {
-		Assertions.assertThrowsExactly(
-			CustomException.class,
+		assertThatThrownBy(
 			() -> userService.deleteAdmin(testAdmin.getId(), testUser.getId())
-		);
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
 	}
 
 	@Test
