@@ -286,8 +286,8 @@ public class AuthServiceTest {
 	void 계정_비밀번호_초기화_성공() {
 
 		// when
-		PasswordManagementRequest.PasswordInit request
-			= new PasswordManagementRequest.PasswordInit(testMember.getEmail());
+		PasswordManagementRequest.PasswordReset request
+			= new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
 		authService.initPassword(request);
 
@@ -298,8 +298,8 @@ public class AuthServiceTest {
 	@Test
 	void 계정_비밀번호_초기화_실패_계정_없음() {
 		// when and then
-		PasswordManagementRequest.PasswordInit resetRequest =
-			new PasswordManagementRequest.PasswordInit("none-exist@email.com");
+		PasswordManagementRequest.PasswordReset resetRequest =
+			new PasswordManagementRequest.PasswordReset("none-exist@email.com");
 
 		CustomException exception = assertThrowsExactly(
 			CustomException.class, () ->
@@ -356,8 +356,8 @@ public class AuthServiceTest {
 	@Test
 	void 비밀번호_초기화_요청_성공() {
 		// when
-		PasswordManagementRequest.PasswordInit request =
-			new PasswordManagementRequest.PasswordInit(testMember.getEmail());
+		PasswordManagementRequest.PasswordReset request =
+			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
 		authService.requestPasswordInit(request);
 
@@ -375,15 +375,15 @@ public class AuthServiceTest {
 	@Test
 	void 비밀번호_초기화_요청_실패_데이터_존재() {
 		// given
-		PasswordManagementRequest.PasswordInit request =
-			new PasswordManagementRequest.PasswordInit(testMember.getEmail());
+		PasswordManagementRequest.PasswordReset request =
+			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
 		authService.requestPasswordInit(request);
 
 		// when and then
 		assertThatThrownBy(() -> authService.requestPasswordInit(request))
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.PASSWORD_INIT_ALREADY_REQUESTED.name());
+			.hasMessageContaining(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED.name());
 	}
 
 	@Test
