@@ -87,4 +87,8 @@ public class OrderEntity extends BaseEntity {
 		this.status = newStatus;
 	}
 
+	public void addOrderProduct(OrderProductEntity orderProduct) {
+		this.orderProducts.add(orderProduct);
+	}
+
 }

@@ -91,6 +91,7 @@ public class OrderServiceImpl implements OrderService {
 				product
 			);
 
+			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
 		}
 	}
