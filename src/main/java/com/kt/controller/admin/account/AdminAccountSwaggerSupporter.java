@@ -1,17 +1,10 @@
 package com.kt.controller.admin.account;
 
-import java.util.UUID;
-
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
+
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.response.AccountResponse;
 
@@ -19,26 +12,49 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "account", description = "계정 관련 API")
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.UUID;
+
+@Tag(name = "Admin Account", description = "관리자 계정 관리 관련 API")
 public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 
-	@Operation(summary = "계정 검색", description = "회원, 배송기사를 검색")
+	@Operation(
+		summary = "계정 목록 조회",
+		description = "관리자의 전체 계정 조회 API"
+	)
 	ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAccounts(
 		@ParameterObject AccountRequest.Search request,
 		@ModelAttribute Paging paging
 	);
 
-	@Operation(summary = "계정 삭제 - soft", description = "회원과 배송기사를 soft delete 합니다.",
+	@Operation(
+		summary = "계정 논리 삭제",
+		description = "관리자의 계정 논리 삭제(Soft Delete) API",
 		parameters = {
-			@Parameter(name = "accountId", description = "계정 Id")
-		})
-	@DeleteMapping("/accounts/{accountId}")
-	ResponseEntity<ApiResult<Void>> deleteAccount(@PathVariable UUID accountId);
+			@Parameter(name = "accountId" , description = "계정 ID")
+		}
+	)
+	ResponseEntity<ApiResult<Void>> deleteAccount(UUID accountId);
 
-	@Operation(summary = "계정 삭제 - hard", description = "회원과 배송기사를 hard delete 합니다.", parameters = {
-		@Parameter(name = "accountId", description = "계정 Id")
-	})
-	@DeleteMapping("/accounts/{accountId}/force")
-	ResponseEntity<ApiResult<Void>> deleteAccountPermanently(@PathVariable UUID accountId);
 
+	@Operation(
+		summary = "계정 물리 삭제",
+		description = "관리자의 계정 물리 삭제(Hard Delete) API",
+		parameters = {
+			@Parameter(name = "accountId" , description = "계정 ID")
+		}
+	)
+	ResponseEntity<ApiResult<Void>> deleteAccountPermanently(UUID accountId);
+
+	@Operation(
+		summary = "계정 비밀번호 초기화",
+		description = "관리자의 계정 비밀번호 초기화 API",
+		parameters = {
+			@Parameter(name = "accountId" , description = "계정 ID")
+		}
+	)
+	ResponseEntity<ApiResult<Void>> resetAccountPassword(UUID accountId);
 }
