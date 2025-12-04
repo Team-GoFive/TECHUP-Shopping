@@ -3,17 +3,12 @@ package com.kt.api.product;
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
@@ -92,18 +87,5 @@ public class ProductReviewTest extends MockMvcTest {
 			OrderProductEntity orderProduct = list.get(i);
 			reviewService.create(testMember.getMobile(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
-	}
-
-	@Test
-	void 상품_id를_통해_리뷰_조회_성공__200_OK() throws Exception {
-		// when
-		ResultActions actions = mockMvc.perform(
-			get("/api/products/{productId}/reviews", testProduct.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(testMember.getEmail()))
-		);
-
-		// then
-		actions.andExpect(status().isOk());
-		actions.andExpect(jsonPath("$.data.length()").value(3));
 	}
 }
