@@ -38,4 +38,12 @@ public class CurrentUserCreator {
 			UserRole.MEMBER
 		);
 	}
+
+	public static DefaultCurrentUser getMemberUserDetails(String email) {
+		return new DefaultCurrentUser(
+			UUID.randomUUID(),
+			email,
+			UserRole.MEMBER
+		);
+	}
 }

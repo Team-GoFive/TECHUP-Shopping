@@ -8,12 +8,22 @@ import com.kt.domain.entity.UserEntity;
 
 public class UserEntityCreator {
 
-	public static final String DEFAULT_MEMBER_EMAIL = "member@naver.com";
+	public static UserEntity createMember(String email, String encodedPassword) {
+		return UserEntity.create(
+			"회원1",
+			email,
+			encodedPassword,
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.now(),
+			"010-1234-5678"
+		);
+	}
 
 	public static UserEntity createMember() {
 		return UserEntity.create(
 			"회원1",
-			DEFAULT_MEMBER_EMAIL,
+			"member@test.com",
 			"1234",
 			UserRole.MEMBER,
 			Gender.MALE,

@@ -1,5 +1,6 @@
 package com.kt.api.review;
 
+import static com.kt.common.CurrentUserCreator.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,18 +50,19 @@ public class ReviewUpdateTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	UserEntity testMember;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
-		userRepository.save(user);
+		testMember = UserEntityCreator.createMember();
+		userRepository.save(testMember);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(receiver, user);
+		OrderEntity order = OrderEntity.create(receiver, testMember);
 		orderRepository.save(order);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
@@ -85,15 +87,13 @@ public class ReviewUpdateTest extends MockMvcTest {
 		);
 		String updateJson = objectMapper.writeValueAsString(update);
 
-
 		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/reviews/{reviewId}", review.getId())
-				.with(user("테스트용임다"))
+				.with(user(getMemberUserDetails(testMember.getEmail())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson)
 		);
-
 
 		// then
 		actions.andExpect(status().isOk());

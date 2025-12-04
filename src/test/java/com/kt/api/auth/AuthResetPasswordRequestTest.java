@@ -48,7 +48,6 @@ public class AuthResetPasswordRequestTest extends MockMvcTest {
 
 	void saveTestUser() {
 		testUser = createMember();
-		currentUser = getAdminUserDetails();
 		userRepository.save(testUser);
 	}
 

@@ -3,6 +3,7 @@ package com.kt.api.review.admin;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,14 +53,16 @@ public class ReviewDeleteTest extends MockMvcTest {
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
+	UserEntity testAdmin;
+
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
-		userRepository.save(user);
+		testAdmin = UserEntityCreator.createAdmin();
+		userRepository.save(testAdmin);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(receiver, user);
+		OrderEntity order = OrderEntity.create(receiver, testAdmin);
 		orderRepository.save(order);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
@@ -80,10 +83,10 @@ public class ReviewDeleteTest extends MockMvcTest {
 		reviewRepository.save(review);
 
 		// when
-		ResultActions actions =  mockMvc.perform(
+		ResultActions actions = mockMvc.perform(
 			delete("/api/admin/reviews/{reviewId}", review.getId())
-				.with(user(CurrentUserCreator.getAdminUserDetails()))
-		);
+				.with(user(CurrentUserCreator.getAdminUserDetails(testAdmin.getEmail())))
+		).andDo(print());
 
 		// then
 		actions.andExpect(status().isOk());
