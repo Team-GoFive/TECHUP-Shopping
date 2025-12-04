@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.AccountRequest;
 
 import com.kt.domain.dto.response.AccountResponse;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,13 +26,13 @@ import lombok.RequiredArgsConstructor;
 import static com.kt.common.api.ApiResult.*;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/accounts")
 @RequiredArgsConstructor
 public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	private final AccountService accountService;
 
 	@Override
-	@GetMapping("/accounts")
+	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAccounts(
 		@ParameterObject AccountRequest.Search request,
 		@ModelAttribute Paging paging
@@ -46,19 +46,24 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	}
 
 	@Override
-	@DeleteMapping("/accounts/{accountId}")
+	@DeleteMapping("/{accountId}")
 	public ResponseEntity<ApiResult<Void>> deleteAccount(@PathVariable UUID accountId) {
 		accountService.deleteAccount(accountId);
 		return empty();
 	}
 
 	@Override
-	@DeleteMapping("/accounts/{accountId}/force")
+	@DeleteMapping("/{accountId}/force")
 	public ResponseEntity<ApiResult<Void>> deleteAccountPermanently(@PathVariable UUID accountId) {
 		accountService.deleteAccountPermanently(accountId);
 		return empty();
 	}
 
+	@PatchMapping("/{accountId}/password/reset")
+	public ResponseEntity<ApiResult<Void>> resetAccountPassword(@PathVariable UUID accountId) {
+		accountService.resetAccountPassword(accountId);
+		return empty();
+	}
 }
 
 
