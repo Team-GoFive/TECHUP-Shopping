@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.common.support.SwaggerAssistanceInterface;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
@@ -25,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @Tag(name = "admin", description = "관리자 관리 관련 API")
-public interface AdminSwaggerSupporter extends SwaggerAssistanceInterface {
+public interface AdminSwaggerSupporter {
 	@Operation(
 		summary = "관리자 검색", description = "관리자를 검색"
 	)

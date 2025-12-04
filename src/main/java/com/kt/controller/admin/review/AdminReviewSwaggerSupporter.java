@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.common.support.SwaggerAssistanceInterface;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.DefaultCurrentUser;
@@ -20,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "review", description = "리뷰 관련 API")
-public interface AdminReviewSwaggerSupporter extends SwaggerAssistanceInterface {
+public interface AdminReviewSwaggerSupporter {
 
 	@Operation(
 		summary = "리뷰 조회", description = "카테고리, 상품명으로 리뷰 검색이 가능합니다."

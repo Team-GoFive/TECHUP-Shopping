@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.kt.common.api.ApiResult;
-import com.kt.common.support.SwaggerAssistanceInterface;
+import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.response.UserResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "user", description = "회원 관련 API")
-public interface AdminUserSwaggerSupporter extends SwaggerAssistanceInterface {
+public interface AdminUserSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
 		summary = "회원 상세 조회", parameters = {
