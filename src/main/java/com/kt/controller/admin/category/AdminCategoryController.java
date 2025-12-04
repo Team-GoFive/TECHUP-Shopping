@@ -1,4 +1,4 @@
-package com.kt.controller.admin;
+package com.kt.controller.admin.category;
 
 import static com.kt.common.api.ApiResult.*;
 
@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/categories")
 @RequiredArgsConstructor
-public class AdminCategoryController {
+public class AdminCategoryController implements AdminCategorySwaggerSupporter {
 
 	private final CategoryService categoryService;
 
 	@PostMapping
-	ResponseEntity<ApiResult<Void>> create(
+	public ResponseEntity<ApiResult<Void>> create(
 		@RequestBody CategoryRequest.Create request
 	) {
 		categoryService.create(
@@ -38,7 +38,7 @@ public class AdminCategoryController {
 	}
 
 	@PutMapping("/{categoryId}")
-	ResponseEntity<ApiResult<Void>> update(
+	public ResponseEntity<ApiResult<Void>> update(
 		@RequestBody CategoryRequest.Update request,
 		@PathVariable UUID categoryId
 	) {
@@ -50,7 +50,7 @@ public class AdminCategoryController {
 	}
 
 	@DeleteMapping("/{categoryId}")
-	ResponseEntity<ApiResult<Void>> delete(
+	public ResponseEntity<ApiResult<Void>> delete(
 		@PathVariable UUID categoryId
 	) {
 		categoryService.delete(categoryId);

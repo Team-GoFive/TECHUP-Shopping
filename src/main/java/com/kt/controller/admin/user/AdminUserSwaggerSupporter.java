@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "user", description = "회원 관련 API")
+@Tag(name = "User", description = "회원 관련 API")
 public interface AdminUserSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(

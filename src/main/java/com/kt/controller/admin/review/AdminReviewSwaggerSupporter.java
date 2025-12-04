@@ -18,7 +18,7 @@ import com.kt.security.DefaultCurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "review", description = "리뷰 관련 API")
+@Tag(name = "Review", description = "리뷰 관련 API")
 public interface AdminReviewSwaggerSupporter {
 
 	@Operation(

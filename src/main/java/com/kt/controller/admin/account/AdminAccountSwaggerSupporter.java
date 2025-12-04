@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "account", description = "계정 관련 API")
+@Tag(name = "Account", description = "계정 관련 API")
 public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(summary = "계정 검색", description = "회원, 배송기사를 검색")
