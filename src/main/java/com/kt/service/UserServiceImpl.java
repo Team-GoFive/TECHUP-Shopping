@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse.Orders getOrdersByUserId(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		List<OrderEntity> orders = orderRepository.findAllByOrderBy_Id(subjectId);
 		return UserResponse.Orders.of(subjectId, orders);
@@ -52,12 +52,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, UserRole role) {
 		verifyAdmin(userId);
+
 		return userRepository.searchUsers(pageable, keyword, role);
 	}
 
 	@Override
 	public UserResponse.UserDetail getUserDetail(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, true);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		return new UserResponse.UserDetail(
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponse.UserDetail getAdminDetail(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, true);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		return new UserResponse.UserDetail(
@@ -103,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void enableUser(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		user.enabled();
@@ -111,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void disableUser(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		user.disabled();
@@ -119,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		user.delete();
@@ -127,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void retireUser(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		user.retired();
@@ -151,7 +152,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUserPermanently(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		orderRepository.clearUser(user.getId());
@@ -161,7 +162,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteAdmin(UUID currentId, UUID adminId) {
 		verifyAdmin(adminId);
-		verifyAccess(currentId, adminId);
+		verifyAccess(currentId, adminId, false);
 
 		UserEntity user = userRepository.findByIdOrThrow(adminId);
 		user.delete();
@@ -173,7 +174,7 @@ public class UserServiceImpl implements UserService {
 		UUID subjectId,
 		UserRequest.UpdateDetails details
 	) {
-		verifyAccess(currentId, subjectId);
+		verifyAccess(currentId, subjectId, false);
 
 		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
 
@@ -208,20 +209,28 @@ public class UserServiceImpl implements UserService {
 		);
 	}
 
-	private void verifyAccess(UUID currentId, UUID subjectId) {
-		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
+	private void verifyAccess(UUID currentId, UUID subjectId, boolean onSearch) {
+		UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 
-		if (subjectUser.getRole() == UserRole.ADMIN) {
-			Preconditions.validate(
-				currentId.equals(subjectId),
-				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
-			);
-		} else {
-			UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
+		if (onSearch){
 			Preconditions.validate(
 				currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 			);
+		} else {
+			UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
+
+			if (subjectUser.getRole() == UserRole.ADMIN) {
+				Preconditions.validate(
+					currentId.equals(subjectId),
+					ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
+				);
+			} else {
+				Preconditions.validate(
+					currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
+					ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
+				);
+			}
 		}
 	}
 }
