@@ -7,12 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 
-import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.domain.dto.request.AccountRequest;
 
 import com.kt.domain.dto.request.PasswordRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.entity.PasswordRequestEntity;
 
@@ -32,11 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
-import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -377,15 +373,7 @@ class AccountServiceTest {
 
 	@Test
 	void 비밀번호_변경_및_초기화_요청_리스트_조회_성공() {
-		String originPassword = "1234";
 		String updatePassword = "123123";
-		CourierEntity courier = CourierEntity.create(
-			"테스트",
-			"example@test.com",
-			originPassword,
-			Gender.MALE
-		);
-		courierRepository.save(courier);
 
 		PasswordRequestEntity firstRequest = PasswordRequestEntity.create(
 			member1,
@@ -394,7 +382,7 @@ class AccountServiceTest {
 		);
 
 		PasswordRequestEntity secondRequest = PasswordRequestEntity.create(
-			courier,
+			courier1,
 			updatePassword,
 			PasswordRequestType.UPDATE
 		);
@@ -403,9 +391,10 @@ class AccountServiceTest {
 
 
 		Pageable pageable = Pageable.ofSize(10);
+
 		// when
 		PasswordRequest.Search request = new PasswordRequest.Search(
-			null,
+			UserRole.COURIER,
 			null,
 			null,
 			""
@@ -416,11 +405,11 @@ class AccountServiceTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
+		assertThat(result.getContent()).hasSize(1);
 		assertThat(result.getContent()
 			.stream()
 			.map(PasswordRequestResponse.Search::accountId)
-		).contains(member1.getId());
+		).contains(courier1.getId());
 
 	}
 

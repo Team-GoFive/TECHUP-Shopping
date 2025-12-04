@@ -1,5 +1,7 @@
 package com.kt.repository.account;
 
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.request.PasswordRequest;
@@ -12,7 +14,9 @@ import com.kt.domain.entity.QCourierEntity;
 import com.kt.domain.entity.QPasswordRequestEntity;
 import com.kt.domain.entity.QUserEntity;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -87,48 +92,67 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 		return new PageImpl<>(list, pageable, totalCount);
 	}
 
+
 	@Override
 	public Page<PasswordRequestResponse.Search> searchPasswordRequests(
 		PasswordRequest.Search request,
 		Pageable pageable
 	) {
 
-		JPQLQuery<PasswordRequestResponse.Search> query = jpaQueryFactory
-			.select(new QPasswordRequestResponse_Search(
-				passwordRequest.id,
-				passwordRequest.account.id,
-				passwordRequest.requestType,
-				passwordRequest.status
-			))
-			.from(passwordRequest);
+		BooleanBuilder conditions = new BooleanBuilder();
 
-		BooleanBuilder builder = new BooleanBuilder();
+		conditions.and(equalsRole(request.role()));
+		conditions.and(equalsPasswordRequestStatus(request.status()));
+		conditions.and(equalsPasswordRequestType(request.requestType()));
+		conditions.and(containsName(request.searchKeyword()));
 
-		if (request.role() != null) {
-			builder.and(passwordRequest.account.role.eq(request.role()));
-		}
-
-		if (request.status() != null) {
-			builder.and(passwordRequest.status.eq(request.status()));
-		}
-
-		if (request.requestType() != null) {
-			builder.and(passwordRequest.requestType.eq(request.requestType()));
-		}
-
-		if (StringUtils.hasText(request.searchKeyword())) {
-			builder.and(passwordRequest.account.name.contains(request.searchKeyword()));
-		}
-
-		query.where(builder);
-
-		List<PasswordRequestResponse.Search> list = query
+		List<PasswordRequestResponse.Search> list = jpaQueryFactory
+			.select(
+				new QPasswordRequestResponse_Search(
+					passwordRequest.id,
+					passwordRequest.account.id,
+					passwordRequest.requestType,
+					passwordRequest.status
+				)
+			)
+			.from(passwordRequest)
+			.where(conditions)
+			.orderBy(passwordRequest.createdAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		long totalCount = query.fetchCount();
+		JPAQuery<Long> totalCount = jpaQueryFactory
+			.select(passwordRequest.count())
+			.from(passwordRequest)
+			.where(conditions);
 
-		return new PageImpl<>(list, pageable, totalCount);
+		return PageableExecutionUtils.getPage(
+			list, pageable, totalCount::fetchOne
+		);
+	}
+
+	private BooleanExpression containsName(String searchKeyword) {
+		return StringUtils.hasText(searchKeyword)
+			? account.name.contains(searchKeyword)
+			: null;
+	}
+
+	private BooleanExpression equalsRole(UserRole role) {
+		return role != null
+			? passwordRequest.account.role.eq(role)
+			: null;
+	}
+
+	private BooleanExpression equalsPasswordRequestStatus(PasswordRequestStatus status) {
+		return status != null
+			? passwordRequest.status.eq(status)
+			: null;
+	}
+
+	private BooleanExpression equalsPasswordRequestType(PasswordRequestType type) {
+		return type != null
+			? passwordRequest.requestType.eq(type)
+			: null;
 	}
 }
