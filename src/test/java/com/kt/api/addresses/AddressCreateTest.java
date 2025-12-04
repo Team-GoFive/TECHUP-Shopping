@@ -1,6 +1,8 @@
 package com.kt.api.addresses;
 
+import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.UserEntityCreator.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -10,38 +12,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.common.AddressCreator;
-import com.kt.common.CurrentUserCreator;
+import com.kt.common.MockMvcTest;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.user.UserRepository;
 
-import jakarta.transaction.Transactional;
-
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
 @DisplayName("주소 생성 - POST /api/addresses")
-class AddressCreateTest {
+class AddressCreateTest extends MockMvcTest {
 
-	private final String URL = "/api/addresses";
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
 	@Autowired
 	AddressRepository addressRepository;
 	@Autowired
 	UserRepository userRepository;
+
 	UserEntity testMember;
 	AddressEntity address;
 	AddressRequest validRequest;
@@ -51,7 +40,8 @@ class AddressCreateTest {
 		testMember = createMember();
 		userRepository.save(testMember);
 
-		address = addressRepository.save(AddressCreator.createAddress(testMember));
+		address = AddressCreator.createAddress(testMember);
+		addressRepository.save(address);
 
 		validRequest = new AddressRequest(
 			address.getReceiverName(),
@@ -66,21 +56,22 @@ class AddressCreateTest {
 	@Test
 	@DisplayName("주소_생성_성공")
 	void 주소_생성_성공() throws Exception {
-
-		mockMvc.perform(post(URL)
+		// when
+		ResultActions actions = mockMvc.perform(
+			post("/api/addresses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(validRequest))
-				.with(SecurityMockMvcRequestPostProcessors.user(
-					CurrentUserCreator.getMemberUserDetails(testMember.getId())
-				)))
-			.andExpect(status().isOk());
+				.with(user(getMemberUserDetails(testMember.getEmail())))
+		);
+
+		// then
+		actions.andExpect(status().isOk());
 	}
 
 	@ParameterizedTest
 	@NullAndEmptySource
-	@DisplayName("주소_생성_실패__receiverName_null")
 	void 주소_생성_실패__receiverName_null(String invalid) throws Exception {
-
+		// when
 		AddressRequest address = new AddressRequest(
 			invalid,
 			validRequest.receiverMobile(),
@@ -90,12 +81,15 @@ class AddressCreateTest {
 			validRequest.detail()
 		);
 
-		mockMvc.perform(post(URL)
+		ResultActions actions = mockMvc.perform(
+			post("/api/addresses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(address))
-				.with(SecurityMockMvcRequestPostProcessors.user(CurrentUserCreator.getMemberUserDetails()
-				)))
-			.andExpect(status().isBadRequest());
+				.with(user(getMemberUserDetails()))
+		);
+
+		// then
+		actions.andExpect(status().isBadRequest());
 	}
 
 }

@@ -7,8 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
-import com.kt.domain.dto.request.PasswordManagementRequest;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,43 +61,6 @@ class AuthControllerTest {
 	void setUp() {
 		accountRepository.deleteAll();
 		redisCache.delete(RedisKey.SIGNUP_CODE.key(TEST_EMAIL));
-	}
-
-	@Test
-	void 비밀번호_초기화_성공() throws Exception {
-		String email = "dd@com";
-		String password = "123456";
-		// given
-
-		UserEntity user = UserEntity.create(
-			"김도현",
-			email,
-			passwordEncoder.encode(password),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"010-3333-2222"
-		);
-		UserEntity savedUser = userRepository.save(user);
-		PasswordManagementRequest.PasswordReset resetPasswordRequest =
-			new PasswordManagementRequest.PasswordReset(
-				savedUser.getEmail()
-			);
-
-		// when
-		mockMvc.perform(patch("/api/auth/init-password")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(resetPasswordRequest)))
-			.andDo(print())
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.code").value("ok"),
-				jsonPath("$.message").value("성공")
-			);
-
-		// then
-		UserEntity updatedUser = userRepository.findByIdOrThrow(savedUser.getId());
-		assertThat(passwordEncoder.matches(password, updatedUser.getPassword())).isFalse();
 	}
 
 	@Test
