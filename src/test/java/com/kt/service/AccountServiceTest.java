@@ -343,7 +343,35 @@ class AccountServiceTest {
 			() -> accountService.resetAccountPassword(member1.getId())
 		).isInstanceOf(CustomException.class);
 
-
 	}
 
+
+	@Test
+	void 관리자_다른_계정_비밀번호_변경_성공() {
+		String originPassword = "1234";
+		String updatedPassword = "1231231!";
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			member1,
+			updatedPassword,
+			PasswordRequestType.UPDATE
+		);
+		passwordRequestRepository.save(passwordRequest);
+
+		accountService.updateAccountPassword(member1.getId());
+
+		log.info(
+			"isMatch :: {}", passwordEncoder.matches(
+				originPassword, member1.getPassword()
+			)
+		);
+
+		assertFalse(
+			passwordEncoder.matches(
+				originPassword,
+				member1.getPassword()
+			)
+		);
+
+		log.info("passwordRequest status : {}", passwordRequest.getStatus());
+	}
 }

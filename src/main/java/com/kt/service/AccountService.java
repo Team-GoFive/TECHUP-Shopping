@@ -17,6 +17,8 @@ public interface AccountService {
 
 	void resetAccountPassword(UUID accountId);
 
+	void updateAccountPassword(UUID accountId);
+
 	void updatePassword(
 		UUID accountId,
 		String currentPassword,
@@ -26,5 +28,6 @@ public interface AccountService {
 	void deleteAccount(UUID accountId);
 
 	void deleteAccountPermanently(UUID accountId);
+
 
 }

@@ -29,7 +29,7 @@ public class EmailClient {
 
 	private final JavaMailSender mailSender;
 
-	public void sendMail(String email, MailTemplate template, String code) {
+	public void sendMail(String email, MailTemplate template, String velue) {
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(
@@ -42,14 +42,15 @@ public class EmailClient {
 				content = content.replace("${subject}", template.getSubject());
 				content = content.replace("${titleSubject}",
 					template == MailTemplate.VERIFY_EMAIL ? "인증 코드" : "임시 비밀번호");
-				content = content.replace("${tempCode}", code);
+				content = content.replace("${tempCode}", velue);
 				content = content.replace("${notice}", template.getNotice());
 			} else {
-				if (template == MailTemplate.VERIFY_EMAIL)
-					content = "<div> 인증 코드 : " + code + "</div>";
-				else content = "<div> 임시 비밀번호 : " + code + "</div>";
+				switch (template) {
+					case MailTemplate.VERIFY_EMAIL -> content = "<div> 인증 코드 : " + velue + "</div>";
+					case MailTemplate.RESET_PASSWORD -> content = "<div> 임시 비밀번호 : " + velue + "</div>";
+					case MailTemplate.UPDATE_PASSWORD -> content = "<div> 변경된 비밀번호 : " + velue + "</div>";
+				}
 			}
-
 			String sender = ((JavaMailSenderImpl) mailSender).getUsername();
 			helper.setFrom(sender);
 			helper.setTo(email);
