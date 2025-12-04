@@ -7,7 +7,9 @@ import com.kt.constant.PasswordRequestType;
 import com.kt.constant.mail.MailTemplate;
 import com.kt.domain.dto.request.AccountRequest;
 
+import com.kt.domain.dto.request.PasswordRequest;
 import com.kt.domain.dto.response.AccountResponse;
+import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 
 import com.kt.domain.entity.PasswordRequestEntity;
@@ -123,6 +125,14 @@ public class AccountServiceImpl implements AccountService {
 			decryptPassword
 		);
 
+	}
+
+	@Override
+	public Page<PasswordRequestResponse.Search> searchPasswordRequests(
+		PasswordRequest.Search request,
+		Pageable pageable
+	) {
+		return accountRepository.searchPasswordRequests(request, pageable);
 	}
 
 	private PasswordRequestEntity getPendingPasswordRequest(

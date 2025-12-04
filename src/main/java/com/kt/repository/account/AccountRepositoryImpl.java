@@ -2,10 +2,14 @@ package com.kt.repository.account;
 
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
+import com.kt.domain.dto.request.PasswordRequest;
 import com.kt.domain.dto.response.AccountResponse;
+import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.dto.response.QAccountResponse_Search;
+import com.kt.domain.dto.response.QPasswordRequestResponse_Search;
 import com.kt.domain.entity.QAbstractAccountEntity;
 import com.kt.domain.entity.QCourierEntity;
+import com.kt.domain.entity.QPasswordRequestEntity;
 import com.kt.domain.entity.QUserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
@@ -25,6 +29,7 @@ import java.util.List;
 import static com.kt.domain.entity.QAbstractAccountEntity.abstractAccountEntity;
 import static com.kt.domain.entity.QCourierEntity.courierEntity;
 import static com.kt.domain.entity.QUserEntity.userEntity;
+import static com.kt.domain.entity.QPasswordRequestEntity.passwordRequestEntity;
 
 @Slf4j
 @Repository
@@ -35,6 +40,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 	private final QAbstractAccountEntity account = abstractAccountEntity;
 	private final QCourierEntity courier = courierEntity;
 	private final QUserEntity user = userEntity;
+	private final QPasswordRequestEntity passwordRequest = passwordRequestEntity;
 
 	@Override
 	public Page<AccountResponse.Search> searchAccounts(AccountRequest.Search request, Pageable pageable) {
@@ -72,6 +78,51 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 		query.where(builder);
 
 		List<AccountResponse.Search> list = query
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		long totalCount = query.fetchCount();
+
+		return new PageImpl<>(list, pageable, totalCount);
+	}
+
+	@Override
+	public Page<PasswordRequestResponse.Search> searchPasswordRequests(
+		PasswordRequest.Search request,
+		Pageable pageable
+	) {
+
+		JPQLQuery<PasswordRequestResponse.Search> query = jpaQueryFactory
+			.select(new QPasswordRequestResponse_Search(
+				passwordRequest.id,
+				passwordRequest.account.id,
+				passwordRequest.requestType,
+				passwordRequest.status
+			))
+			.from(passwordRequest);
+
+		BooleanBuilder builder = new BooleanBuilder();
+
+		if (request.role() != null) {
+			builder.and(passwordRequest.account.role.eq(request.role()));
+		}
+
+		if (request.status() != null) {
+			builder.and(passwordRequest.status.eq(request.status()));
+		}
+
+		if (request.requestType() != null) {
+			builder.and(passwordRequest.requestType.eq(request.requestType()));
+		}
+
+		if (StringUtils.hasText(request.searchKeyword())) {
+			builder.and(passwordRequest.account.name.contains(request.searchKeyword()));
+		}
+
+		query.where(builder);
+
+		List<PasswordRequestResponse.Search> list = query
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();

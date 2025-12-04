@@ -17,6 +17,5 @@ public class PasswordRequest {
 		PasswordRequestType requestType,
 		String searchKeyword
 	) {
-
 	}
 }
