@@ -1,0 +1,122 @@
+package com.kt.domain.entity;
+
+import static lombok.AccessLevel.*;
+
+import com.kt.constant.ProductStatus;
+import com.kt.domain.entity.common.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Entity(name = "product")
+@NoArgsConstructor(access = PROTECTED)
+public class ProductEntity extends BaseEntity {
+
+	@Column(nullable = false)
+	private String name;
+
+	@Column(nullable = false)
+	private Long price;
+
+	@Column(nullable = false)
+	private Long stock;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ProductStatus status;
+
+	@ManyToOne
+	@JoinColumn(name = "category_id", nullable = false)
+	private CategoryEntity category;
+
+	protected ProductEntity(
+		String name,
+		Long price,
+		Long stock,
+		ProductStatus status,
+		CategoryEntity category
+	) {
+		this.name = name;
+		this.price = price;
+		this.stock = stock;
+		this.status = status;
+		this.category = category;
+	}
+
+	public static ProductEntity create(
+		final String name,
+		final Long price,
+		final Long stock,
+		final CategoryEntity category
+	) {
+		return new ProductEntity(
+			name,
+			price,
+			stock,
+			ProductStatus.ACTIVATED,
+			category
+		);
+	}
+
+	public static ProductEntity create(
+		final String name,
+		final Long price,
+		final Long stock,
+		final ProductStatus status,
+		final CategoryEntity category
+	) {
+		return new ProductEntity(
+			name,
+			price,
+			stock,
+			status,
+			category
+		);
+	}
+
+	public void update(String name, Long price, Long stock, CategoryEntity category) {
+		this.name = name;
+		this.price = price;
+		this.stock = stock;
+		this.category = category;
+	}
+
+	public void delete() {
+		this.status = ProductStatus.DELETED;
+	}
+
+	public void activate() {
+		this.status = ProductStatus.ACTIVATED;
+	}
+
+	public void inActivate() {
+		this.status = ProductStatus.IN_ACTIVATED;
+	}
+
+	public void toggleActive() {
+		if (status == ProductStatus.ACTIVATED) {
+			inActivate();
+			return;
+		}
+
+		if (status == ProductStatus.IN_ACTIVATED) {
+			activate();
+		}
+	}
+
+
+	public void addStock(Long quantity) {
+		this.stock += quantity;
+	}
+
+	public void decreaseStock(Long quantity) {
+		this.stock -= quantity;
+	}
+}

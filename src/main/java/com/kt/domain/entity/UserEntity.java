@@ -1,0 +1,85 @@
+package com.kt.domain.entity;
+
+import static lombok.AccessLevel.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.kt.constant.Gender;
+import com.kt.constant.UserRole;
+import com.kt.constant.UserStatus;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Entity
+@Table(name = "\"user\"")
+@NoArgsConstructor(access = PROTECTED)
+@DiscriminatorValue("USER")
+public class UserEntity extends AbstractAccountEntity {
+
+	@OneToMany(
+		mappedBy = "createdBy",
+		cascade = CascadeType.REMOVE,
+		orphanRemoval = true
+	)
+	List<AddressEntity> addresses;
+	@Column(nullable = false)
+	private LocalDate birth;
+	@Column(nullable = false)
+	private String mobile;
+
+	protected UserEntity(
+		String name,
+		String email,
+		String password,
+		UserRole role,
+		Gender gender,
+		LocalDate birth,
+		String mobile
+	) {
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+		this.gender = gender;
+		this.birth = birth;
+		this.mobile = mobile;
+		this.status = UserStatus.ENABLED;
+	}
+
+	public static UserEntity create(
+		final String name,
+		final String email,
+		final String password,
+		final UserRole role,
+		final Gender gender,
+		final LocalDate birth,
+		final String mobile
+	) {
+		return new UserEntity(
+			name, email, password, role, gender, birth, mobile
+		);
+	}
+
+	public void delete(){ this.status = UserStatus.DELETED; }
+
+	public void updateDetails(
+		String name,
+		String mobile,
+		LocalDate birth,
+		Gender gender
+	){
+		this.name = name;
+		this.mobile = mobile;
+		this.birth = birth;
+		this.gender = gender;
+	}
+}

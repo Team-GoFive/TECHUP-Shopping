@@ -67,4 +67,4 @@ application*.yaml
 application*.properties
 
 # Environment files
-.env
+*.env
