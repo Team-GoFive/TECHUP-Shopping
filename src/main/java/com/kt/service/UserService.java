@@ -14,27 +14,31 @@ import com.kt.domain.dto.response.UserResponse;
 public interface UserService {
 	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId);
 
-	UserResponse.Orders getOrdersByUserId(UUID id);
+	UserResponse.Orders getOrdersByUserId(UUID currentId, UUID subjectId);
 
-	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, UserRole role);
+	Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, UserRole role);
 
-	UserResponse.UserDetail getUserDetail(UUID id);
+	UserResponse.UserDetail getUserDetail(UUID currentId, UUID subjectId);
 
-	UserResponse.UserDetail getAdminDetail(UUID id);
+	UserResponse.UserDetail getUserDetailSelf(UUID currentId);
 
-	void disableUser(UUID id);
+	UserResponse.UserDetail getAdminDetail(UUID currentId, UUID subjectId);
 
-	void enableUser(UUID id);
+	void disableUser(UUID currentId, UUID subjectId);
 
-	void deleteUser(UUID id);
+	void enableUser(UUID currentId, UUID subjectId);
 
-	void deleteUserPermanently(UUID id);
+	void deleteUser(UUID currentId, UUID subjectId);
 
-	void retireUser(UUID id);
+	void deleteUserPermanently(UUID currentId, UUID id);
 
-	void createAdmin(SignupRequest.SignupMember request);
+	void retireUser(UUID currentId, UUID subjectId) ;
 
-	void deleteAdmin(UUID adminId);
+	void createAdmin(UUID userId, SignupRequest.SignupMember request);
 
-	void updateUserDetail(UUID userId, UserRequest.UpdateDetails details);
+	void deleteAdmin(UUID currentId, UUID adminId);
+
+	void updateUserDetail(UUID currentUserId, UUID targetUserId, UserRequest.UpdateDetails details);
+
+	void updateUserDetailSelf(UUID currentUserId, UserRequest.UpdateDetails details);
 }

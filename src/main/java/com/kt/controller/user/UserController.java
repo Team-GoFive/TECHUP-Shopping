@@ -37,7 +37,7 @@ public class UserController implements UserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	){
 		return wrap(
-			userService.getUserDetail(defaultCurrentUser.getId())
+			userService.getUserDetailSelf(defaultCurrentUser.getId())
 		);
 	}
 
@@ -48,7 +48,7 @@ public class UserController implements UserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@RequestBody @Valid UserRequest.UpdateDetails request
 	){
-		userService.updateUserDetail(
+		userService.updateUserDetailSelf(
 			defaultCurrentUser.getId(),
 			request
 		);

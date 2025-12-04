@@ -1,5 +1,6 @@
 package com.kt.api.admin.user;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,29 +34,29 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayName("유저 상세 조회 (어드민) - GET /api/admin/users/{userId}")
 public class UserDetailTest extends MockMvcTest {
 
-	private final DefaultCurrentUser userDetails = CurrentUserCreator.getAdminUserDetails();
-	UserEntity testUser;
-	UserEntity testAdmin;
+	DefaultCurrentUser adminDetails;
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+
+	UserEntity testAdmin;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-
-		testAdmin = UserEntityCreator.createAdmin();
 		testUser = UserEntityCreator.createMember();
-
 		userRepository.save(testUser);
+		testAdmin = UserEntityCreator.createAdmin();
 		userRepository.save(testAdmin);
+		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
 	@Test
-	void 회원_상세_조회_성공() throws Exception {
+	void 회원_상세_조회_성공__200_OK() throws Exception {
 
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/admin/users/{userId}", testUser.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				.with(user(adminDetails))
 		);
 
 		// then
@@ -75,14 +76,25 @@ public class UserDetailTest extends MockMvcTest {
 
 	@Test
 	void 회원_상세_조회_실패__404_NotFound() throws Exception {
-
-		mockMvc.perform(
+		// when
+		ResultActions actions = mockMvc.perform(
 				get("/api/admin/users/{userId}", UUID.randomUUID())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-			)
-			.andDo(print())
-			.andExpectAll(
-				status().isNotFound());
+					.with(user(adminDetails))
+			);
+
+		// then
+		actions.andExpect(status().isNotFound());
 	}
 
+	@Test
+	void 회원_상세_조회__실패_일반계정에서_시도_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+				get("/api/admin/users/{userId}", testUser.getId())
+					.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
+			);
+
+		// then
+		actions.andExpect(status().isForbidden());
+	}
 }

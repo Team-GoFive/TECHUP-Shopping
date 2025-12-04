@@ -24,11 +24,14 @@ public class CourierDetailTest extends MockMvcTest {
 	CourierRepository courierRepository;
 
 	CourierEntity testCourier;
+	CourierEntity testCourier2;
 	@BeforeEach
 	void setUp() throws Exception {
 		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
+		testCourier2 = CourierEntityCreator.createCourierEntity();
+		courierRepository.save(testCourier2);
 	}
 
 	@Test
@@ -36,7 +39,7 @@ public class CourierDetailTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/couriers/{courierId}", testCourier.getId())
-				.with(user(CurrentUserCreator.getMemberUserDetails()))
+				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier.getId())))
 		);
 
 		// then
@@ -44,5 +47,17 @@ public class CourierDetailTest extends MockMvcTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.id").value(testCourier.getId().toString()))
 			.andExpect(jsonPath("$.data.email").value(testCourier.getEmail().toString()));
+	}
+
+	@Test
+	void 배송기사조회_실패__다른_배송기사_계정_403_FORBIDDEN() throws Exception {
+		// when
+		ResultActions actions = mockMvc.perform(
+			get("/api/couriers/{courierId}", testCourier.getId())
+				.with(user(CurrentUserCreator.getCourierUserDetails(testCourier2.getId())))
+		);
+
+		// then
+		actions.andExpect(status().isForbidden());
 	}
 }

@@ -17,11 +17,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
@@ -33,6 +35,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -184,7 +187,7 @@ class UserServiceTest {
 		);
 		orderRepository.save(order);
 		// when
-		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId);
+		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId, userId);
 
 		// then
 		assertThat(foundOrder).isNotNull();
@@ -239,7 +242,7 @@ class UserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "테스터", UserRole.MEMBER);
+		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터", UserRole.MEMBER);
 
 		// then
 		assertThat(result).isNotNull();
@@ -250,7 +253,7 @@ class UserServiceTest {
 	void 어드민_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(Pageable.ofSize(10), "어드민", UserRole.ADMIN);
+		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민", UserRole.ADMIN);
 
 		// then
 		assertThat(result).isNotNull();
@@ -258,8 +261,8 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 유저_상세_조회() {
-		UserResponse.UserDetail savedUser = userService.getUserDetail(userId);
+	void 유저_상세_본인조회() {
+		UserResponse.UserDetail savedUser = userService.getUserDetail(userId, userId);
 
 		// then
 		assertThat(userId).isNotNull();
@@ -267,8 +270,8 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 어드민_상세_조회() {
-		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId);
+	void 어드민_상세_본인조회() {
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId, AdminId);
 
 		// then
 		assertThat(AdminId).isNotNull();
@@ -276,24 +279,55 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 유저_상태_변경_disabled() {
+	void 유저_상세_조회__실패_다른사람조회() {
+		assertThatThrownBy(
+			() -> userService.getUserDetail(userId, AdminId)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
+	}
+
+	@Test
+	void 어드민_상세_다른어드민조회__성공() {
+		UserEntity someAdmin = UserEntityCreator.createAdmin();
+		userRepository.save(someAdmin);
 
 		// when
-		userService.disableUser(testUser.getId());
+		UserResponse.UserDetail savedUser = userService.getAdminDetail(someAdmin.getId(), AdminId);
+
+		// then
+		assertThat(AdminId).isNotNull();
+		assertThat(savedUser.name()).isEqualTo("어드민테스터");
+	}
+
+
+	@Test
+	void 유저_상태_변경_disabled() {
+		// when
+		userService.disableUser(testAdmin.getId(), testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 
 		// then
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DISABLED);
+	}
 
+	@Test
+	void 유저_상태_변경__실패_어드민아님() {
+		// then
+		assertThatThrownBy(
+			() -> userService.disableUser(testUser2.getId(), testUser.getId())
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
 	void 유저_상태_변경_enabled() {
 
 		// when
-		userService.disableUser(testUser.getId());
-		userService.enableUser(testUser.getId());
+		userService.disableUser(testAdmin.getId(), testUser.getId());
+		userService.enableUser(testAdmin.getId(), testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 
 		// then
@@ -306,7 +340,7 @@ class UserServiceTest {
 	void 유저_상태_변경_retired() {
 
 		// when
-		userService.retireUser(testUser.getId());
+		userService.retireUser(testAdmin.getId(), testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 		// then
 		assertThat(foundedUser).isNotNull();
@@ -316,14 +350,12 @@ class UserServiceTest {
 
 	@Test
 	void 유저_상태_변경_delete() {
-
 		// when
-		userService.deleteUser(testUser.getId());
+		userService.deleteUser(testUser.getId() , testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 		// then
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
-
 	}
 
 	@Test
@@ -339,7 +371,7 @@ class UserServiceTest {
 		);
 
 		// when
-		userService.createAdmin(request);
+		userService.createAdmin(testAdmin.getId(), request);
 
 		// then
 		UserEntity admin = userRepository.findByEmail("admin@test.com")
@@ -351,11 +383,49 @@ class UserServiceTest {
 		assertThat(admin.getPassword()).isNotEqualTo("1234");
 	}
 
+
+	@Test
+	void 어드민_유저_생성__실패_어드민아님() {
+		// given
+		SignupRequest.SignupMember request = new SignupRequest.SignupMember(
+			"어드민생성",
+			"admin@test.com",
+			"1234",
+			Gender.MALE,
+			LocalDate.of(1995, 5, 5),
+			"010-5555-5555"
+		);
+
+		// then
+		assertThatThrownBy(
+			()-> userService.createAdmin(testUser.getId(), request)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
+	}
+
 	@Test
 	void 어드민_삭제_성공() {
-		userService.deleteAdmin(testUser.getId());
+		userService.deleteAdmin(testAdmin.getId(), testAdmin.getId());
+		Assertions.assertEquals(UserStatus.DELETED, testAdmin.getStatus());
+	}
 
-		Assertions.assertEquals(UserStatus.DELETED, testUser.getStatus());
+	@Test
+	void 어드민_삭제__실패_일반계정() {
+		assertThatThrownBy(
+			()-> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
+	}
+
+	@Test
+	void 어드민_삭제__실패_대상이_어드민아님() {
+		assertThatThrownBy(
+			() -> userService.deleteAdmin(testAdmin.getId(), testUser.getId())
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
 	}
 
 	@Test
@@ -380,20 +450,17 @@ class UserServiceTest {
 		OrderEntity savedOrder = orderRepository.save(order);
 
 		// when
-		userService.deleteUserPermanently(savedUser.getId());
+		userService.deleteUserPermanently(testAdmin.getId() ,savedUser.getId());
 
 		// then
 		assertThat(userRepository.existsById(savedUser.getId())).isFalse();
 		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
 		assertThat(foundOrder).isNotNull();
-
 	}
 
 	@Test
 	void 내정보조회_성공() {
-		UserResponse.UserDetail foundedDetail = userService.getUserDetail(
-			testUser.getId()
-		);
+		UserResponse.UserDetail foundedDetail = userService.getUserDetailSelf(testUser.getId());
 
 		Assertions.assertNotNull(foundedDetail);
 		Assertions.assertEquals(testUser.getName(), foundedDetail.name());
@@ -409,7 +476,7 @@ class UserServiceTest {
 			Gender.FEMALE
 		);
 
-		userService.updateUserDetail(
+		userService.updateUserDetailSelf(
 			testUser.getId(),
 			updateDetails
 		);
