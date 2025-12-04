@@ -26,6 +26,7 @@ public class AdminCategoryController implements AdminCategorySwaggerSupporter {
 
 	private final CategoryService categoryService;
 
+	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> create(
 		@RequestBody CategoryRequest.Create request
@@ -37,6 +38,7 @@ public class AdminCategoryController implements AdminCategorySwaggerSupporter {
 		return empty();
 	}
 
+	@Override
 	@PutMapping("/{categoryId}")
 	public ResponseEntity<ApiResult<Void>> update(
 		@RequestBody CategoryRequest.Update request,
@@ -49,6 +51,7 @@ public class AdminCategoryController implements AdminCategorySwaggerSupporter {
 		return empty();
 	}
 
+	@Override
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<ApiResult<Void>> delete(
 		@PathVariable UUID categoryId
