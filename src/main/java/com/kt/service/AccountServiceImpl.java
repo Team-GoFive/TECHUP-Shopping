@@ -6,15 +6,16 @@ import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.mail.MailTemplate;
 import com.kt.domain.dto.request.AccountRequest;
+
 import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 
-import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.infra.mail.EmailClient;
 import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
+
+import com.kt.util.EncryptUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -83,14 +84,10 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void resetAccountPassword(UUID accountId) {
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		PasswordRequestEntity passwordRequest = passwordRequestRepository
-			.findByAccountAndStatusAndRequestType(
-				account,
-				PasswordRequestStatus.PENDING,
-				PasswordRequestType.RESET
-			).orElseThrow(
-				() -> new CustomException(ErrorCode.PASSWORD_RESET_REQUESTS_NOT_FOUND)
-			);
+		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
+			account,
+			PasswordRequestType.RESET
+		);
 
 		String resetPassword = getRandomPassword();
 		passwordRequest.updateStatus(
@@ -102,6 +99,49 @@ public class AccountServiceImpl implements AccountService {
 			MailTemplate.RESET_PASSWORD,
 			resetPassword
 		);
+	}
+
+	@Override
+	public void updateAccountPassword(UUID accountId) {
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
+			account,
+			PasswordRequestType.UPDATE
+		);
+
+		String decryptPassword = EncryptUtil.decrypt(passwordRequest.getEncryptedPassword());
+		passwordRequest.updateStatus(
+			PasswordRequestStatus.COMPLETED
+		);
+		account.updatePassword(
+			passwordEncoder.encode(decryptPassword)
+		);
+		passwordRequest.clearEncryptedPassword();
+		emailClient.sendMail(
+			account.getEmail(),
+			MailTemplate.UPDATE_PASSWORD,
+			decryptPassword
+		);
+
+	}
+
+	private PasswordRequestEntity getPendingPasswordRequest(
+		AbstractAccountEntity requiredAccount,
+		PasswordRequestType requestType
+	) {
+
+		ErrorCode errorCode = requestType == PasswordRequestType.UPDATE ?
+			ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND :
+			ErrorCode.PASSWORD_RESET_REQUESTS_NOT_FOUND;
+
+		return passwordRequestRepository
+			.findByAccountAndStatusAndRequestType(
+				requiredAccount,
+				PasswordRequestStatus.PENDING,
+				requestType
+			).orElseThrow(
+				() -> new CustomException(errorCode)
+			);
 	}
 
 	private String getRandomPassword() {

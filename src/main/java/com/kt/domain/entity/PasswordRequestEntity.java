@@ -47,6 +47,10 @@ public class PasswordRequestEntity extends BaseEntity {
 		this.encryptedPassword = EncryptUtil.encrypt(resetPassword);
 	}
 
+	public void clearEncryptedPassword() {
+		this.encryptedPassword = null;
+	}
+
 	protected PasswordRequestEntity(
 		AbstractAccountEntity account,
 		String encryptedPassword,
