@@ -49,4 +49,14 @@ public class CourierResponse {
 		CourierWorkStatus workStatus
 	) {
 	}
+
+	public record CourierDetail(
+		UUID id,
+		String name,
+		String email,
+		Gender gender,
+		UserStatus status,
+		CourierWorkStatus workStatus
+	) {
+	}
 }

@@ -2,6 +2,7 @@ package com.kt.domain.dto.request;
 
 import com.kt.constant.Gender;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 public class SignupRequest {
 
+	@Schema(name = "SignupEmailRequest")
 	public record SignupEmail(
 		@Email(message = "올바른 이메일 형식이 아닙니다.")
 		@NotBlank(message = "이메일은 필수 항목입니다.")
@@ -18,6 +20,7 @@ public class SignupRequest {
 	) {
 	}
 
+	@Schema(name = "VerifySignupCodeRequest")
 	public record VerifySignupCode(
 		@Email(message = "올바른 이메일 형식이 아닙니다.")
 		@NotBlank(message = "이메일은 필수 항목입니다.")
@@ -25,9 +28,10 @@ public class SignupRequest {
 
 		@NotBlank(message = "인증 코드는 필수 항목입니다.")
 		String authCode
-	){
+	) {
 	}
 
+	@Schema(name = "SignupMemberRequest")
 	public record SignupMember(
 		@NotBlank(message = "이름은 필수 항목입니다.")
 		String name,
@@ -54,6 +58,7 @@ public class SignupRequest {
 	) {
 	}
 
+	@Schema(name = "SignupCourierRequest")
 	public record SignupCourier(
 		@NotBlank(message = "이름은 필수 항목입니다.")
 		String name,

@@ -31,6 +31,7 @@ public class CourierServiceImpl implements CourierService {
 		);
 	}
 
+
 	@Override
 	public CourierResponse.DetailAdmin getDetailForAdmin(UUID courierId) {
 		CourierEntity courierEntity = courierRepository.findByIdOrThrow(courierId);
