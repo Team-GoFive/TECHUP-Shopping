@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.CourierEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.domain.entity.CourierEntity;
@@ -87,12 +88,12 @@ class CourierServiceTest {
 			Gender.FEMALE
 		);
 
-
 		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
+		assertThatThrownBy(
 			() -> courierService.updateDetail(someCourier.getId(), testCourier.getId(), update)
-		);
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
@@ -115,9 +116,10 @@ class CourierServiceTest {
 		courierRepository.save(someCourier);
 
 		// then
-		Assertions.assertThrowsExactly(
-			CustomException.class,
+		assertThatThrownBy(
 			() -> courierService.getDetail(someCourier.getId(), testCourier.getId())
-		);
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 }
