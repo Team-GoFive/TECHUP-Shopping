@@ -56,6 +56,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 		}
 	)
 	ResponseEntity<ApiResult<Void>> cancelOrder(
+		DefaultCurrentUser currentUser,
 		UUID orderId
 	);
 
@@ -67,6 +68,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 		}
 	)
 	ResponseEntity<ApiResult<Void>> updateOrder(
+		DefaultCurrentUser currentUser,
 		UUID orderId,
 		OrderRequest.Update request
 	);
