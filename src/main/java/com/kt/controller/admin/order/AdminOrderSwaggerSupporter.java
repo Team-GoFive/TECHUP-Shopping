@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Admin Order", description = "관리자 주문 관련 API")
+@Tag(name = "Order", description = "주문 관련 API")
 public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(

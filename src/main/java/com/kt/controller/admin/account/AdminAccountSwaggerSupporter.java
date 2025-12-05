@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.UUID;
 
-@Tag(name = "Admin Account", description = "관리자 계정 관리 관련 API")
+@Tag(name = "Account", description = "관리자 계정 관리 관련 API")
 public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
@@ -65,12 +65,10 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		summary = "계정 비밀번호 변경",
 		description = "관리자의 계정 비밀번호 변경 API",
 		parameters = {
-			@Parameter(name = "accountId" , description = "계정 ID")
+			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID accountId);
-
-
 
 	@Operation(
 		summary = "계정 비밀번호 변경 및 초기화 요청 목록",
@@ -80,6 +78,5 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		@ParameterObject PasswordRequest.Search request,
 		@ModelAttribute Paging paging
 	);
-
 
 }

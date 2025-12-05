@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 import static com.kt.common.api.ApiResult.*;
 
-@Tag(name = "auth", description = "인증 관련 API")
+@Tag(name = "Auth", description = "인증 관련 API")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor

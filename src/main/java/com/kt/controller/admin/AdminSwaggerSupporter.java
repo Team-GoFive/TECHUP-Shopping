@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "admin", description = "관리자 관리 관련 API")
+@Tag(name = "Admin", description = "관리자 관리 관련 API")
 public interface AdminSwaggerSupporter {
 	@Operation(
 		summary = "관리자 검색", description = "관리자를 검색"
