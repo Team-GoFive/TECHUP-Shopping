@@ -31,12 +31,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrderSwaggerSupporter {
 
 	private final OrderService orderService;
 
+	@Override
 	@GetMapping
-	ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
+	public ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
 		return ApiResult.page(
@@ -44,8 +45,9 @@ public class OrderController {
 		);
 	}
 
+	@Override
 	@GetMapping("/{orderId}")
-	ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
+	public ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
 		return ApiResult.wrap(
@@ -53,8 +55,9 @@ public class OrderController {
 		);
 	}
 
+	@Override
 	@PostMapping
-	ResponseEntity<ApiResult<Void>> createOrder(
+	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@Valid @RequestBody OrderRequest request
 	) {
@@ -66,8 +69,9 @@ public class OrderController {
 		return empty();
 	}
 
+	@Override
 	@PatchMapping("/{orderId}/cancel")
-	ResponseEntity<ApiResult<Void>> cancelOrder(
+	public ResponseEntity<ApiResult<Void>> cancelOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId
 	) {
@@ -75,8 +79,9 @@ public class OrderController {
 		return empty();
 	}
 
+	@Override
 	@PutMapping("/{orderId}")
-	ResponseEntity<ApiResult<Void>> updateOrder(
+	public ResponseEntity<ApiResult<Void>> updateOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request

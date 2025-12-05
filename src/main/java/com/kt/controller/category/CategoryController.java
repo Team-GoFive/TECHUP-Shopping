@@ -16,10 +16,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController implements CategorySwaggerSupporter{
 
 	private final CategoryService categoryService;
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<List<CategoryResponse.CategoryTreeItem>>> getAllCategories() {
 		List<CategoryResponse.CategoryTreeItem> list = categoryService.getAll();

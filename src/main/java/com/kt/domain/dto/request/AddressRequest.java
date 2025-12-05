@@ -1,7 +1,9 @@
 package com.kt.domain.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(name = "AddressRequest")
 public record AddressRequest(
 	@NotBlank(message = "수신자 이름은 필수입니다.")
 	String receiverName,
