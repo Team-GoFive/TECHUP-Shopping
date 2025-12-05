@@ -15,6 +15,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.UUID;
 
 @Tag(name = "Account", description = "관리자 계정 관리 관련 API")
 public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
@@ -32,17 +37,16 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		summary = "계정 논리 삭제",
 		description = "관리자의 계정 논리 삭제(Soft Delete) API",
 		parameters = {
-			@Parameter(name = "accountId" , description = "계정 ID")
+			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> deleteAccount(UUID accountId);
-
 
 	@Operation(
 		summary = "계정 물리 삭제",
 		description = "관리자의 계정 물리 삭제(Hard Delete) API",
 		parameters = {
-			@Parameter(name = "accountId" , description = "계정 ID")
+			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> deleteAccountPermanently(UUID accountId);
@@ -51,7 +55,7 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		summary = "계정 비밀번호 초기화",
 		description = "관리자의 계정 비밀번호 초기화 API",
 		parameters = {
-			@Parameter(name = "accountId" , description = "계정 ID")
+			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> resetAccountPassword(UUID accountId);
@@ -60,12 +64,10 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		summary = "계정 비밀번호 변경",
 		description = "관리자의 계정 비밀번호 변경 API",
 		parameters = {
-			@Parameter(name = "accountId" , description = "계정 ID")
+			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
 	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID accountId);
-
-
 
 	@Operation(
 		summary = "계정 비밀번호 변경 및 초기화 요청 목록",
@@ -75,6 +77,5 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 		@ParameterObject PasswordRequest.Search request,
 		@ModelAttribute Paging paging
 	);
-
 
 }
