@@ -1,11 +1,5 @@
 package com.kt.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import lombok.RequiredArgsConstructor;
-
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -17,6 +11,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.kt.common.profile.DevProfile;
+import com.kt.common.profile.LocalProfile;
+import com.kt.common.profile.ProdProfile;
+import com.kt.common.profile.TestProfile;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,6 +28,8 @@ public class RedisConfiguration {
 	private final RedisProperties redisProperties;
 
 	@Bean
+	@DevProfile
+	@ProdProfile
 	public RedissonClient redissonClient() {
 		var config = new Config();
 		var host = redisProperties.getCluster().getNodes().getFirst();
@@ -34,6 +39,19 @@ public class RedisConfiguration {
 			.useClusterServers()
 			.addNodeAddress(uri);
 
+		return Redisson.create(config);
+	}
+
+	@Bean
+	@LocalProfile
+	@TestProfile
+	public RedissonClient localRedissonClient() {
+		var config = new Config();
+		var host = redisProperties.getCluster().getNodes().getFirst();
+		var uri = String.format("redis://%s", host);
+
+		config
+			.useSingleServer().setAddress(uri);
 		return Redisson.create(config);
 	}
 
