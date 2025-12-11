@@ -34,7 +34,7 @@ public class AuthController extends SwaggerAssistance {
 	private final AuthService authService;
 
 	@Operation(
-		summary = "인증 번호 전송",
+		summary = "이메일 인증 코드 전송",
 		description = "요청된 이메일로 인증 번호 전송 API"
 	)
 	@PostMapping("/email/code")
@@ -46,11 +46,11 @@ public class AuthController extends SwaggerAssistance {
 	}
 
 	@Operation(
-		summary = "인증 번호 검증",
+		summary = "이메일 인증 코드 검증",
 		description = "이메일로 전송된 인증 코드 검증 API"
 	)
 	@PostMapping("/email/verify")
-	public ResponseEntity<ApiResult<Void>> verifySignupCode(
+	public ResponseEntity<ApiResult<Void>> verifyAuthCode(
 		@RequestBody @Valid SignupRequest.VerifySignupCode request
 	) {
 		authService.verifySignupCode(request);
