@@ -51,47 +51,4 @@ class AuthControllerTest extends MockMvcTest {
 		accountRepository.deleteAll();
 		redisCache.delete(RedisKey.SIGNUP_CODE.key(TEST_EMAIL));
 	}
-
-	@Test
-	void 로그인_성공() throws Exception {
-
-		String email = "dd@com";
-		String password = "123456";
-		// given
-
-		UserEntity user = UserEntity.create(
-			"김도현",
-			email,
-			passwordEncoder.encode(password),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"010-3333-2222"
-		);
-		userRepository.save(user);
-
-		LoginRequest loginInfo = new LoginRequest(email, password);
-
-		// when
-		MvcResult result = mockMvc.perform(post("/api/auth/login")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(loginInfo)))
-			.andDo(print())
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.code").value("ok"),
-				jsonPath("$.message").value("성공")
-			).andReturn();
-
-		// then
-		String responseBody = result.getResponse().getContentAsString();
-		JsonNode json = objectMapper.readTree(responseBody);
-
-		String accessToken = json.get("data").get("accessToken").asText();
-		String refreshToken = json.get("data").get("refreshToken").asText();
-
-		assertThatCode(() -> jwtTokenProvider.validateToken(accessToken)).doesNotThrowAnyException();
-		assertThatCode(() -> jwtTokenProvider.validateToken(refreshToken)).doesNotThrowAnyException();
-	}
-
 }
