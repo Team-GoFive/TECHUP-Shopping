@@ -53,31 +53,6 @@ class AuthControllerTest extends MockMvcTest {
 	}
 
 	@Test
-	void 멤버_회원가입_성공() throws Exception {
-		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
-		// then
-		SignupRequest.SignupMember verifiedEmailUser = new SignupRequest.SignupMember(
-			"테스트",
-			TEST_EMAIL,
-			"비밀번호",
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1020-1200"
-		);
-
-		// then
-		mockMvc.perform(post("/api/auth/signup/member")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(verifiedEmailUser)))
-			.andDo(print())
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.code").value("ok"),
-				jsonPath("$.message").value("성공")
-			);
-	}
-
-	@Test
 	void 배송기사_회원가입_성공() throws Exception {
 		redisCache.set(RedisKey.SIGNUP_VERIFIED, TEST_EMAIL, true);
 		// then

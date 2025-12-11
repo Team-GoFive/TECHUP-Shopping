@@ -58,20 +58,20 @@ public class AuthController extends SwaggerAssistance {
 	}
 
 	@Operation(
-		summary = "회원 가입",
-		description = "회원 가입 API"
+		summary = "유저 회원 가입",
+		description = "유저 회원 가입 API"
 	)
-	@PostMapping("/signup/member")
-	public ResponseEntity<ApiResult<Void>> signupMember(
-		@RequestBody @Valid SignupRequest.SignupMember request
+	@PostMapping("/signup/user")
+	public ResponseEntity<ApiResult<Void>> signupUser(
+		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
-		authService.signupMember(request);
+		authService.signupUser(request);
 		return empty();
 	}
 
 	@Operation(
-		summary = "기사 가입",
-		description = "기사 가입 API"
+		summary = "기사 회원 가입",
+		description = "기사 회원 가입 API"
 	)
 	@PostMapping("/signup/courier")
 	public ResponseEntity<ApiResult<Void>> signupCourier(

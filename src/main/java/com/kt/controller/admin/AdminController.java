@@ -73,7 +73,7 @@ public class AdminController implements AdminSwaggerSupporter {
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@RequestBody @Valid SignupRequest.SignupMember request
+ 		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
 		adminAdminService.createAdmin(currentUser.getId(), request);
 		return empty();
