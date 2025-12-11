@@ -50,7 +50,7 @@ public interface AdminSwaggerSupporter {
 	)
 	ResponseEntity<ApiResult<Void>> createAdmin(
 		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@RequestBody @Valid SignupRequest.SignupMember request
+		@RequestBody @Valid SignupRequest.SignupUser request
 	);
 
 	@Operation(

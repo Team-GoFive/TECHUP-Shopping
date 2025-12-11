@@ -1,7 +1,7 @@
 package com.kt.service;
 
 import static com.kt.common.SignupCourierRequestCreator.*;
-import static com.kt.common.SignupMemberRequestCreator.*;
+import static com.kt.common.SignupUserRequestCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,8 +87,8 @@ public class AuthServiceTest {
 		redisCache.set(RedisKey.SIGNUP_VERIFIED, email, true);
 
 		// when
-		SignupRequest.SignupMember request = createSignupMemberRequest(email);
-		authService.signupMember(request);
+		SignupRequest.SignupUser request = createSignupUserRequest(email);
+		authService.signupUser(request);
 
 		// then
 		UserEntity member = userRepository.findByEmailOrThrow(request.email());
@@ -104,12 +104,12 @@ public class AuthServiceTest {
 		Thread.sleep(200);
 
 		// when
-		SignupRequest.SignupMember request = createSignupMemberRequest(email);
+		SignupRequest.SignupUser request = createSignupUserRequest(email);
 
 		// then
 		assertThrowsExactly(
 			CustomException.class,
-			() -> authService.signupMember(request),
+			() -> authService.signupUser(request),
 			ErrorCode.AUTH_EMAIL_UNVERIFIED.getMessage()
 		);
 	}
@@ -117,11 +117,11 @@ public class AuthServiceTest {
 	@Test
 	void 맴버_회원가입_실패_인증정보_없음_이메일_키값() {
 		// when and then
-		SignupRequest.SignupMember request = createSignupMemberRequest();
+		SignupRequest.SignupUser request = createSignupUserRequest();
 
 		CustomException exception = assertThrowsExactly(
 			CustomException.class,
-			() -> authService.signupMember(request)
+			() -> authService.signupUser(request)
 		);
 		assertEquals(ErrorCode.AUTH_EMAIL_UNVERIFIED, exception.error());
 	}
@@ -131,15 +131,15 @@ public class AuthServiceTest {
 		// given
 		String email = "member@email.com";
 		redisCache.set(RedisKey.SIGNUP_VERIFIED, email, true);
-		SignupRequest.SignupMember firstSignup = createSignupMemberRequest(email);
-		authService.signupMember(firstSignup);
+		SignupRequest.SignupUser firstSignup = createSignupUserRequest(email);
+		authService.signupUser(firstSignup);
 
 		// when and then
-		SignupRequest.SignupMember secondSignup = createSignupMemberRequest(email);
+		SignupRequest.SignupUser secondSignup = createSignupUserRequest(email);
 
 		CustomException exception = assertThrowsExactly(
 			CustomException.class,
-			() -> authService.signupMember(secondSignup)
+			() -> authService.signupUser(secondSignup)
 		);
 		assertEquals(ErrorCode.DUPLICATED_EMAIL, exception.error());
 	}

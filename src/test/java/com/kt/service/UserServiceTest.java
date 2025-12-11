@@ -361,7 +361,7 @@ class UserServiceTest {
 	@Test
 	void 어드민_유저_생성() {
 		// given
-		SignupRequest.SignupMember request = new SignupRequest.SignupMember(
+		SignupRequest.SignupUser request = new SignupRequest.SignupUser(
 			"어드민생성",
 			"admin@test.com",
 			"1234",
@@ -387,7 +387,7 @@ class UserServiceTest {
 	@Test
 	void 어드민_유저_생성__실패_어드민아님() {
 		// given
-		SignupRequest.SignupMember request = new SignupRequest.SignupMember(
+		SignupRequest.SignupUser request = new SignupRequest.SignupUser(
 			"어드민생성",
 			"admin@test.com",
 			"1234",

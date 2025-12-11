@@ -34,7 +34,7 @@ public interface UserService {
 
 	void retireUser(UUID currentId, UUID subjectId) ;
 
-	void createAdmin(UUID userId, SignupRequest.SignupMember request);
+	void createAdmin(UUID userId, SignupRequest.SignupUser request);
 
 	void deleteAdmin(UUID currentId, UUID adminId);
 
