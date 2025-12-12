@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
-class AccountServiceTest {
+class AdminAccountServiceTest {
 
 	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
