@@ -29,6 +29,7 @@ import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
 import com.kt.service.UserService;
+import com.kt.service.admin.AdminAdminService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ import static com.kt.common.api.ApiResult.*;
 @RequiredArgsConstructor
 public class AdminController implements AdminSwaggerSupporter {
 
-	private final UserService userService;
+	private final AdminAdminService adminAdminService;
 	private final AccountService accountService;
 
 	@Override
@@ -64,7 +65,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@PathVariable UUID adminId
 	) {
 		return wrap(
-			userService.getUserDetail(currentUser.getId(), adminId)
+			adminAdminService.getAdminDetail(currentUser.getId(), adminId)
 		);
 	}
 
@@ -74,7 +75,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid SignupRequest.SignupMember request
 	) {
-		userService.createAdmin(currentUser.getId(), request);
+		adminAdminService.createAdmin(currentUser.getId(), request);
 		return empty();
 	}
 
@@ -85,7 +86,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
 	) {
-		userService.updateUserDetail(currentUser.getId(), adminId, request);
+		adminAdminService.updateDetail(currentUser.getId(), adminId, request);
 		return empty();
 	}
 
@@ -95,7 +96,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID adminId
 	) {
-		userService.deleteUser(defaultCurrentUser.getId(), adminId);
+		adminAdminService.deleteAdmin(defaultCurrentUser.getId(), adminId);
 		return empty();
 	}
 

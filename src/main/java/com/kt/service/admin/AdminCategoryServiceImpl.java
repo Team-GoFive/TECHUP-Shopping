@@ -1,9 +1,7 @@
-package com.kt.service;
+package com.kt.service.admin;
 
 import java.util.List;
 import java.util.UUID;
-
-import com.kt.exception.CustomException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,10 +17,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CategoryServiceImpl implements CategoryService {
+public class AdminCategoryServiceImpl implements AdminCategoryService {
 	private final CategoryRepository categoryRepository;
 
-	// TODO: for admin
 	@Override
 	public void create(String name, UUID parentId) {
 		isDuplicatedCategory(name);
@@ -35,7 +32,6 @@ public class CategoryServiceImpl implements CategoryService {
 
 	}
 
-	// TODO: for admin
 	@Override
 	public void update(UUID id, String name) {
 		isDuplicatedCategory(name);
@@ -58,7 +54,6 @@ public class CategoryServiceImpl implements CategoryService {
 			.stream().map(CategoryResponse.CategoryTreeItem::of).toList();
 	}
 
-	// TODO: for admin
 	@Override
 	public void delete(UUID id) {
 		CategoryEntity category = categoryRepository.findById(id)
@@ -75,5 +70,4 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new CustomException(ErrorCode.DUPLICATED_CATEGORY);
 		}
 	}
-
 }

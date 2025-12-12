@@ -28,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
+
+// TODO: 본인 확인 ID로 변경
 public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewRepository reviewRepository;
@@ -68,6 +70,7 @@ public class ReviewServiceImpl implements ReviewService {
 		review.update(content);
 	}
 
+	// TODO: 현재 본인만 리뷰 삭제 가능, 어드민 리뷰 삭제 검토
 	@Override
 	public void delete(
 		String email,
@@ -96,6 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewRepository.searchReviewsByProductId(pageable, productId);
 	}
 
+	// TODO: for admin
 	@Override
 	public Page<ReviewResponse.Search> getReviewsByAdmin(
 		Pageable pageable,

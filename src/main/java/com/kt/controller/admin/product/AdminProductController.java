@@ -25,6 +25,7 @@ import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.CurrentUser;
 import com.kt.service.ProductService;
+import com.kt.service.admin.AdminProductService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +35,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminProductController implements AdminProductSwaggerSupporter {
 
-	private final ProductService productService;
+	private final AdminProductService adminProductService;
 
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> create(
 		@RequestBody @Valid AdminProductRequest.Create request
 	) {
-		productService.create(
+		adminProductService.create(
 			request.name(),
 			request.price(),
 			request.stock(),
@@ -53,7 +54,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> soldOutProducts(
 		@RequestBody @Valid AdminProductRequest.SoldOut request
 	) {
-		productService.soldOutProducts(request.productIds());
+		adminProductService.soldOutProducts(request.productIds());
 		return empty();
 	}
 
@@ -65,7 +66,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 		Paging paging
 	) {
 		return page(
-			productService.search(
+			adminProductService.search(
 				user.getRole(),
 				keyword,
 				type,
@@ -79,14 +80,14 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 		@AuthenticationPrincipal CurrentUser user,
 		@PathVariable UUID productId
 	) {
-		return wrap(productService.detail(user.getRole(), productId));
+		return wrap(adminProductService.detail(user.getRole(), productId));
 	}
 
 	@PatchMapping("/{productId}/toggle-sold-out")
 	public ResponseEntity<ApiResult<Void>> toggleActive(
 		@PathVariable UUID productId
 	) {
-		productService.toggleActive(productId);
+		adminProductService.toggleActive(productId);
 		return empty();
 	}
 
@@ -94,7 +95,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> activate(
 		@PathVariable UUID productId
 	) {
-		productService.activate(productId);
+		adminProductService.activate(productId);
 		return empty();
 	}
 
@@ -102,7 +103,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> inActivate(
 		@PathVariable UUID productId
 	) {
-		productService.inActivate(productId);
+		adminProductService.inActivate(productId);
 		return empty();
 	}
 
@@ -111,7 +112,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 		@PathVariable UUID productId,
 		@RequestBody @Valid AdminProductRequest.Update request
 	) {
-		productService.update(
+		adminProductService.update(
 			productId,
 			request.name(),
 			request.price(),
@@ -125,7 +126,7 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> delete(
 		@PathVariable UUID productId
 	) {
-		productService.delete(productId);
+		adminProductService.delete(productId);
 		return empty();
 	}
 
