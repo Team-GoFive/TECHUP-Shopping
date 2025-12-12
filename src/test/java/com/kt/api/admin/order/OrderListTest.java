@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import com.kt.common.UserEntityCreator;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 

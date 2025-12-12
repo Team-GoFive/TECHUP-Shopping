@@ -29,7 +29,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;

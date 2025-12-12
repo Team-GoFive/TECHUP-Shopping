@@ -23,7 +23,7 @@ import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.OrderEntity;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("주문 수정(어드민) - Update api/orders/{orderid}/change-status")

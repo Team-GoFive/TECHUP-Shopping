@@ -38,7 +38,7 @@ import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
