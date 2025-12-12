@@ -15,6 +15,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.CourierService;
+import com.kt.service.admin.AdminCourierService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/admin/couriers")
 public class AdminCourierController implements AdminCourierSwaggerSupporter {
 
-	private final CourierService courierService;
+	private final AdminCourierService adminCourierService;
 
 	@Override
 	@GetMapping("/{courierId}")
@@ -31,6 +32,6 @@ public class AdminCourierController implements AdminCourierSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID courierId
 	) {
-		return wrap(courierService.getDetailForAdmin(defaultCurrentUser.getId(), courierId));
+		return wrap(adminCourierService.getDetail(defaultCurrentUser.getId(), courierId));
 	}
 }
