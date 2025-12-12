@@ -39,7 +39,7 @@ public class CourierServiceImpl implements CourierService {
 		);
 	}
 
-
+	// TODO: for admin
 	@Override
 	public CourierResponse.DetailAdmin getDetailForAdmin(UUID currentId, UUID subjectId) {
 		verifyAccess(currentId, subjectId);

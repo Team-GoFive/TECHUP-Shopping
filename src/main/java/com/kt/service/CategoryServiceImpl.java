@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
 
+	// TODO: for admin
 	@Override
 	public void create(String name, UUID parentId) {
 		isDuplicatedCategory(name);
@@ -34,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	}
 
+	// TODO: for admin
 	@Override
 	public void update(UUID id, String name) {
 		isDuplicatedCategory(name);
@@ -56,6 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
 			.stream().map(CategoryResponse.CategoryTreeItem::of).toList();
 	}
 
+	// TODO: for admin
 	@Override
 	public void delete(UUID id) {
 		CategoryEntity category = categoryRepository.findById(id)
