@@ -359,7 +359,7 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request =
 			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.requestPasswordInit(request);
+		authService.requestPasswordReset(request);
 
 		// then
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
@@ -378,10 +378,10 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request =
 			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.requestPasswordInit(request);
+		authService.requestPasswordReset(request);
 
 		// when and then
-		assertThatThrownBy(() -> authService.requestPasswordInit(request))
+		assertThatThrownBy(() -> authService.requestPasswordReset(request))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED.name());
 	}
