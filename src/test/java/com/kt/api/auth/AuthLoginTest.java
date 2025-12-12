@@ -2,6 +2,7 @@ package com.kt.api.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.LoginRequest;
@@ -19,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("이메일 인증 코드 검증 - POST /api/auth/login")
+@DisplayName("계정로그인 - POST /api/auth/login")
 public class AuthLoginTest extends MockMvcTest {
 
 	@Autowired
@@ -44,14 +44,8 @@ public class AuthLoginTest extends MockMvcTest {
 	}
 
 	void saveUser() {
-		UserEntity user = UserEntity.create(
-			"테스트유저",
-			EMAIL,
-			passwordEncoder.encode(PASSWORD),
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 30),
-			"010-1234-5678"
+		UserEntity user = UserEntityCreator.createMember(
+			EMAIL, passwordEncoder.encode(PASSWORD)
 		);
 		userRepository.save(user);
 		assertNotNull(user);
@@ -60,8 +54,7 @@ public class AuthLoginTest extends MockMvcTest {
 	@Test
 	void 로그인_성공_200__OK() throws Exception {
 		LoginRequest request = new LoginRequest(
-			EMAIL,
-			PASSWORD
+			EMAIL, PASSWORD
 		);
 		MvcResult result = mockMvc.perform(
 			post("/api/auth/login")

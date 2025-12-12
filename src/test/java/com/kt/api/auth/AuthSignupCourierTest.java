@@ -1,7 +1,7 @@
 package com.kt.api.auth;
 
 import com.kt.common.MockMvcTest;
-import com.kt.constant.Gender;
+import com.kt.common.SignupCourierRequestCreator;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.SignupRequest;
 
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("이메일 인증 코드 검증 - POST /api/auth/signup/courier")
+@DisplayName("기사 회원가입 - POST /api/auth/signup/courier")
 public class AuthSignupCourierTest extends MockMvcTest {
 
 	@Autowired
@@ -42,14 +42,9 @@ public class AuthSignupCourierTest extends MockMvcTest {
 		redisCache.set(RedisKey.SIGNUP_VERIFIED, EMAIL, true);
 	}
 	@Test
-	void 유저_회원갸입_성공_200__OK() throws Exception {
-
-		SignupRequest.SignupCourier request = new SignupRequest.SignupCourier(
-			"테스트기사",
-			EMAIL,
-			"123123",
-			Gender.MALE
-		);
+	void 기사_회원가입_성공_200__OK() throws Exception {
+		SignupRequest.SignupCourier request =
+			SignupCourierRequestCreator.createSignupCourierRequest(EMAIL);
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/auth/signup/courier")
