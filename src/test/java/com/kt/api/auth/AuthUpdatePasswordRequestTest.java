@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @Slf4j
-@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-update/requests")
+@DisplayName("비밀번호 변경 요청 - POST /api/auth/password-update/requests")
 public class AuthUpdatePasswordRequestTest extends MockMvcTest {
 
 	@Autowired
