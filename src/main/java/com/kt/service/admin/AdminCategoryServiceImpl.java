@@ -1,9 +1,7 @@
-package com.kt.service;
+package com.kt.service.admin;
 
 import java.util.List;
 import java.util.UUID;
-
-import com.kt.exception.CustomException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-
+import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CategoryServiceImpl implements CategoryService {
+public class AdminCategoryServiceImpl implements AdminCategoryService {
 	private final CategoryRepository categoryRepository;
 
 	@Override
@@ -72,5 +70,4 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new CustomException(ErrorCode.DUPLICATED_CATEGORY);
 		}
 	}
-
 }
