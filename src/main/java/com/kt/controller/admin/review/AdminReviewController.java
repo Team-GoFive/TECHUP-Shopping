@@ -20,7 +20,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.ReviewService;
+import com.kt.service.admin.AdminReviewService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class AdminReviewController implements AdminReviewSwaggerSupporter {
-	private final ReviewService reviewService;
+	private final AdminReviewService adminReviewService;
 
 	@Override
 	@GetMapping
@@ -39,7 +39,7 @@ public class AdminReviewController implements AdminReviewSwaggerSupporter {
 		@RequestParam(required = false) ProductSearchType type
 	) {
 		return page(
-			reviewService.getReviewsByAdmin(
+			adminReviewService.getReviewsByAdmin(
 				paging.toPageable(),
 				keyword,
 				type
@@ -53,7 +53,7 @@ public class AdminReviewController implements AdminReviewSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	) {
-		reviewService.delete(currentUser.getEmail(), reviewId);
+		adminReviewService.delete(currentUser.getEmail(), reviewId);
 		return empty();
 	}
 }
