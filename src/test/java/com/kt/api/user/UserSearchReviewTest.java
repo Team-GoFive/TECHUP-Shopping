@@ -5,15 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.UUID;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CategoryEntityCreator;
@@ -23,7 +18,6 @@ import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -32,12 +26,11 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("내가 작성한 리뷰 조회 - GET /api/reviews/mine")
 public class UserSearchReviewTest extends MockMvcTest {

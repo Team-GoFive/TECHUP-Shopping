@@ -25,7 +25,7 @@ import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -47,12 +47,24 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findWithProductByOrderId(orderId);
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 
+	// TODO: @Lock 붙이기
+	@Transactional(readOnly = true)
+	public void checkStock(List<OrderRequest.Item> items) {
+		for (OrderRequest.Item item : items) {
+			ProductEntity product = productRepository.findByIdOrThrow(item.productId());
+
+			if (product.getStock() < item.quantity()) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+		}
+	}
+
 	@Override
-	public void createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
+	public OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
 
 		UserEntity user = userRepository.findByEmailOrThrow(email);
 
@@ -77,12 +89,6 @@ public class OrderServiceImpl implements OrderService {
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 
-			if (product.getStock() < quantity) {
-				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
-			}
-
-			product.decreaseStock(quantity);
-
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
@@ -93,6 +99,25 @@ public class OrderServiceImpl implements OrderService {
 
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
+		}
+	  return order;
+
+	}
+
+	@Transactional
+	public void reduceStock(UUID orderId) {
+
+		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+		
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
+		
+		for (OrderProductEntity orderProduct : orderProducts) {
+			ProductEntity product = orderProduct.getProduct();
+			Long quantity = orderProduct.getQuantity();
+
+			product.decreaseStock(quantity);
+			orderProduct.updateStatus(OrderProductStatus.PAID);
 		}
 	}
 
@@ -171,13 +196,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
 
-		OrderEntity order = orderRepository.findById(orderId)
+		OrderEntity order = orderRepository.findDetailWithProducts(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		List<OrderProductEntity> orderProducts =
-			orderProductRepository.findAllByOrderId(orderId);
-
-		return AdminOrderResponse.Detail.from(order, orderProducts);
+		return AdminOrderResponse.Detail.from(order, order.getOrderProducts());
 	}
 
 	@Override
