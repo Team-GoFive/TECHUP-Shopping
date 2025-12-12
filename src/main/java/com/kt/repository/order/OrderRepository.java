@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.order;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.exception.CustomException;
 
 @Repository
-public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
+public interface OrderRepository extends JpaRepository<OrderEntity, UUID>, OrderRepositoryCustom {
 	List<OrderEntity> findAllByOrderBy_Id(UUID id);
 
 	default OrderEntity findByIdOrThrow(UUID orderId) {

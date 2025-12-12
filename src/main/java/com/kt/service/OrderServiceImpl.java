@@ -25,7 +25,7 @@ import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findWithProductByOrderId(orderId);
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 
@@ -197,13 +197,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
 
-		OrderEntity order = orderRepository.findById(orderId)
+		OrderEntity order = orderRepository.findDetailWithProducts(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		List<OrderProductEntity> orderProducts =
-			orderProductRepository.findAllByOrderId(orderId);
-
-		return AdminOrderResponse.Detail.from(order, orderProducts);
+		return AdminOrderResponse.Detail.from(order, order.getOrderProducts());
 	}
 
 	@Override
