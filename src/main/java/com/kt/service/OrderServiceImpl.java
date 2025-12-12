@@ -51,8 +51,20 @@ public class OrderServiceImpl implements OrderService {
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 
+	// TODO: @Lock 붙이기
+	@Transactional(readOnly = true)
+	public void checkStock(List<OrderRequest.Item> items) {
+		for (OrderRequest.Item item : items) {
+			ProductEntity product = productRepository.findByIdOrThrow(item.productId());
+
+			if (product.getStock() < item.quantity()) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+		}
+	}
+
 	@Override
-	public void createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
+	public OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
 
 		UserEntity user = userRepository.findByEmailOrThrow(email);
 
@@ -77,12 +89,6 @@ public class OrderServiceImpl implements OrderService {
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 
-			if (product.getStock() < quantity) {
-				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
-			}
-
-			product.decreaseStock(quantity);
-
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
@@ -93,6 +99,25 @@ public class OrderServiceImpl implements OrderService {
 
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
+		}
+	  return order;
+
+	}
+
+	@Transactional
+	public void reduceStock(UUID orderId) {
+
+		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+		
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
+		
+		for (OrderProductEntity orderProduct : orderProducts) {
+			ProductEntity product = orderProduct.getProduct();
+			Long quantity = orderProduct.getQuantity();
+
+			product.decreaseStock(quantity);
+			orderProduct.updateStatus(OrderProductStatus.PAID);
 		}
 	}
 

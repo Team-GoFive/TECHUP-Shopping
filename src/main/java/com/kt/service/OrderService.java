@@ -10,11 +10,16 @@ import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
+import com.kt.domain.entity.OrderEntity;
 
 public interface OrderService {
 	OrderResponse.OrderProducts getOrderProducts(UUID orderId);
 
-	void createOrder(String email, List<OrderRequest.Item> items, UUID addressId);
+	void checkStock(List<OrderRequest.Item> items);
+
+	OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId);
+
+	void reduceStock(UUID orderId);
 
 	void cancelOrder(UUID userId, UUID orderId);
 
