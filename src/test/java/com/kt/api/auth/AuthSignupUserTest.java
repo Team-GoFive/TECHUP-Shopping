@@ -1,7 +1,7 @@
 package com.kt.api.auth;
 
 import com.kt.common.MockMvcTest;
-import com.kt.constant.Gender;
+import com.kt.common.SignupUserRequestCreator;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("이메일 인증 코드 검증 - POST /api/auth/signup/user")
+@DisplayName("유저 회원가입 - POST /api/auth/signup/user")
 public class AuthSignupUserTest extends MockMvcTest {
 	@Autowired
 	RedisCache redisCache;
@@ -44,16 +44,10 @@ public class AuthSignupUserTest extends MockMvcTest {
 	}
 
 	@Test
-	void 유저_회원갸입_성공_200__OK() throws Exception {
+	void 유저_회원가입_성공_200__OK() throws Exception {
 
-		SignupRequest.SignupUser request = new SignupRequest.SignupUser(
-			"테스트황",
-			EMAIL,
-			"1231231!",
-			Gender.MALE,
-			LocalDate.of(1998, 3, 13),
-			"010-1234-1234"
-		);
+		SignupRequest.SignupUser request =
+			SignupUserRequestCreator.createSignupUserRequest(EMAIL);
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/auth/signup/user")
