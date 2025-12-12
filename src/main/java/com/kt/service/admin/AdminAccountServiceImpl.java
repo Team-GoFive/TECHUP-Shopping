@@ -1,53 +1,43 @@
-package com.kt.service;
+package com.kt.service.admin;
 
+import java.util.Random;
 import java.util.UUID;
-
-import com.kt.constant.PasswordRequestStatus;
-import com.kt.constant.PasswordRequestType;
-import com.kt.constant.mail.MailTemplate;
-import com.kt.domain.dto.request.AccountRequest;
-
-import com.kt.domain.dto.request.PasswordRequest;
-import com.kt.domain.dto.response.AccountResponse;
-import com.kt.domain.dto.response.PasswordRequestResponse;
-import com.kt.domain.entity.AbstractAccountEntity;
-
-import com.kt.domain.entity.PasswordRequestEntity;
-import com.kt.infra.mail.EmailClient;
-import com.kt.repository.PasswordRequestRepository;
-import com.kt.repository.account.AccountRepository;
-
-import com.kt.util.EncryptUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.kt.constant.message.ErrorCode;
-import com.kt.exception.CustomException;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
+import com.kt.constant.PasswordRequestStatus;
+import com.kt.constant.PasswordRequestType;
+import com.kt.constant.mail.MailTemplate;
+import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.request.AccountRequest;
+import com.kt.domain.dto.request.PasswordRequest;
+import com.kt.domain.dto.response.AccountResponse;
+import com.kt.domain.dto.response.PasswordRequestResponse;
+import com.kt.domain.entity.AbstractAccountEntity;
+import com.kt.domain.entity.PasswordRequestEntity;
+import com.kt.exception.CustomException;
+import com.kt.infra.mail.EmailClient;
+import com.kt.repository.PasswordRequestRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.util.EncryptUtil;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService {
+public class AdminAccountServiceImpl implements AdminAccountService {
 	private final PasswordEncoder passwordEncoder;
 	private final AccountRepository accountRepository;
 	private final PasswordRequestRepository passwordRequestRepository;
 	private final EmailClient emailClient;
 
-	@Override
-	public void deleteAccount(UUID accountId) {
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		account.delete();
-	}
-
+	// FIXME: Admin도 회원탈퇴와 비밀번호 변경을 가능하게 할 것인지
+	// 회원 탈퇴와 비밀번호 변경은 AdminAccountTest 생성 X
 	@Override
 	public void updatePassword(
 		UUID accountId,
@@ -64,6 +54,12 @@ public class AccountServiceImpl implements AccountService {
 
 		String hashedPassword = passwordEncoder.encode(newPassword);
 		account.updatePassword(hashedPassword);
+	}
+
+	@Override
+	public void deleteAccount(UUID accountId) {
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+		account.delete();
 	}
 
 	@Override
