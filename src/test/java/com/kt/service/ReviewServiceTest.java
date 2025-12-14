@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.ReviewResponse;
@@ -86,7 +86,7 @@ class ReviewServiceTest {
 	@Test
 	void 리뷰생성_성공() {
 		// given
-		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		// when
 		reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용");
 		// // then
@@ -101,13 +101,13 @@ class ReviewServiceTest {
 
 	@ParameterizedTest
 	@EnumSource(
-		value = OrderStatus.class,
+		value = OrderProductStatus.class,
 		names = {"PURCHASE_CONFIRMED"},
 		mode = EnumSource.Mode.EXCLUDE
 	)
-	void 리뷰생성_실패__주문_구매확정_아님(OrderStatus orderStatus) {
+	void 리뷰생성_실패__주문_구매확정_아님(OrderProductStatus orderProductStatus) {
 		// given
-		testOrderProduct.getOrder().updateStatus(orderStatus);
+		testOrderProduct.updateStatus(orderProductStatus);
 
 		// when and then
 		assertThatThrownBy(

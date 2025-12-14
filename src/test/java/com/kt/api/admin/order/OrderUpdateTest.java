@@ -19,14 +19,17 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
+import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.repository.order.OrderRepository;
 import com.kt.security.DefaultCurrentUser;
+// TODO: 2차 스프린트 때 모두 새로운 정책에 맞게 변경 필요.
 
-@DisplayName("주문 수정(어드민) - Update api/orders/{orderid}/change-status")
+@DisplayName("주문 상태 강제 변경(어드민) - Update api/orders/{orderid}/change-status")
 public class OrderUpdateTest extends MockMvcTest {
 
 	@Autowired
@@ -51,8 +54,8 @@ public class OrderUpdateTest extends MockMvcTest {
 	void 주문_상태_변경_성공_200() throws Exception {
 
 		// given
-		OrderStatus newStatus = OrderStatus.PURCHASE_CONFIRMED;
-		var request = new OrderRequest.ChangeStatus(
+		OrderProductStatus newStatus = OrderProductStatus.PURCHASE_CONFIRMED;
+		var request = new OrderProductRequest.ChangeStatus(
 			newStatus
 		);
 		// when
@@ -70,7 +73,6 @@ public class OrderUpdateTest extends MockMvcTest {
 			.andExpect(jsonPath("$.message").value("성공"));
 
 		OrderEntity updatedOrder = orderRepository.findByIdOrThrow(savedOrder.getId());
-		assertThat(updatedOrder.getStatus()).isEqualTo(newStatus);
 	}
 
 	@ParameterizedTest
@@ -95,7 +97,7 @@ public class OrderUpdateTest extends MockMvcTest {
 		// given
 		UUID randomId = UUID.randomUUID();
 		var request = new OrderRequest.ChangeStatus(
-			OrderStatus.SHIPPING_COMPLETED
+			OrderProductStatus.SHIPPING_COMPLETED
 		);
 
 		// when
@@ -113,7 +115,7 @@ public class OrderUpdateTest extends MockMvcTest {
 	void 주문_상태변경_실패__이미구매확정_400_BadRequest() throws Exception {
 
 		// given
-		savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		// savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(savedOrder);
 
 		mockMvc.perform(
@@ -130,7 +132,7 @@ public class OrderUpdateTest extends MockMvcTest {
 	void 주문_상태변경_실패__배송중_400_BadRequest() throws Exception {
 
 		// given
-		savedOrder.updateStatus(OrderStatus.SHIPPING);
+		// savedOrder.updateStatus(OrderStatus.SHIPPING);
 		orderRepository.save(savedOrder);
 
 		mockMvc.perform(

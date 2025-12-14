@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -80,7 +80,7 @@ public class ProductReviewTest extends MockMvcTest {
 			orderService.createOrder(testMember.getEmail(), items, address.getId());
 		}
 
-		orderRepository.findAll().forEach(order -> order.updateStatus(OrderStatus.PURCHASE_CONFIRMED));
+		orderProductRepository.findAll().forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED));
 
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {

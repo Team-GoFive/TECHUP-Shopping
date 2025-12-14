@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -76,10 +76,15 @@ public class OrderCancelTest extends MockMvcTest {
 	}
 
 	@Test
-	void 주문_취소_성공__200_OK() throws Exception {
+	void 주문_취소_성공__모든_주문상품_PAID_상태() throws Exception {
 		// when
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
+		saved.getOrderProducts().forEach(orderProduct ->
+			orderProduct.updateStatus(OrderProductStatus.PAID)
+		);
+
+		// when
 		ResultActions actions = mockMvc.perform(
 			patch("/api/orders/{orderId}/cancel", saved.getId())
 				.with(user(getMemberUserDetails(testMember.getId())))
@@ -88,8 +93,44 @@ public class OrderCancelTest extends MockMvcTest {
 		// then
 		actions.andDo(print());
 		actions.andExpect(status().isOk());
-		assertThat(saved.getStatus()).isEqualTo(OrderStatus.CANCELED);
+
+		OrderEntity canceled = orderRepository.findById(saved.getId()).orElseThrow();
+
+		assertThat(canceled.getOrderProducts())
+			.allSatisfy(orderProduct ->
+				assertThat(orderProduct.getStatus())
+					.isEqualTo(OrderProductStatus.CANCELED)
+			);
 	}
 
-	// TODO: 취소 불가 상태일 경우 취소시 실패 테스트 추가 (에러 헨들링 이후)
+	@Test
+	void 주문_취소_실패__하나라도_PAID_상태가_아님() throws Exception {
+		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
+
+		saved.getOrderProducts().get(0)
+		.updateStatus(OrderProductStatus.PAID);
+
+		if(saved.getOrderProducts().size() > 1) {
+			saved.getOrderProducts().subList(1, saved.getOrderProducts().size())
+				.forEach(orderProduct ->
+					orderProduct.updateStatus(OrderProductStatus.SHIPPING)
+				);
+		}
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			patch("/api/orders/{orderId}/cancel", saved.getId())
+				.with(user(getMemberUserDetails(testMember.getId())))
+		);
+		actions.andDo(print());
+		actions.andExpect(status().isBadRequest());
+
+		OrderEntity notCanceled = orderRepository.findById(saved.getId()).orElseThrow();
+
+		assertThat(notCanceled.getOrderProducts())
+			.anySatisfy(orderProduct ->
+				assertThat(orderProduct.getStatus())
+					.isNotEqualTo(OrderProductStatus.CANCELED)
+			);
+	}
 }

@@ -18,7 +18,7 @@ import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -77,7 +77,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	@Test
 	void 주문상품조회_성공__200_OK() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(testOrder);
 
 		// when
@@ -99,7 +99,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	@Test
 	void 주문상품조회_실패__작성된리뷰존재_주문상품없음() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.saveAndFlush(review);
@@ -121,7 +121,7 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	@Test
 	void 주문상품조회_실패__주문상태구매확정아님_주문상품없음() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.CANCELED);
+		testOrderProduct.updateStatus(OrderProductStatus.CANCELED);
 		orderRepository.save(testOrder);
 
 		// when

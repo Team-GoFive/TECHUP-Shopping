@@ -19,7 +19,7 @@ import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -81,7 +81,7 @@ public class ReviewCreateTest extends MockMvcTest {
 	@Test
 	void 상품리뷰작성_성공__200_OK() throws Exception {
 		// given
-		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			testOrderProduct.getId(),
 			"생성한테스트리뷰내용"

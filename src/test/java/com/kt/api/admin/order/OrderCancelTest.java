@@ -16,7 +16,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
@@ -42,12 +42,18 @@ public class OrderCancelTest extends MockMvcTest {
 
 	@Test
 	void 주문_취소__성공_200() throws Exception {
+		//given
 		UserEntity user = UserEntityCreator.createMember();
-
 		savedUser = userRepository.save(user);
+
 		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
 		savedOrder = orderRepository.save(order);
-		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
+
+		savedOrder.getOrderProducts()
+				.forEach(orderProduct ->
+					orderProduct.updateStatus(OrderProductStatus.PAID));
+
+		// when & then
 		mockMvc.perform(patch("/api/admin/orders/{orderId}/cancel", order.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(user.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -60,12 +66,16 @@ public class OrderCancelTest extends MockMvcTest {
 
 	@Test
 	void 주문_취소__실패_NotFound_404() throws Exception {
+		//given
 		UserEntity user = UserEntityCreator.createMember();
-
 		savedUser = userRepository.save(user);
+
 		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
 		savedOrder = orderRepository.save(order);
-		savedOrder.updateStatus(OrderStatus.WAITING_PAYMENT);
+
+		savedOrder.getOrderProducts()
+			.forEach(orderProduct ->
+				orderProduct.updateStatus(OrderProductStatus.PAID));
 
 		mockMvc.perform(patch("/api/orders/{orderId}/cancel", UUID.randomUUID())
 				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(user.getId())))
