@@ -70,18 +70,18 @@ public class OrderController implements OrderSwaggerSupporter {
 	}
 
 	@Override
-	@PatchMapping("/{orderId}/cancel")
-	public ResponseEntity<ApiResult<Void>> cancelOrder(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@PathVariable UUID orderId
+	@PatchMapping("/order-products/{orderProductId}/cancel")
+	public ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		@PathVariable UUID orderProductId,
+		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		orderService.cancelOrderProduct(currentUser.getId(), orderId);
+		orderService.cancelOrderProduct(currentUser.getId(), orderProductId);
 		return empty();
 	}
 
 	@Override
 	@PutMapping("/{orderId}")
-	public ResponseEntity<ApiResult<Void>> updateOrder(
+	public ResponseEntity<ApiResult<Void>> changeOrderAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request

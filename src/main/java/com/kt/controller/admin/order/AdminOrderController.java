@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.admin.AdminOrderService;
@@ -59,12 +58,12 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 	// }
 
 	@Override
-	@PatchMapping("/{orderId}/cancel")
-	public ResponseEntity<ApiResult<Void>> cancelOrder(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@PathVariable UUID orderId
+	@PatchMapping("/order-products/{orderProductId}/cancel")
+	public ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		@PathVariable UUID orderProductId,
+		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		adminOrderService.cancelOrder(currentUser.getId(), orderId);
+		adminOrderService.cancelOrder(currentUser.getId(), orderProductId);
 		return empty(); // TODO: cancelOrderProduct로 변경
 	}
 }

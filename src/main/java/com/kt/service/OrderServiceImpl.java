@@ -118,7 +118,6 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
-	//TODO: 추후 확장: 관리자의 주문 전체 취소 추가 (cancelOrderByAdmin)
 	@Override
 	public void cancelOrderProduct(UUID userId, UUID orderProductId) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);

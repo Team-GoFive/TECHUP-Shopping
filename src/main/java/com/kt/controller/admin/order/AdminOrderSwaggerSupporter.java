@@ -9,7 +9,6 @@ import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
-import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
 
@@ -49,13 +48,13 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
 		summary = "주문 취소",
-		description = "관리자의 주문취소 관련 API",
+		description = "관리자의 주문 상품별 취소 관련 API",
 		parameters = {
-			@Parameter(name = "orderId", description = "주문 ID")
+			@Parameter(name = "orderProductId", description = "주문 상품 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> cancelOrder(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		UUID orderId
+	ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		UUID orderProductId,
+		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	);
 }
