@@ -308,7 +308,8 @@ class AccountServiceTest {
 		passwordRequestRepository.save(passwordRequest);
 		String originPassword = "1234";
 
-		accountService.resetAccountPassword(member1.getId());
+		assertNotNull(passwordRequest.getId());
+		accountService.resetAccountPassword(passwordRequest.getId());
 
 		log.info(
 			"isMatch :: {}", passwordEncoder.matches(

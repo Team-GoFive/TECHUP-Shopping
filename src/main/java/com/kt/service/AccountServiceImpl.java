@@ -80,23 +80,28 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void resetAccountPassword(UUID accountId) {
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
-			account,
-			PasswordRequestType.RESET
+	public void resetAccountPassword(UUID passwordRequestId) {
+		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
+			passwordRequestId, PasswordRequestType.RESET
 		);
 
+		if (passwordRequest.getRequestType() != PasswordRequestType.RESET)
+			throw new CustomException(ErrorCode.BAD_REQUEST);
+
+		AbstractAccountEntity account = passwordRequest.getAccount();
+
 		String resetPassword = getRandomPassword();
+		account.resetPassword(passwordEncoder.encode(resetPassword));
 		passwordRequest.updateStatus(
 			PasswordRequestStatus.COMPLETED
 		);
-		account.resetPassword(passwordEncoder.encode(resetPassword));
+
 		emailClient.sendMail(
 			account.getEmail(),
 			MailTemplate.RESET_PASSWORD,
 			resetPassword
 		);
+
 	}
 
 	@Override
