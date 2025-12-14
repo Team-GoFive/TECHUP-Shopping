@@ -16,23 +16,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.CategoryEntityCreator;
+import com.kt.common.CourierEntityCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.ShippingType;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -60,6 +66,10 @@ class OrderServiceTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	AddressRepository addressRepository;
+	@Autowired
+	ShippingDetailRepository shippingDetailRepository;
+	@Autowired
+	CourierRepository courierRepository;
 
 	CategoryEntity category;
 
@@ -79,20 +89,23 @@ class OrderServiceTest {
 
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
-		product.decreaseStock(quantity);
-		productRepository.save(product);
-
-		return orderProductRepository.save(
-			OrderProductEntity.create(
-				quantity,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order,
-				product
-			)
+		ProductEntity product = productRepository.save(
+			ProductEntityCreator.createProduct(category)
 		);
+
+		OrderProductEntity orderProduct = OrderProductEntity.create(
+			quantity,
+			product.getPrice(),
+			OrderProductStatus.CREATED,
+			order,
+			product
+		);
+
+		order.addOrderProduct(orderProduct);
+
+		return orderProductRepository.save(orderProduct);
 	}
+
 
 	@Test
 	void 주문_생성_성공() {
@@ -176,7 +189,7 @@ class OrderServiceTest {
 	}
 
 	@Test
-	void 주문_취소_성공__모든_주문상품_PAID() {
+	void 주문상품_취소_성공__PAID_상태() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
 		OrderEntity order = orderRepository.save(
@@ -193,7 +206,8 @@ class OrderServiceTest {
 		long beforeStock2 = orderProduct2.getProduct().getStock();
 
 		// when
-		orderService.cancelOrderProduct(user.getId(), order.getId());
+		orderService.cancelOrderProduct(user.getId(), orderProduct1.getId());
+		orderService.cancelOrderProduct(user.getId(), orderProduct2.getId());
 
 		// then
 		OrderProductEntity canceled1 =
@@ -229,7 +243,7 @@ class OrderServiceTest {
 		orderProduct.updateStatus(OrderProductStatus.SHIPPING);
 
 		// when & then
-		assertThatThrownBy(() -> orderService.cancelOrderProduct(user.getId(), order.getId()))
+		assertThatThrownBy(() -> orderService.cancelOrderProduct(user.getId(), orderProduct.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
 	}
@@ -271,7 +285,18 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING);
+		orderProduct.updateStatus(OrderProductStatus.PAID);
+
+		CourierEntity courier = courierRepository.save(
+			CourierEntityCreator.createCourierEntity()
+		);
+
+		ShippingDetailEntity shippingDetail =
+			ShippingDetailEntity.create(courier, orderProduct);
+
+		shippingDetailRepository.save(shippingDetail);
+
+		shippingDetail.startShipping();
 
 		OrderRequest.Update request = new OrderRequest.Update(
 			"이름",
@@ -328,8 +353,8 @@ class OrderServiceTest {
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
 
-		createOrderWithProducts(order, 3L);
-
+		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
+		orderProduct.updateStatus(OrderProductStatus.PAID);
 		// when
 		AdminOrderResponse.Detail detail = orderService.getOrderDetail(order.getId());
 
@@ -340,10 +365,5 @@ class OrderServiceTest {
 		assertThat(detail.products()).hasSize(1);
 		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
 	}
-
-	/*예전 정책: 관리자가 직접 주문 상태를 PAID->SHIPPING으로 변경.
-	* 현재는 배송기사가 추가되었기 떄문에 관리자가 주문 진행 상태를 마음대로 변경하지 않아도 된다.
-	* 삭제함.
-	* */
 
 }

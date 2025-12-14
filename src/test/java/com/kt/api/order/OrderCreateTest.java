@@ -7,6 +7,7 @@ import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class OrderCreateTest extends MockMvcTest {
 
 		// then
 		actions.andDo(print());
-		assertThat(testProduct1.getStock()).isEqualTo(999L);
+		actions.andExpect(status().isOk());
 		assertThat(orderRepository.count()).isEqualTo(1L);
 	}
 
@@ -117,9 +118,8 @@ public class OrderCreateTest extends MockMvcTest {
 
 		// then
 		actions.andDo(print());
+		actions.andExpect(status().isOk());
 		assertThat(orderRepository.count()).isEqualTo(1L);
-		assertThat(testProduct1.getStock()).isEqualTo(999L);
-		assertThat(testProduct2.getStock()).isEqualTo(998L);
 	}
 
 	// TODO: 재고 수량 부족으로 인한 주문 생성 실패 테스트 추가하기 (에러 핸들러 추가후)

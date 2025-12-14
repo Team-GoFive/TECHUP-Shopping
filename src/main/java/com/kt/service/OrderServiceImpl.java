@@ -66,6 +66,8 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
 
+		checkStock(items);
+
 		UserEntity user = userRepository.findByEmailOrThrow(email);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
@@ -125,6 +127,11 @@ public class OrderServiceImpl implements OrderService {
 
 		OrderEntity order = orderProduct.getOrder();
 		hasOrderCancelPermission(user, order);
+
+		if (orderProduct.getStatus() == OrderProductStatus.SHIPPING
+			|| orderProduct.getStatus() == OrderProductStatus.SHIPPING_COMPLETED) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
 
 		if (!orderProduct.isCancelable()) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);

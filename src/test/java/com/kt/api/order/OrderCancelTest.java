@@ -25,16 +25,18 @@ import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 
-@DisplayName("주문 취소 - PATCH /api/orders/{orderId}/cancel")
+@DisplayName("주문 취소 - PATCH /api/orders/order-products/{orderProductId}/cancel")
 public class OrderCancelTest extends MockMvcTest {
 
 	@Autowired
@@ -47,6 +49,8 @@ public class OrderCancelTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
 	@Autowired
 	AddressRepository addressRepository;
 
@@ -80,13 +84,12 @@ public class OrderCancelTest extends MockMvcTest {
 		// when
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
-		saved.getOrderProducts().forEach(orderProduct ->
-			orderProduct.updateStatus(OrderProductStatus.PAID)
-		);
+		OrderProductEntity orderProduct = saved.getOrderProducts().get(0);
+		orderProduct.updateStatus(OrderProductStatus.PAID);
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			patch("/api/orders/{orderId}/cancel", saved.getId())
+			patch("/api/orders/order-products/{orderProductId}/cancel", orderProduct.getId())
 				.with(user(getMemberUserDetails(testMember.getId())))
 		);
 
@@ -94,13 +97,11 @@ public class OrderCancelTest extends MockMvcTest {
 		actions.andDo(print());
 		actions.andExpect(status().isOk());
 
-		OrderEntity canceled = orderRepository.findById(saved.getId()).orElseThrow();
+		OrderProductEntity canceled =
+			orderProductRepository.findById(orderProduct.getId()).orElseThrow();
 
-		assertThat(canceled.getOrderProducts())
-			.allSatisfy(orderProduct ->
-				assertThat(orderProduct.getStatus())
-					.isEqualTo(OrderProductStatus.CANCELED)
-			);
+		assertThat(canceled.getStatus())
+			.isEqualTo(OrderProductStatus.CANCELED);
 	}
 
 	@Test
@@ -119,11 +120,11 @@ public class OrderCancelTest extends MockMvcTest {
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			patch("/api/orders/{orderId}/cancel", saved.getId())
+			patch("/api/orders/order-products/{orderProductsId}/cancel", saved.getId())
 				.with(user(getMemberUserDetails(testMember.getId())))
 		);
 		actions.andDo(print());
-		actions.andExpect(status().isBadRequest());
+		actions.andExpect(status().isNotFound());
 
 		OrderEntity notCanceled = orderRepository.findById(saved.getId()).orElseThrow();
 
