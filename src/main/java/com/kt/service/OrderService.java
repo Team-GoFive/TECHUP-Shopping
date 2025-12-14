@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
@@ -21,14 +21,11 @@ public interface OrderService {
 
 	void reduceStock(UUID orderId);
 
-	void cancelOrder(UUID userId, UUID orderId);
+	void cancelOrderProduct(UUID userId, UUID orderProductId);
 
-	void updateOrder(UUID userId, UUID orderId, OrderRequest.Update orderRequest);
+	void changeOrderAddress(UUID userId, UUID orderId, OrderRequest.Update orderRequest);
 
 	Page<AdminOrderResponse.Search> searchOrder(Pageable pageable);
 
 	AdminOrderResponse.Detail getOrderDetail(UUID orderId);
-
-	void updateOrderStatus(UUID orderId, OrderStatus newStatus);
-
 }

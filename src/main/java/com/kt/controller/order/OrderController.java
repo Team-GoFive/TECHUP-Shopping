@@ -75,7 +75,7 @@ public class OrderController implements OrderSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId
 	) {
-		orderService.cancelOrder(currentUser.getId(), orderId);
+		orderService.cancelOrderProduct(currentUser.getId(), orderId);
 		return empty();
 	}
 
@@ -86,7 +86,7 @@ public class OrderController implements OrderSwaggerSupporter {
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request
 	) {
-		orderService.updateOrder(currentUser.getId(), orderId, request);
+		orderService.changeOrderAddress(currentUser.getId(), orderId, request);
 		return empty();
 	}
 
