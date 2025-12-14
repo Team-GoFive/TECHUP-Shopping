@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.constant.PasswordRequestStatus;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -335,6 +337,7 @@ class AccountServiceTest {
 
 	}
 
+
 	@Test
 	void 관리자_다른_계정_비밀번호_변경_성공() {
 		String originPassword = "1234";
@@ -345,19 +348,19 @@ class AccountServiceTest {
 			PasswordRequestType.UPDATE
 		);
 		passwordRequestRepository.save(passwordRequest);
+		assertNotNull(passwordRequest.getId());
+		accountService.updateAccountPassword(passwordRequest.getId());
 
-		accountService.updateAccountPassword(member1.getId());
+		assertFalse(
+			passwordEncoder.matches(originPassword, member1.getPassword())
+		);
 
 		log.info(
 			"isMatch :: {}", passwordEncoder.matches(
 				originPassword, member1.getPassword()
 			)
 		);
-
-		assertFalse(
-			passwordEncoder.matches(originPassword, member1.getPassword())
-		);
-
+		assertEquals(PasswordRequestStatus.COMPLETED, passwordRequest.getStatus());
 		log.info("passwordRequest status : {}", passwordRequest.getStatus());
 	}
 

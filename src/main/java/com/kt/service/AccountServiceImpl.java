@@ -92,9 +92,8 @@ public class AccountServiceImpl implements AccountService {
 
 		String resetPassword = getRandomPassword();
 		account.resetPassword(passwordEncoder.encode(resetPassword));
-		passwordRequest.updateStatus(
-			PasswordRequestStatus.COMPLETED
-		);
+
+		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
 
 		emailClient.sendMail(
 			account.getEmail(),
@@ -105,25 +104,31 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void updateAccountPassword(UUID accountId) {
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
-			account,
-			PasswordRequestType.UPDATE
+	public void updateAccountPassword(UUID passwordRequestId) {
+		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
+			passwordRequestId, PasswordRequestType.UPDATE
 		);
 
-		String decryptPassword = EncryptUtil.decrypt(passwordRequest.getEncryptedPassword());
-		passwordRequest.updateStatus(
-			PasswordRequestStatus.COMPLETED
+		if (passwordRequest.getRequestType() != PasswordRequestType.UPDATE)
+			throw new CustomException(ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND);
+
+		AbstractAccountEntity account = passwordRequest.getAccount();
+
+		String requestedDecryptPassword = EncryptUtil.decrypt(
+			passwordRequest.getEncryptedPassword()
 		);
+
 		account.updatePassword(
-			passwordEncoder.encode(decryptPassword)
+			passwordEncoder.encode(requestedDecryptPassword)
 		);
+
+		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
 		passwordRequest.clearEncryptedPassword();
+
 		emailClient.sendMail(
 			account.getEmail(),
 			MailTemplate.UPDATE_PASSWORD,
-			decryptPassword
+			requestedDecryptPassword
 		);
 
 	}
