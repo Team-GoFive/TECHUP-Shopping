@@ -51,4 +51,9 @@ public class OrderProductEntity extends BaseEntity {
 		return status != PURCHASE_CONFIRMED
 			&& status != SHIPPING_COMPLETED;
 	}
+
+	public void assignOrder(OrderEntity order) {
+		this.order = order;
+	}
+
 }

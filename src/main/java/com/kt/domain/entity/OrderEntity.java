@@ -61,6 +61,7 @@ public class OrderEntity extends BaseEntity {
 
 	public void addOrderProduct(OrderProductEntity orderProduct) {
 		this.orderProducts.add(orderProduct);
+		orderProduct.assignOrder(this);
 	}
 
 	public OrderDerivedStatus getDerivedStatus() {
