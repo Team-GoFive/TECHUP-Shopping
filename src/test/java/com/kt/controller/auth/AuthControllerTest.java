@@ -10,16 +10,12 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kt.common.MockMvcTest;
 import com.kt.config.jwt.JwtTokenProvider;
 import com.kt.constant.Gender;
 import com.kt.constant.UserRole;
@@ -34,19 +30,12 @@ import com.kt.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-class AuthControllerTest {
+class AuthControllerTest extends MockMvcTest {
 
 	String TEST_EMAIL = "kimdohyun032@gmail.com";
 
 	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
 	private RedisCache redisCache;
-	@Autowired
-	private MockMvc mockMvc;
 
 	@Autowired
 	private AccountRepository accountRepository;

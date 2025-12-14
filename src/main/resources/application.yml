@@ -1,14 +1,14 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT}
 
 spring:
   application:
     name: shopping
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/techup-shopping}
+    url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ${SPRING_DATASOURCE_PASSWORD:1234}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,8 +22,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USER_NAME:testterry77@gmail.com}
-    password: ${MAIL_PASSWORD:vcey ryso xpni exop}
+    username: ${MAIL_USER_NAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -34,14 +34,18 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-
-  redis:
-    host: localhost
-    port: ${REDIS_PORT:6379}
+  data:
+    redis:
+      ssl:
+        enabled: true
+      cluster:
+        nodes: ${REDIS_HOST}
+        max-redirects: 3
 
 jwt:
-  secret: ${kt.jwt.secret:kt-cloud-tech-up-shopping-202511171107}
-  access-valid-time: ${JWT_ACCESS_TIME:30m}
-  refresh-valid-time: ${JWT_REFRESH_TIME:24h}
+  secret: ${KT_JWT_SECRET}
+  access-valid-time: ${JWT_ACCESS_TIME}
+  refresh-valid-time: ${JWT_REFRESH_TIME}
+
 aes:
-  key: ${ENCRYPT_KEY:TECH-UP-Shopping-Encrypt-key-AES}
+  key: ${ENCRYPT_KEY}

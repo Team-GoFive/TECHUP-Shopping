@@ -1,25 +1,11 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 
-import com.kt.constant.PasswordRequestType;
-import com.kt.domain.dto.request.AccountRequest;
-
-import com.kt.domain.dto.request.PasswordRequest;
-import com.kt.domain.dto.response.PasswordRequestResponse;
-import com.kt.domain.entity.PasswordRequestEntity;
-
-import com.kt.repository.PasswordRequestRepository;
-
 import org.junit.jupiter.api.Assertions;
-
-import lombok.extern.slf4j.Slf4j;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +17,23 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
+import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+import com.kt.domain.dto.request.AccountRequest;
+import com.kt.domain.dto.request.PasswordRequest;
+import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
+import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
+import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional
@@ -66,13 +60,8 @@ class AccountServiceTest {
 	CourierEntity courier1;
 	CourierEntity courier2;
 
-
 	@BeforeEach
 	void setUp() {
-		courierRepository.deleteAll();
-		userRepository.deleteAll();
-		accountRepository.deleteAll();
-
 		member1 = UserEntity.create(
 			"회원",
 			"bjwnstkdbj@naver.com",
@@ -344,7 +333,6 @@ class AccountServiceTest {
 
 	}
 
-
 	@Test
 	void 관리자_다른_계정_비밀번호_변경_성공() {
 		String originPassword = "1234";
@@ -389,7 +377,6 @@ class AccountServiceTest {
 		passwordRequestRepository.save(firstRequest);
 		passwordRequestRepository.save(secondRequest);
 
-
 		Pageable pageable = Pageable.ofSize(10);
 
 		// when
@@ -412,6 +399,5 @@ class AccountServiceTest {
 		).contains(courier1.getId());
 
 	}
-
 
 }

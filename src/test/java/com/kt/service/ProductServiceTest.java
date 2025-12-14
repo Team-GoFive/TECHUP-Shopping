@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
@@ -24,7 +24,8 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@Transactional
 class ProductServiceTest {
 
 	private final ProductService productService;
@@ -39,12 +40,6 @@ class ProductServiceTest {
 		this.productService = productService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-	}
-
-	@BeforeEach
-	void tearDown() {
-		productRepository.deleteAll();
-		categoryRepository.deleteAll();
 	}
 
 	@Test

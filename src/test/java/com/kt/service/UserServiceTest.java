@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 class UserServiceTest {
 
@@ -72,15 +73,18 @@ class UserServiceTest {
 	UUID userId;
 	UUID AdminId;
 
-	@BeforeEach
-	void setUp() throws Exception {
+	@AfterEach
+	void clearUp() {
 		reviewRepository.deleteAll();
 		orderProductRepository.deleteAll();
 		orderRepository.deleteAll();
 		userRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
+	}
 
+	@BeforeEach
+	void setUp() throws Exception {
 		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
@@ -242,7 +246,8 @@ class UserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터", UserRole.MEMBER);
+		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터",
+			UserRole.MEMBER);
 
 		// then
 		assertThat(result).isNotNull();
@@ -253,7 +258,8 @@ class UserServiceTest {
 	void 어드민_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민", UserRole.ADMIN);
+		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민",
+			UserRole.ADMIN);
 
 		// then
 		assertThat(result).isNotNull();
@@ -299,7 +305,6 @@ class UserServiceTest {
 		assertThat(AdminId).isNotNull();
 		assertThat(savedUser.name()).isEqualTo("어드민테스터");
 	}
-
 
 	@Test
 	void 유저_상태_변경_disabled() {
@@ -351,7 +356,7 @@ class UserServiceTest {
 	@Test
 	void 유저_상태_변경_delete() {
 		// when
-		userService.deleteUser(testUser.getId() , testUser.getId());
+		userService.deleteUser(testUser.getId(), testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 		// then
 		assertThat(foundedUser).isNotNull();
@@ -383,7 +388,6 @@ class UserServiceTest {
 		assertThat(admin.getPassword()).isNotEqualTo("1234");
 	}
 
-
 	@Test
 	void 어드민_유저_생성__실패_어드민아님() {
 		// given
@@ -398,7 +402,7 @@ class UserServiceTest {
 
 		// then
 		assertThatThrownBy(
-			()-> userService.createAdmin(testUser.getId(), request)
+			() -> userService.createAdmin(testUser.getId(), request)
 		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
@@ -413,7 +417,7 @@ class UserServiceTest {
 	@Test
 	void 어드민_삭제__실패_일반계정() {
 		assertThatThrownBy(
-			()-> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
+			() -> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
 		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
@@ -450,7 +454,7 @@ class UserServiceTest {
 		OrderEntity savedOrder = orderRepository.save(order);
 
 		// when
-		userService.deleteUserPermanently(testAdmin.getId() ,savedUser.getId());
+		userService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
 
 		// then
 		assertThat(userRepository.existsById(savedUser.getId())).isFalse();
