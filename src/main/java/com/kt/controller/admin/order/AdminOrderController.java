@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.domain.dto.request.OrderRequest;
+import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.OrderService;
 import com.kt.service.admin.AdminOrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -49,15 +47,16 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 		return wrap(adminOrderService.getOrderDetail(orderId));
 	}
 
-	@Override
-	@PatchMapping("/{orderId}/change-status")
-	public ResponseEntity<ApiResult<Void>> updateOrderStatus(
-		@PathVariable UUID orderId,
-		@RequestBody OrderRequest.ChangeStatus request
-	) {
-		adminOrderService.updateOrderStatus(orderId, request.status());
-		return empty();
-	}
+	// TODO: 정책 수정 필요
+	// @Override
+	// @PatchMapping("/{orderProductId}/change-status")
+	// public ResponseEntity<ApiResult<Void>> forceChangeOrderProductStatus(
+	// 	@PathVariable UUID orderProductId,
+	// 	@RequestBody OrderProductRequest.ChangeStatus request
+	// ) {
+	// 	adminOrderService.updateOrderProductStatus(orderProductId, request.status());
+	// 	return empty();
+	// }
 
 	@Override
 	@PatchMapping("/{orderId}/cancel")
@@ -66,6 +65,6 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 		@PathVariable UUID orderId
 	) {
 		adminOrderService.cancelOrder(currentUser.getId(), orderId);
-		return empty();
+		return empty(); // TODO: cancelOrderProduct로 변경
 	}
 }
