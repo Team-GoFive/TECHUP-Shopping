@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
@@ -50,7 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new CustomException(ErrorCode.REVIEW_ALREADY_EXISTS);
 
 		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
-		if (orderProduct.getOrder().getStatus() != OrderStatus.PURCHASE_CONFIRMED)
+		if (orderProduct.getStatus() != OrderProductStatus.PURCHASE_CONFIRMED)
 			throw new CustomException(ErrorCode.ORDER_NOT_CONFIRMED);
 
 		ReviewEntity review = ReviewEntity.create(content);

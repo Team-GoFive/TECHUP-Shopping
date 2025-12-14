@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.QOrderProductResponse_SearchReviewable;
 import com.kt.domain.entity.OrderProductEntity;
@@ -37,7 +37,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 	@Override
 	public Page<OrderProductResponse.SearchReviewable> getReviewableOrderProductsByUserId(Pageable pageable, UUID userId) {
 		BooleanExpression condition = review.orderProduct.isNull()
-			.and(order.status.eq(OrderStatus.PURCHASE_CONFIRMED));
+			.and(orderProduct.status.eq(OrderProductStatus.PURCHASE_CONFIRMED));
 
 		List<OrderProductResponse.SearchReviewable> content = jpaQueryFactory
 			.select(new QOrderProductResponse_SearchReviewable(
