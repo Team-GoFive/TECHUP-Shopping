@@ -2,6 +2,7 @@ package com.kt.api.admin.account;
 
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
+import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
@@ -65,6 +66,9 @@ public class AccountPasswordResetTest extends MockMvcTest {
 
 	@Test
 	void 계정_비밀번호_초기화_성공__200_OK() throws Exception {
+		log.info("Before resetPasswordService, originPassword-user.getPassword isMatch: {}",
+			passwordEncoder.matches(ORIGIN_PASSWORD, testUser.getPassword())
+		);
 		ResultActions actions = mockMvc.perform(
 			patch(
 				"/api/admin/accounts/password-requests/{passwordRequestId}/reset",
@@ -77,6 +81,10 @@ public class AccountPasswordResetTest extends MockMvcTest {
 		assertFalse(
 			passwordEncoder.matches(ORIGIN_PASSWORD, testUser.getPassword())
 		);
+		log.info("After resetPasswordService, resetPassword-user.getPassword isMatch: {}",
+			passwordEncoder.matches(ORIGIN_PASSWORD, testUser.getPassword())
+		);
+		assertEquals(PasswordRequestStatus.COMPLETED, passwordRequest.getStatus());
 
 	}
 }
