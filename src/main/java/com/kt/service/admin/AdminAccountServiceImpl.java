@@ -50,8 +50,8 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 		if (passwordEncoder.matches(newPassword, account.getPassword()))
 			throw new CustomException(ErrorCode.PASSWORD_UNCHANGED);
 
-		String hashedPassword = passwordEncoder.encode(newPassword);
-		account.updatePassword(hashedPassword);
+		String encodedPassword = passwordEncoder.encode(newPassword);
+		account.updatePassword(encodedPassword);
 	}
 
 	@Override
