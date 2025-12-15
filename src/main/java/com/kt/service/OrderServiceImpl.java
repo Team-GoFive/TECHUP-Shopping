@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.ShippingType;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
@@ -25,7 +24,7 @@ import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -47,12 +46,27 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findWithProductByOrderId(orderId);
 		return OrderResponse.OrderProducts.of(orderId, orderProducts);
 	}
 
+	// TODO: @Lock 붙이기
+	public void checkStock(List<OrderRequest.Item> items) {
+		for (OrderRequest.Item item : items) {
+			ProductEntity product = productRepository.findByIdOrThrow(item.productId());
+
+			if (product.getStock() < item.quantity()) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+
+			// TODO: 재고 부족시 현재 상품, 상품 수량을 그대로 장바구니에 저장
+		}
+	}
+
 	@Override
-	public void createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
+	public OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
+
+		checkStock(items);
 
 		UserEntity user = userRepository.findByEmailOrThrow(email);
 
@@ -77,12 +91,6 @@ public class OrderServiceImpl implements OrderService {
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 
-			if (product.getStock() < quantity) {
-				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
-			}
-
-			product.decreaseStock(quantity);
-
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
@@ -94,57 +102,59 @@ public class OrderServiceImpl implements OrderService {
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
 		}
+	  return order;
+
 	}
 
-	private boolean isCancelable(OrderStatus status) {
-		if (status == OrderStatus.PURCHASE_CONFIRMED)
-			return false;
-		if (status == OrderStatus.SHIPPING_COMPLETED)
-			return false;
-		return true;
+	@Transactional
+	public void reduceStock(UUID orderId) {
+		List<OrderProductEntity> orderProducts =
+			orderProductRepository.findAllByOrderId(orderId);
+		
+		for (OrderProductEntity orderProduct : orderProducts) {
+			ProductEntity product = orderProduct.getProduct();
+			Long quantity = orderProduct.getQuantity();
+
+			product.decreaseStock(quantity);
+			orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		}
 	}
 
 	@Override
-	public void cancelOrder(UUID userId, UUID orderId) {
+	public void cancelOrderProduct(UUID userId, UUID orderProductId) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
-		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
 
+		OrderEntity order = orderProduct.getOrder();
 		hasOrderCancelPermission(user, order);
 
-		if (!isCancelable(order.getStatus())) {
+		if (orderProduct.getStatus() == OrderProductStatus.SHIPPING
+			|| orderProduct.getStatus() == OrderProductStatus.SHIPPING_COMPLETED) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		if (!orderProduct.isCancelable()) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
 
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
-
-		for (OrderProductEntity orderproduct : orderProducts) {
-			ProductEntity product = orderproduct.getProduct();
-			product.addStock(orderproduct.getQuantity());
-			orderproduct.cancel();
-		}
-		order.cancel();
+		ProductEntity product = orderProduct.getProduct();
+		product.addStock(orderProduct.getQuantity());
+		orderProduct.cancel();
 	}
 
 	// TODO: for seller
 	@Override
-	public void updateOrder(UUID userId, UUID orderId, OrderRequest.Update request) {
+	public void changeOrderAddress(UUID userId, UUID orderId, OrderRequest.Update request) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
 
 		hasOrderUpdatePermission(user, order);
 
-		if (order.getStatus() == OrderStatus.PURCHASE_CONFIRMED) {
-			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
-		}
-
-		List<OrderProductEntity> orderProducts =
-			orderProductRepository.findAllByOrderId(orderId);
-
-		List<ShippingDetailEntity> shippingDetails =
-			shippingDetailRepository.findAllByOrderProductIn(orderProducts);
+		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
+		List<ShippingDetailEntity> shippingDetails = shippingDetailRepository.findAllByOrderProductIn(orderProducts);
 
 		boolean shippingStarted = shippingDetails.stream()
-			.anyMatch(sd -> sd.getShippingType() != ShippingType.READY);
+			.anyMatch(shippingDetail -> shippingDetail.getShippingType() != ShippingType.READY);
 
 		if (shippingStarted) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
@@ -160,7 +170,6 @@ public class OrderServiceImpl implements OrderService {
 		);
 
 		order.updateReceiverVO(newReceiverVO);
-		orderRepository.save(order);
 	}
 
 	@Override
@@ -172,31 +181,13 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
 
-		OrderEntity order = orderRepository.findById(orderId)
+		OrderEntity order = orderRepository.findDetailWithProducts(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		List<OrderProductEntity> orderProducts =
-			orderProductRepository.findAllByOrderId(orderId);
-
-		return AdminOrderResponse.Detail.from(order, orderProducts);
+		return AdminOrderResponse.Detail.from(order, order.getOrderProducts());
 	}
 
-	@Override
-	public void updateOrderStatus(UUID orderId, OrderStatus newStatus) {
-		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
-
-		OrderStatus current = order.getStatus();
-
-		if (current == OrderStatus.PURCHASE_CONFIRMED) {
-			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
-		}
-
-		if (current == OrderStatus.SHIPPING) {
-			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
-		}
-
-		order.updateStatus(newStatus);
-	}
+	// TODO: 관리자 전용 코드 삭제함 - 2차 스프린트 때 구현 예정
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
 		UserRole role = order.getOrderBy().getRole();

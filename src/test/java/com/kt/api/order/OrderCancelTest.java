@@ -20,21 +20,23 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 
-@DisplayName("주문 취소 - PATCH /api/orders/{orderId}/cancel")
+@DisplayName("주문 취소 - PATCH /api/orders/order-products/{orderProductId}/cancel")
 public class OrderCancelTest extends MockMvcTest {
 
 	@Autowired
@@ -47,6 +49,8 @@ public class OrderCancelTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
 	@Autowired
 	AddressRepository addressRepository;
 
@@ -76,20 +80,58 @@ public class OrderCancelTest extends MockMvcTest {
 	}
 
 	@Test
-	void 주문_취소_성공__200_OK() throws Exception {
+	void 주문_취소_성공__모든_주문상품_PAID_상태() throws Exception {
 		// when
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
+		OrderProductEntity orderProduct = saved.getOrderProducts().get(0);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+
+		// when
 		ResultActions actions = mockMvc.perform(
-			patch("/api/orders/{orderId}/cancel", saved.getId())
+			patch("/api/orders/order-products/{orderProductId}/cancel", orderProduct.getId())
 				.with(user(getMemberUserDetails(testMember.getId())))
 		);
 
 		// then
 		actions.andDo(print());
 		actions.andExpect(status().isOk());
-		assertThat(saved.getStatus()).isEqualTo(OrderStatus.CANCELED);
+
+		OrderProductEntity canceled =
+			orderProductRepository.findById(orderProduct.getId()).orElseThrow();
+
+		assertThat(canceled.getStatus())
+			.isEqualTo(OrderProductStatus.CANCELED);
 	}
 
-	// TODO: 취소 불가 상태일 경우 취소시 실패 테스트 추가 (에러 헨들링 이후)
+	@Test
+	void 주문_취소_실패__하나라도_PAID_상태가_아님() throws Exception {
+		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
+
+		saved.getOrderProducts().get(0)
+		.updateStatus(OrderProductStatus.SHIPPING_READY);
+
+		if(saved.getOrderProducts().size() > 1) {
+			saved.getOrderProducts().subList(1, saved.getOrderProducts().size())
+				.forEach(orderProduct ->
+					orderProduct.updateStatus(OrderProductStatus.SHIPPING)
+				);
+		}
+
+		// when
+		ResultActions actions = mockMvc.perform(
+			patch("/api/orders/order-products/{orderProductsId}/cancel", saved.getId())
+				.with(user(getMemberUserDetails(testMember.getId())))
+		);
+		actions.andDo(print());
+		actions.andExpect(status().isNotFound());
+
+		OrderEntity notCanceled = orderRepository.findById(saved.getId()).orElseThrow();
+
+		assertThat(notCanceled.getOrderProducts())
+			.anySatisfy(orderProduct ->
+				assertThat(orderProduct.getStatus())
+					.isNotEqualTo(OrderProductStatus.CANCELED)
+			);
+	}
 }

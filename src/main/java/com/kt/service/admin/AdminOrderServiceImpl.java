@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
@@ -17,7 +17,7 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -33,24 +33,25 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	private final OrderProductRepository orderProductRepository;
 
 	@Override
-	public void cancelOrder(UUID userId, UUID orderId) {
+	public void cancelOrderProduct(UUID userId, UUID orderProductId) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
-		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
 
+		OrderEntity order = orderProduct.getOrder();
 		hasOrderCancelPermission(user, order);
 
-		if (!isCancelable(order.getStatus())) {
+		if (orderProduct.getStatus() == OrderProductStatus.SHIPPING
+			|| orderProduct.getStatus() == OrderProductStatus.SHIPPING_COMPLETED) {
+			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+		}
+
+		if (!orderProduct.isCancelable()) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
 		}
 
-		List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(orderId);
-
-		for (OrderProductEntity orderproduct : orderProducts) {
-			ProductEntity product = orderproduct.getProduct();
-			product.addStock(orderproduct.getQuantity());
-			orderproduct.cancel();
-		}
-		order.cancel();
+		ProductEntity product = orderProduct.getProduct();
+		product.addStock(orderProduct.getQuantity());
+		orderProduct.cancel();
 	}
 
 	@Override
@@ -71,22 +72,23 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 		return AdminOrderResponse.Detail.from(order, orderProducts);
 	}
 
-	@Override
-	public void updateOrderStatus(UUID orderId, OrderStatus newStatus) {
-		OrderEntity order = orderRepository.findByIdOrThrow(orderId);
-
-		OrderStatus current = order.getStatus();
-
-		if (current == OrderStatus.PURCHASE_CONFIRMED) {
-			throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
-		}
-
-		if (current == OrderStatus.SHIPPING) {
-			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
-		}
-
-		order.updateStatus(newStatus);
-	}
+	// TODO: 관리자 취소 정책 수정 필요
+	//  @Override
+	// public void updateOrderStatus(UUID orderId, OrderStatus newStatus) {
+	// 	OrderEntity order = orderRepository.findByIdOrThrow(orderId);
+	//
+	// 	OrderStatus current = order.getStatus();
+	//
+	// 	if (current == OrderStatus.PURCHASE_CONFIRMED) {
+	// 		throw new CustomException(ErrorCode.ORDER_ALREADY_CONFIRMED);
+	// 	}
+	//
+	// 	if (current == OrderStatus.SHIPPING) {
+	// 		throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
+	// 	}
+	//
+	// 	order.updateStatus(newStatus);
+	// }
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
 		UserRole role = order.getOrderBy().getRole();
@@ -98,11 +100,4 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 		}
 	}
 
-	private boolean isCancelable(OrderStatus status) {
-		if (status == OrderStatus.PURCHASE_CONFIRMED)
-			return false;
-		if (status == OrderStatus.SHIPPING_COMPLETED)
-			return false;
-		return true;
-	}
 }

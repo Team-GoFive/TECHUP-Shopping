@@ -9,7 +9,6 @@ import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
-import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
 
@@ -35,27 +34,27 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 	)
 	ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(UUID orderId);
 
-	@Operation(
-		summary = "주문 상태 변경",
-		description = "관리자의 주문상태 변경 관련 API",
-		parameters = {
-			@Parameter(name = "orderId", description = "주문 ID")
-		}
-	)
-	ResponseEntity<ApiResult<Void>> updateOrderStatus(
-		UUID orderId,
-		OrderRequest.ChangeStatus request
-	);
+	// @Operation(
+	// 	summary = "주문상품 상태 변경",
+	// 	description = "관리자의 주문상태 변경 관련 API",
+	// 	parameters = {
+	// 		@Parameter(name = "orderProductId", description = "주문상품 ID")
+	// 	}
+	// )
+	// ResponseEntity<ApiResult<Void>> updateOrderProductStatus(
+	// 	UUID orderProductId,
+	// 	OrderProductRequest.ChangeStatus request
+	// );
 
 	@Operation(
 		summary = "주문 취소",
-		description = "관리자의 주문취소 관련 API",
+		description = "관리자의 주문 상품별 취소 관련 API",
 		parameters = {
-			@Parameter(name = "orderId", description = "주문 ID")
+			@Parameter(name = "orderProductId", description = "주문 상품 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> cancelOrder(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		UUID orderId
+	ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		UUID orderProductId,
+		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	);
 }

@@ -1,5 +1,7 @@
 package com.kt.domain.entity;
 
+import static com.kt.constant.OrderProductStatus.*;
+
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
@@ -37,7 +39,21 @@ public class OrderProductEntity extends BaseEntity {
 		return new OrderProductEntity(quantity, unitPrice, status, order, product);
 	}
 
+	public void updateStatus(OrderProductStatus newStatus) {
+		this.status = newStatus;
+	}
+
 	public void cancel() {
 		this.status = OrderProductStatus.CANCELED;
 	}
+
+	public boolean isCancelable() {
+		return status != PURCHASE_CONFIRMED
+			&& status != SHIPPING_COMPLETED;
+	}
+
+	public void assignOrder(OrderEntity order) {
+		this.order = order;
+	}
+
 }

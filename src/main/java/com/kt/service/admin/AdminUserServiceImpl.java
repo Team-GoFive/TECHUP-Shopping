@@ -13,7 +13,7 @@ import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.util.Preconditions;
 

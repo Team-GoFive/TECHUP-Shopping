@@ -50,14 +50,14 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
 		summary = "주문 취소",
-		description = "사용자가 자신의 주문을 취소하는 API",
+		description = "사용자가 자신의 주문을 주문 상품별로 취소하는 API",
 		parameters = {
-			@Parameter(name = "orderId", description = "주문 ID")
+			@Parameter(name = "orderProductId", description = "주문 상품 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> cancelOrder(
-		DefaultCurrentUser currentUser,
-		UUID orderId
+	ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		UUID orderProductId,
+		DefaultCurrentUser currentUser
 	);
 
 	@Operation(
@@ -67,7 +67,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> updateOrder(
+	ResponseEntity<ApiResult<Void>> changeOrderAddress(
 		DefaultCurrentUser currentUser,
 		UUID orderId,
 		OrderRequest.Update request

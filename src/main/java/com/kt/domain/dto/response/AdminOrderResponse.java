@@ -4,7 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderDerivedStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReceiverVO;
@@ -13,15 +14,15 @@ public class AdminOrderResponse {
 
 	public record Search(
 		UUID orderId,
-		String ordererName,
-		OrderStatus status,
-		java.time.Instant createdAt
+		UUID ordererName,
+		OrderDerivedStatus status,
+		Instant createdAt
 	) {
 		public static Search from(OrderEntity order) {
 			return new Search(
 				order.getId(),
-				order.getOrderBy().getName(),
-				order.getStatus(),
+				order.getOrderBy().getId(),
+				order.getDerivedStatus(),
 				order.getCreatedAt()
 			);
 		}
@@ -29,8 +30,7 @@ public class AdminOrderResponse {
 
 	public record Detail(
 		UUID orderId,
-		String ordererName,
-		OrderStatus status,
+		UUID ordererId,
 		Instant createdAt,
 		ReceiverVO receiver,
 		List<ProductSummary> products
@@ -38,8 +38,7 @@ public class AdminOrderResponse {
 		public static Detail from(OrderEntity order, List<OrderProductEntity> orderProducts) {
 			return new Detail(
 				order.getId(),
-				order.getOrderBy().getName(),
-				order.getStatus(),
+				order.getOrderBy().getId(),
 				order.getCreatedAt(),
 				order.getReceiverVO(),
 				orderProducts.stream()
@@ -51,15 +50,19 @@ public class AdminOrderResponse {
 	}
 
 	public record ProductSummary(
+		UUID orderProductId,
 		UUID productId,
 		String productName,
-		Long quantity
+		Long quantity,
+		OrderProductStatus status
 	) {
-		public static ProductSummary from(OrderProductEntity orderproduct) {
+		public static ProductSummary from(OrderProductEntity orderProduct) {
 			return new ProductSummary(
-				orderproduct.getProduct().getId(),
-				orderproduct.getProduct().getName(),
-				orderproduct.getQuantity()
+				orderProduct.getId(),
+				orderProduct.getProduct().getId(),
+				orderProduct.getProduct().getName(),
+				orderProduct.getQuantity(),
+				orderProduct.getStatus()
 			);
 		}
 	}

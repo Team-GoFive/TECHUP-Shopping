@@ -23,5 +23,4 @@ public interface OrderProductRepository
 		);
 	}
 
-	List<OrderProductEntity> findAllByProductId(UUID productId);
 }

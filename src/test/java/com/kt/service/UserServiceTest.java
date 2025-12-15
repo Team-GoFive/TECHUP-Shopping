@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.message.ErrorCode;
@@ -38,7 +37,7 @@ import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
@@ -201,7 +200,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_존재() {
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(testOrder);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);
@@ -217,7 +216,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__작성한_리뷰_존재() {
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
@@ -232,7 +231,7 @@ class UserServiceTest {
 
 	@Test
 	void 리뷰_가능한_주문상품_없음__주문_리뷰가능_상태_아님() {
-		testOrder.updateStatus(OrderStatus.CANCELED);
+		testOrderProduct.updateStatus(OrderProductStatus.CANCELED);
 		orderRepository.save(testOrder);
 
 		PageRequest pageRequest = PageRequest.of(0, 10);

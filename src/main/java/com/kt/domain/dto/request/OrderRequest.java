@@ -3,7 +3,7 @@ package com.kt.domain.dto.request;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -52,7 +52,7 @@ public record OrderRequest(
 	@Schema(name = "OrderChangeStatusRequest")
 	public record ChangeStatus(
 		@NotNull
-		OrderStatus status
+		OrderProductStatus status
 	) {
 	}
 }
