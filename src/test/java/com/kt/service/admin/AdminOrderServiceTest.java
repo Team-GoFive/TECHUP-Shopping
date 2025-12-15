@@ -150,7 +150,7 @@ class AdminOrderServiceTest {
 		orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 
 		// when & then
-		assertThatThrownBy(() -> adminOrderService.cancelOrderProduct(user.getId(), order.getId()))
+		assertThatThrownBy(() -> adminOrderService.cancelOrderProduct(user.getId(), orderProduct.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.ORDER_ALREADY_CONFIRMED.name());
 	}
