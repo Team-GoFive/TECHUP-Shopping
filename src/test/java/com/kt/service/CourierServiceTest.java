@@ -1,7 +1,6 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +39,6 @@ class CourierServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
 		testAdmin = UserEntityCreator.createAdmin();
@@ -48,7 +46,7 @@ class CourierServiceTest {
 	}
 
 	@Test
-	void 배송기사정보수정_본인_성공(){
+	void 배송기사정보수정_본인_성공() {
 		// given
 		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
 			"변경된 테스터명",
@@ -59,11 +57,11 @@ class CourierServiceTest {
 		courierService.updateDetail(testCourier.getId(), testCourier.getId(), update);
 
 		// then
-		Assertions.assertEquals(testCourier.getName(),update.name());
+		Assertions.assertEquals(testCourier.getName(), update.name());
 	}
 
 	@Test
-	void 배송기사정보수정_어드민_성공(){
+	void 배송기사정보수정_어드민_성공() {
 		// given
 		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
 			"변경된 테스터명",
@@ -74,11 +72,11 @@ class CourierServiceTest {
 		courierService.updateDetail(testAdmin.getId(), testCourier.getId(), update);
 
 		// then
-		Assertions.assertEquals(testCourier.getName(),update.name());
+		Assertions.assertEquals(testCourier.getName(), update.name());
 	}
 
 	@Test
-	void 배송기사정보수정_실패__본인아님(){
+	void 배송기사정보수정_실패__본인아님() {
 		// given
 		CourierEntity someCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(someCourier);
@@ -97,20 +95,20 @@ class CourierServiceTest {
 	}
 
 	@Test
-	void 배송기사조회_성공_본인(){
+	void 배송기사조회_성공_본인() {
 		// when
 		CourierResponse.Detail savedCourier = courierService.getDetail(testCourier.getId(), testCourier.getId());
 
 		// then
 		assertThat(savedCourier).satisfies(
 			courierEntity -> {
-				Assertions.assertEquals(courierEntity.id(),testCourier.getId());
-					Assertions.assertEquals(courierEntity.email(),testCourier.getEmail());
+				Assertions.assertEquals(courierEntity.id(), testCourier.getId());
+				Assertions.assertEquals(courierEntity.email(), testCourier.getEmail());
 			});
 	}
 
 	@Test
-	void 배송기사조회_실패_본인_아님(){
+	void 배송기사조회_실패_본인_아님() {
 		// given
 		CourierEntity someCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(someCourier);
