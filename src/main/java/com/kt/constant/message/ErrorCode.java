@@ -18,6 +18,7 @@ public enum ErrorCode {
 	AUTH_CODE_INVALID(HttpStatus.UNAUTHORIZED, "인증 코드가 일치하지 않습니다."),
 	AUTH_EXPIRED(HttpStatus.UNAUTHORIZED, "엑세스 토큰이 만료되었습니다."),
 	AUTH_INVALID(HttpStatus.UNAUTHORIZED, "올바르지 않은 인증 정보입니다."),
+	AUTH_INVALID_ACCESS_PATH(HttpStatus.UNAUTHORIZED, "올바르지 않은 접근 경로입니다."),
 	AUTH_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 	AUTH_EMAIL_UNVERIFIED(HttpStatus.UNAUTHORIZED, "인증되지 않은 이메일입니다."),
 	AUTH_FAILED_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 혹은 비밀번호가 일치하지 않습니다."),
