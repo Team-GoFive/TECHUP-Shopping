@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
 	// TODO: for admin
 	@Override
-	public void createAdmin(UUID userId, SignupRequest.SignupMember request) {
+	public void createAdmin(UUID userId, SignupRequest.SignupUser request) {
 		checkAdmin(userId);
 
 		UserEntity admin = UserEntity.create(

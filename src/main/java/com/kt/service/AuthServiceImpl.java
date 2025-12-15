@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailClient emailClient;
 
 	@Override
-	public void signupMember(SignupRequest.SignupMember request) {
+	public void signupUser(SignupRequest.SignupUser request) {
 		String email = request.email();
 		requireVerifiedEmail(email);
 		requireDuplicatedEmail(email);
