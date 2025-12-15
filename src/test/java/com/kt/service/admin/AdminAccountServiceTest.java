@@ -1,6 +1,7 @@
-package com.kt.service;
+package com.kt.service.admin;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -39,11 +40,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
-class AccountServiceTest {
+class AdminAccountServiceTest {
 
 	static final String TEST_PASSWORD = "1234567891011";
 	@Autowired
-	AccountService accountService;
+	AdminAccountService adminAccountService;
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
@@ -60,9 +61,13 @@ class AccountServiceTest {
 	CourierEntity courier1;
 	CourierEntity courier2;
 
-
 	@BeforeEach
 	void setUp() {
+		passwordRequestRepository.deleteAll();
+		courierRepository.deleteAll();
+		userRepository.deleteAll();
+		accountRepository.deleteAll();
+
 		member1 = UserEntity.create(
 			"회원",
 			"bjwnstkdbj@naver.com",
@@ -115,7 +120,7 @@ class AccountServiceTest {
 		);
 
 		// when
-		Page<?> result = accountService.searchAccounts(
+		Page<?> result = adminAccountService.searchAccounts(
 			request,
 			Pageable.ofSize(10)
 		);
@@ -137,7 +142,7 @@ class AccountServiceTest {
 		);
 
 		// when
-		Page<?> result = accountService.searchAccounts(
+		Page<?> result = adminAccountService.searchAccounts(
 			request,
 			Pageable.ofSize(10)
 		);
@@ -159,7 +164,7 @@ class AccountServiceTest {
 		);
 
 		// when
-		Page<?> result = accountService.searchAccounts(
+		Page<?> result = adminAccountService.searchAccounts(
 			request,
 			Pageable.ofSize(10)
 		);
@@ -182,7 +187,7 @@ class AccountServiceTest {
 		);
 		userRepository.save(user);
 
-		accountService.updatePassword(
+		adminAccountService.updatePassword(
 			user.getId(),
 			TEST_PASSWORD,
 			"12345678910"
@@ -206,7 +211,7 @@ class AccountServiceTest {
 		);
 		courierRepository.save(courier);
 
-		accountService.updatePassword(
+		adminAccountService.updatePassword(
 			courier.getId(),
 			TEST_PASSWORD,
 			"12345678910"
@@ -236,7 +241,7 @@ class AccountServiceTest {
 		assertThrowsExactly(
 			CustomException.class,
 			() -> {
-				accountService.updatePassword(
+				adminAccountService.updatePassword(
 					user.getId(),
 					"틀린비밀번호입니다.......",
 					"22222222222222"
@@ -257,7 +262,7 @@ class AccountServiceTest {
 
 		assertThrowsExactly(
 			CustomException.class,
-			() -> accountService.updatePassword(
+			() -> adminAccountService.updatePassword(
 				courier.getId(),
 				TEST_PASSWORD,
 				TEST_PASSWORD
@@ -275,7 +280,7 @@ class AccountServiceTest {
 		);
 		courierRepository.save(courier);
 
-		accountService.deleteAccount(courier.getId());
+		adminAccountService.deleteAccount(courier.getId());
 		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(courier.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
@@ -291,7 +296,7 @@ class AccountServiceTest {
 		);
 		courierRepository.save(courier);
 
-		accountService.deleteAccountPermanently(courier.getId());
+		adminAccountService.deleteAccountPermanently(courier.getId());
 
 		assertThatThrownBy(() -> accountRepository.findByIdOrThrow(courier.getId()))
 			.isInstanceOf(CustomException.class);
@@ -308,7 +313,7 @@ class AccountServiceTest {
 		passwordRequestRepository.save(passwordRequest);
 		String originPassword = "1234";
 
-		accountService.resetAccountPassword(member1.getId());
+		adminAccountService.resetAccountPassword(member1.getId());
 
 		log.info(
 			"isMatch :: {}", passwordEncoder.matches(
@@ -329,7 +334,7 @@ class AccountServiceTest {
 	void 관리자_다른_계정_비밀번호_초기화_실패_요청사항_없음() {
 
 		assertThatThrownBy(
-			() -> accountService.resetAccountPassword(member1.getId())
+			() -> adminAccountService.resetAccountPassword(member1.getId())
 		).isInstanceOf(CustomException.class);
 
 	}
@@ -345,7 +350,7 @@ class AccountServiceTest {
 		);
 		passwordRequestRepository.save(passwordRequest);
 
-		accountService.updateAccountPassword(member1.getId());
+		adminAccountService.updateAccountPassword(member1.getId());
 
 		log.info(
 			"isMatch :: {}", passwordEncoder.matches(
@@ -389,7 +394,7 @@ class AccountServiceTest {
 		);
 
 		Page<PasswordRequestResponse.Search> result =
-			accountService.searchPasswordRequests(request, pageable);
+			adminAccountService.searchPasswordRequests(request, pageable);
 
 		// then
 		assertThat(result).isNotNull();

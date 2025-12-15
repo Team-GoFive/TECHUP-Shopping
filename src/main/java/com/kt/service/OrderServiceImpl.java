@@ -125,6 +125,7 @@ public class OrderServiceImpl implements OrderService {
 		order.cancel();
 	}
 
+	// TODO: for seller
 	@Override
 	public void updateOrder(UUID userId, UUID orderId, OrderRequest.Update request) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);

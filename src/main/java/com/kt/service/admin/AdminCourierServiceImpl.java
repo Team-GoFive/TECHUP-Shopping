@@ -1,4 +1,4 @@
-package com.kt.service;
+package com.kt.service.admin;
 
 import java.util.UUID;
 
@@ -18,30 +18,15 @@ import com.kt.util.Preconditions;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class CourierServiceImpl implements CourierService {
+@RequiredArgsConstructor
+public class AdminCourierServiceImpl implements AdminCourierService {
 
 	private final CourierRepository courierRepository;
 	private final AccountRepository accountRepository;
 
 	@Override
-	public CourierResponse.Detail getDetail(UUID currentId, UUID subjectId) {
-		verifyAccess(currentId, subjectId);
-
-		CourierEntity courierEntity = courierRepository.findByIdOrThrow(subjectId);
-		return new CourierResponse.Detail(
-			courierEntity.getId(),
-			courierEntity.getName(),
-			courierEntity.getEmail(),
-			courierEntity.getGender(),
-			courierEntity.getWorkStatus()
-		);
-	}
-
-	// TODO: for admin
-	@Override
-	public CourierResponse.DetailAdmin getDetailForAdmin(UUID currentId, UUID subjectId) {
+	public CourierResponse.DetailAdmin getDetail(UUID currentId, UUID subjectId) {
 		verifyAccess(currentId, subjectId);
 
 		CourierEntity courierEntity = courierRepository.findByIdOrThrow(subjectId);

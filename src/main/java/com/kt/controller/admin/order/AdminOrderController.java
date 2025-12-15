@@ -21,6 +21,7 @@ import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.OrderService;
+import com.kt.service.admin.AdminOrderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,14 +29,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/orders")
 public class AdminOrderController implements AdminOrderSwaggerSupporter {
-	public final OrderService orderService;
+	public final AdminOrderService adminOrderService;
 
 	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrder(
 		@ModelAttribute Paging paging
 	) {
-		return page(orderService.searchOrder(
+		return page(adminOrderService.searchOrder(
 			paging.toPageable()
 		));
 	}
@@ -45,7 +46,7 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 	public ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
-		return wrap(orderService.getOrderDetail(orderId));
+		return wrap(adminOrderService.getOrderDetail(orderId));
 	}
 
 	@Override
@@ -54,7 +55,7 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 		@PathVariable UUID orderId,
 		@RequestBody OrderRequest.ChangeStatus request
 	) {
-		orderService.updateOrderStatus(orderId, request.status());
+		adminOrderService.updateOrderStatus(orderId, request.status());
 		return empty();
 	}
 
@@ -64,7 +65,7 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId
 	) {
-		orderService.cancelOrder(currentUser.getId(), orderId);
+		adminOrderService.cancelOrder(currentUser.getId(), orderId);
 		return empty();
 	}
 }

@@ -1,5 +1,6 @@
 package com.kt.controller.admin.category;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -16,6 +17,7 @@ import com.kt.domain.dto.request.CategoryRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.AccountResponse;
+import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.dto.response.UserResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,4 +55,9 @@ public interface AdminCategorySwaggerSupporter {
 		@PathVariable UUID categoryId
 	);
 
+	@Operation(
+		summary = "전체 카테고리 조회",
+		description = "전체 카테고리를 트리 구조로 조회하는 API"
+	)
+	ResponseEntity<ApiResult<List<CategoryResponse.CategoryTreeItem>>> getAllCategories();
 }
