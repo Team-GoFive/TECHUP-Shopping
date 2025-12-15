@@ -7,7 +7,7 @@ import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
 
 public interface AdminAdminService {
-	void createAdmin(UUID userId, SignupRequest.SignupMember request);
+	void createAdmin(UUID userId, SignupRequest.SignupUser request);
 
 	void deleteAdmin(UUID currentId, UUID adminId);
 

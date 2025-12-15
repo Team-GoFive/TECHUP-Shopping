@@ -26,7 +26,7 @@ public class AdminAdminServiceImpl implements AdminAdminService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public void createAdmin(UUID userId, SignupRequest.SignupMember request) {
+	public void createAdmin(UUID userId, SignupRequest.SignupUser request) {
 		checkAdmin(userId);
 
 		UserEntity admin = UserEntity.create(
