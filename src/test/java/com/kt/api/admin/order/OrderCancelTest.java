@@ -77,7 +77,7 @@ public class OrderCancelTest extends MockMvcTest {
 			OrderProductEntity.create(
 				1L,
 				product.getPrice(),
-				OrderProductStatus.PAID,
+				OrderProductStatus.SHIPPING_READY,
 				order,
 				product
 			)
@@ -108,7 +108,7 @@ public class OrderCancelTest extends MockMvcTest {
 
 		savedOrder.getOrderProducts()
 			.forEach(orderProduct ->
-				orderProduct.updateStatus(OrderProductStatus.PAID));
+				orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY));
 
 		mockMvc.perform(patch("/api/orders/order-products/{orderProductId}/cancel", UUID.randomUUID())
 				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(user.getId())))

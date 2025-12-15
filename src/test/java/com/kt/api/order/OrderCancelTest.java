@@ -85,7 +85,7 @@ public class OrderCancelTest extends MockMvcTest {
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
 		OrderProductEntity orderProduct = saved.getOrderProducts().get(0);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		// when
 		ResultActions actions = mockMvc.perform(
@@ -109,7 +109,7 @@ public class OrderCancelTest extends MockMvcTest {
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
 		saved.getOrderProducts().get(0)
-		.updateStatus(OrderProductStatus.PAID);
+		.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		if(saved.getOrderProducts().size() > 1) {
 			saved.getOrderProducts().subList(1, saved.getOrderProducts().size())

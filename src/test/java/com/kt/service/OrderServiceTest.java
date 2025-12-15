@@ -176,7 +176,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		// when
 		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(order.getId());
@@ -199,8 +199,8 @@ class OrderServiceTest {
 		OrderProductEntity orderProduct1 = createOrderWithProducts(order, 3L);
 		OrderProductEntity orderProduct2 = createOrderWithProducts(order, 2L);
 
-		orderProduct1.updateStatus(OrderProductStatus.PAID);
-		orderProduct2.updateStatus(OrderProductStatus.PAID);
+		orderProduct1.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct2.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		long beforeStock1 = orderProduct1.getProduct().getStock();
 		long beforeStock2 = orderProduct2.getProduct().getStock();
@@ -257,7 +257,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
 			"박수정",
@@ -285,7 +285,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		CourierEntity courier = courierRepository.save(
 			CourierEntityCreator.createCourierEntity()
