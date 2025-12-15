@@ -13,7 +13,9 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,8 +33,21 @@ public class UserEntity extends AbstractAccountEntity {
 		orphanRemoval = true
 	)
 	List<AddressEntity> addresses;
+
+	@OneToOne(
+		mappedBy = "user",
+		cascade = {
+			CascadeType.PERSIST,
+			CascadeType.REMOVE
+		},
+		orphanRemoval = true,
+		fetch = FetchType.LAZY
+	)
+	private PayEntity pay;
+
 	@Column(nullable = false)
 	private LocalDate birth;
+
 	@Column(nullable = false)
 	private String mobile;
 
@@ -53,6 +68,7 @@ public class UserEntity extends AbstractAccountEntity {
 		this.birth = birth;
 		this.mobile = mobile;
 		this.status = UserStatus.ENABLED;
+		this.pay = PayEntity.create(this);
 	}
 
 	public static UserEntity create(
