@@ -286,35 +286,35 @@ class AdminUserServiceTest {
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
 	}
-	//
-	// @Test
-	// @Transactional(propagation = Propagation.NOT_SUPPORTED)
-	// void 유저_하드_딜리트_성공() {
-	// 	// given
-	// 	UserEntity user = UserEntity.create(
-	// 		"삭제",
-	// 		"aaa",
-	// 		"1234",
-	// 		UserRole.MEMBER,
-	// 		Gender.MALE,
-	// 		LocalDate.of(1111, 1, 1),
-	// 		"111"
-	// 	);
-	// 	UserEntity savedUser = userRepository.save(user);
-	//
-	// 	OrderEntity order = OrderEntity.create(
-	// 		ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-	// 		savedUser
-	// 	);
-	// 	OrderEntity savedOrder = orderRepository.save(order);
-	//
-	// 	// when
-	// 	adminUserService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
-	//
-	// 	// then
-	// 	assertThat(userRepository.existsById(savedUser.getId())).isFalse();
-	// 	OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
-	// 	assertThat(foundOrder).isNotNull();
-	// }
+
+	@Test
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	void 유저_하드_딜리트_성공() {
+		// given
+		UserEntity user = UserEntity.create(
+			"삭제",
+			"aaa",
+			"1234",
+			UserRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1111, 1, 1),
+			"111"
+		);
+		UserEntity savedUser = userRepository.save(user);
+
+		OrderEntity order = OrderEntity.create(
+			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
+			savedUser
+		);
+		OrderEntity savedOrder = orderRepository.save(order);
+
+		// when
+		adminUserService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
+
+		// then
+		assertThat(userRepository.existsById(savedUser.getId())).isFalse();
+		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
+		assertThat(foundOrder).isNotNull();
+	}
 
 }
