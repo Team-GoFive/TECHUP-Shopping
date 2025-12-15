@@ -19,7 +19,7 @@ public interface AuthService {
 
 	void initPassword(PasswordManagementRequest.PasswordReset request);
 
-	void requestPasswordInit(PasswordManagementRequest.PasswordReset request);
+	void requestPasswordReset(PasswordManagementRequest.PasswordReset request);
 
 	void requestPasswordUpdate(PasswordManagementRequest.PasswordUpdate request);
 }

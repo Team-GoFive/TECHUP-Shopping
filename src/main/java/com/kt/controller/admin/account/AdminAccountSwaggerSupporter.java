@@ -59,7 +59,7 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "accountId" , description = "계정 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> resetAccountPassword(UUID accountId);
+	ResponseEntity<ApiResult<Void>> resetAccountPassword(UUID passwordRequestId);
 
 	@Operation(
 		summary = "계정 비밀번호 변경",
@@ -68,7 +68,7 @@ public interface AdminAccountSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "accountId", description = "계정 ID")
 		}
 	)
-	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID accountId);
+	ResponseEntity<ApiResult<Void>> updateAccountPassword(UUID passwordRequestId);
 
 	@Operation(
 		summary = "계정 비밀번호 변경 및 초기화 요청 목록",
