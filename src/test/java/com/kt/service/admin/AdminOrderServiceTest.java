@@ -1,9 +1,7 @@
 package com.kt.service.admin;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import com.kt.common.ProductEntityCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.CategoryEntity;
@@ -30,7 +27,7 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
@@ -73,12 +70,11 @@ class AdminOrderServiceTest {
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
 	}
 
-	OrderEntity createOrder(UserEntity user, OrderStatus status) {
+	OrderEntity createOrder(UserEntity user) {
 		return orderRepository.save(
 			OrderEntity.create(
 				ReceiverCreator.createReceiver(),
-				user,
-				status
+				user
 			)
 		);
 	}
@@ -104,66 +100,77 @@ class AdminOrderServiceTest {
 	void 주문_취소_성공() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
-		OrderEntity order = createOrder(user, OrderStatus.WAITING_PAYMENT);
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(ReceiverCreator.createReceiver(), user)
+		);
 
-		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		long beforeStock = orderProduct.getProduct().getStock();
+		OrderProductEntity orderProduct1 = createOrderWithProducts(order, 3L);
+		OrderProductEntity orderProduct2 = createOrderWithProducts(order, 2L);
+
+		orderProduct1.updateStatus(OrderProductStatus.PAID);
+		orderProduct2.updateStatus(OrderProductStatus.PAID);
+
+		long beforeStock1 = orderProduct1.getProduct().getStock();
+		long beforeStock2 = orderProduct2.getProduct().getStock();
 
 		// when
-		adminOrderService.cancelOrder(user.getId(), order.getId());
+		adminOrderService.cancelOrderProduct(user.getId(), orderProduct1.getId());
+		adminOrderService.cancelOrderProduct(user.getId(), orderProduct2.getId());
 
 		// then
-		long afterStock = productRepository.findById(orderProduct.getProduct().getId()).get().getStock();
-		assertThat(afterStock).isEqualTo(beforeStock + 3L);
+		OrderProductEntity canceled1 =
+			orderProductRepository.findById(orderProduct1.getId()).orElseThrow();
+		OrderProductEntity canceled2 =
+			orderProductRepository.findById(orderProduct2.getId()).orElseThrow();
+
+		assertThat(canceled1.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
+		assertThat(canceled2.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
+
+		long afterStock1 = productRepository
+			.findById(orderProduct1.getProduct().getId())
+			.orElseThrow().getStock();
+		long afterStock2 = productRepository
+			.findById(orderProduct2.getProduct().getId())
+			.orElseThrow()
+			.getStock();
+
+		assertThat(afterStock1).isEqualTo(beforeStock1 + 3L);
+		assertThat(afterStock2).isEqualTo(beforeStock2 + 2L);
 	}
 
 	@Test
 	void 주문_취소_실패__이미_구매확정() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		OrderEntity order = createOrder(user, OrderStatus.PURCHASE_CONFIRMED);
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(ReceiverCreator.createReceiver(), user)
+		);
+
+		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
+		orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 
 		// when & then
-		assertThatThrownBy(() -> adminOrderService.cancelOrder(user.getId(), order.getId()))
+		assertThatThrownBy(() -> adminOrderService.cancelOrderProduct(user.getId(), order.getId()))
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining("ORDER_ALREADY_CONFIRMED");
+			.hasMessageContaining(ErrorCode.ORDER_ALREADY_CONFIRMED.name());
 	}
 
 	@Test
 	void 주문_리스트_조회_성공() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
-
-		OrderEntity order1 = createOrder(user, OrderStatus.CREATED);
-		OrderEntity order2 = createOrder(user, OrderStatus.WAITING_PAYMENT);
-
-		product.decreaseStock(1L);
-		productRepository.save(product);
-		orderProductRepository.save(
-			OrderProductEntity.create(
-				1L,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order1,
-				product
-			)
+		OrderEntity order1 = orderRepository.save(
+			OrderEntity.create(ReceiverCreator.createReceiver(), user)
+		);
+		OrderEntity order2 = orderRepository.save(
+			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
 
-		product.decreaseStock(2L);
-		productRepository.save(product);
-		orderProductRepository.save(
-			OrderProductEntity.create(
-				2L,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order2,
-				product
-			)
-		);
+		createOrderWithProducts(order1, 1L);
+		createOrderWithProducts(order2, 1L);
 
 		Pageable pageable = Pageable.ofSize(10);
+
 		// when
 		Page<AdminOrderResponse.Search> result = adminOrderService.searchOrder(pageable);
 
@@ -180,20 +187,13 @@ class AdminOrderServiceTest {
 	void 주문_상세_조회_성공() {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
 
-		OrderEntity order = createOrder(user, OrderStatus.CREATED);
-		product.decreaseStock(3L);
-		productRepository.save(product);
-		orderProductRepository.save(
-			OrderProductEntity.create(
-				3L,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order,
-				product
-			)
+		OrderEntity order = orderRepository.save(
+			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
+
+		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
+		orderProduct.updateStatus(OrderProductStatus.PAID);
 
 		// when
 		AdminOrderResponse.Detail detail = adminOrderService.getOrderDetail(order.getId());
@@ -201,66 +201,13 @@ class AdminOrderServiceTest {
 		// then
 		assertThat(detail).isNotNull();
 		assertThat(detail.orderId()).isEqualTo(order.getId());
-		assertThat(detail.ordererName()).isEqualTo(user.getName());
+		assertThat(detail.ordererId()).isEqualTo(user.getId());
 		assertThat(detail.products()).hasSize(1);
 		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
 	}
 
-	@Test
-	void 주문_상태_변경_성공() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
+	// TODO: 주문상품_상태_변경_성공
 
-		OrderEntity order = createOrder(user, OrderStatus.CREATED);
-		product.decreaseStock(1L);
-		productRepository.save(product);
-		orderProductRepository.save(
-			OrderProductEntity.create(
-				1L,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order,
-				product
-			)
-		);
-		OrderStatus newStatus = OrderStatus.SHIPPING;
-
-		// when
-		adminOrderService.updateOrderStatus(order.getId(), newStatus);
-
-		// then
-		OrderEntity updated = orderRepository.findById(order.getId()).get();
-		assertThat(updated.getStatus()).isEqualTo(newStatus);
-	}
-
-	@Test
-	void 주문_상태_변경_실패__현재배송중() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
-
-		OrderEntity order = createOrder(user, OrderStatus.SHIPPING);
-		product.decreaseStock(1L);
-		productRepository.save(product);
-		orderProductRepository.save(
-			OrderProductEntity.create(
-				1L,
-				product.getPrice(),
-				OrderProductStatus.CREATED,
-				order,
-				product
-			)
-		);
-
-		OrderStatus newStatus = OrderStatus.CANCELED;
-
-		// when & then
-		assertThatThrownBy(() ->
-			adminOrderService.updateOrderStatus(order.getId(), newStatus)
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
-	}
+	// TODO: 주문상품_상태_변경_실패__배송중
 
 }

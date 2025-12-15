@@ -63,7 +63,7 @@ public class AdminOrderController implements AdminOrderSwaggerSupporter {
 		@PathVariable UUID orderProductId,
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		adminOrderService.cancelOrder(currentUser.getId(), orderProductId);
-		return empty(); // TODO: cancelOrderProduct로 변경
+		adminOrderService.cancelOrderProduct(currentUser.getId(), orderProductId);
+		return empty();
 	}
 }

@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.request.OrderRequest;

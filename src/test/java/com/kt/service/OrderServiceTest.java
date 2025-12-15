@@ -313,57 +313,5 @@ class OrderServiceTest {
 			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
 	}
 
-	// TODO: 조회 API용 DTO 매핑 테스트로 위치 변경
-	@Test
-	void 주문_리스트_조회_성공() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-
-		OrderEntity order1 = orderRepository.save(
-			OrderEntity.create(ReceiverCreator.createReceiver(), user)
-		);
-		OrderEntity order2 = orderRepository.save(
-			OrderEntity.create(ReceiverCreator.createReceiver(), user)
-		);
-
-		createOrderWithProducts(order1, 1L);
-		createOrderWithProducts(order2, 1L);
-
-		Pageable pageable = Pageable.ofSize(10);
-
-		// when
-		Page<AdminOrderResponse.Search> result = orderService.searchOrder(pageable);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
-		assertThat(result.getContent()
-			.stream()
-			.map(AdminOrderResponse.Search::orderId)
-		).contains(order1.getId(), order2.getId());
-	}
-
-	// TODO: 위치 변경 필요
-	@Test
-	void 주문_상세_조회_성공() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-
-		OrderEntity order = orderRepository.save(
-			OrderEntity.create(ReceiverCreator.createReceiver(), user)
-		);
-
-		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
-		// when
-		AdminOrderResponse.Detail detail = orderService.getOrderDetail(order.getId());
-
-		// then
-		assertThat(detail).isNotNull();
-		assertThat(detail.orderId()).isEqualTo(order.getId());
-		assertThat(detail.ordererId()).isEqualTo(user.getId());
-		assertThat(detail.products()).hasSize(1);
-		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
-	}
 
 }
