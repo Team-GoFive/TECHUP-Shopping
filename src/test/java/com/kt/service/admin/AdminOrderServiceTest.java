@@ -38,7 +38,7 @@ import com.kt.repository.user.UserRepository;
 
 @Transactional
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class AdminOrderServiceTest {
 
 	@Autowired
@@ -62,14 +62,6 @@ class AdminOrderServiceTest {
 
 	@BeforeEach
 	void setup() {
-		reviewRepository.deleteAll();
-		orderProductRepository.deleteAll();
-		orderRepository.deleteAll();
-		productRepository.deleteAll();
-		userRepository.deleteAll();
-		categoryRepository.deleteAll();
-		addressRepository.deleteAll();
-
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
 	}
 

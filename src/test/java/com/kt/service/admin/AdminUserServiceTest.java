@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 class AdminUserServiceTest {
 
@@ -65,15 +66,18 @@ class AdminUserServiceTest {
 	UUID userId;
 	UUID AdminId;
 
-	@BeforeEach
-	void setUp() throws Exception {
+	@AfterEach
+	void clearUp() {
 		reviewRepository.deleteAll();
 		orderProductRepository.deleteAll();
 		orderRepository.deleteAll();
 		userRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
+	}
 
+	@BeforeEach
+	void setUp() throws Exception {
 		testUser = UserEntity.create(
 			"주문자테스터1",
 			"wjd123@naver.com",
