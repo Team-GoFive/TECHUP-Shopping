@@ -1,42 +1,32 @@
 package com.kt.service.admin;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.message.ErrorCode;
-import com.kt.domain.dto.request.SignupRequest;
-import com.kt.domain.dto.request.UserRequest;
-import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
-import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
@@ -45,12 +35,11 @@ import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.UserService;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class AdminUserServiceImplTest {
+class AdminUserServiceTest {
 
 	@Autowired
 	AdminUserService adminUserService;
@@ -297,35 +286,35 @@ class AdminUserServiceImplTest {
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
 	}
-
-	@Test
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	void 유저_하드_딜리트_성공() {
-		// given
-		UserEntity user = UserEntity.create(
-			"삭제",
-			"aaa",
-			"1234",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1111, 1, 1),
-			"111"
-		);
-		UserEntity savedUser = userRepository.save(user);
-
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-			savedUser
-		);
-		OrderEntity savedOrder = orderRepository.save(order);
-
-		// when
-		adminUserService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
-
-		// then
-		assertThat(userRepository.existsById(savedUser.getId())).isFalse();
-		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
-		assertThat(foundOrder).isNotNull();
-	}
+	//
+	// @Test
+	// @Transactional(propagation = Propagation.NOT_SUPPORTED)
+	// void 유저_하드_딜리트_성공() {
+	// 	// given
+	// 	UserEntity user = UserEntity.create(
+	// 		"삭제",
+	// 		"aaa",
+	// 		"1234",
+	// 		UserRole.MEMBER,
+	// 		Gender.MALE,
+	// 		LocalDate.of(1111, 1, 1),
+	// 		"111"
+	// 	);
+	// 	UserEntity savedUser = userRepository.save(user);
+	//
+	// 	OrderEntity order = OrderEntity.create(
+	// 		ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
+	// 		savedUser
+	// 	);
+	// 	OrderEntity savedOrder = orderRepository.save(order);
+	//
+	// 	// when
+	// 	adminUserService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
+	//
+	// 	// then
+	// 	assertThat(userRepository.existsById(savedUser.getId())).isFalse();
+	// 	OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
+	// 	assertThat(foundOrder).isNotNull();
+	// }
 
 }

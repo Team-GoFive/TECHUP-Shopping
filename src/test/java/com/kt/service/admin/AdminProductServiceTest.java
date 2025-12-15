@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.ProductStatus;
 import com.kt.constant.UserRole;
@@ -21,11 +23,13 @@ import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.service.ProductService;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 class AdminProductServiceTest {
 
 	private final AdminProductService adminProductService;
@@ -34,9 +38,12 @@ class AdminProductServiceTest {
 
 	private final CategoryRepository categoryRepository;
 
+	private final OrderProductRepository orderProductRepository;
+
 	@Autowired
 	AdminProductServiceTest(AdminProductService adminProductService, ProductRepository productRepository,
-		CategoryRepository categoryRepository) {
+		CategoryRepository categoryRepository, OrderProductRepository orderProductRepository) {
+		this.orderProductRepository = orderProductRepository;
 		this.adminProductService = adminProductService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
@@ -44,6 +51,7 @@ class AdminProductServiceTest {
 
 	@BeforeEach
 	void tearDown() {
+		orderProductRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
 	}

@@ -63,6 +63,7 @@ class AdminAccountServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		passwordRequestRepository.deleteAll();
 		courierRepository.deleteAll();
 		userRepository.deleteAll();
 		accountRepository.deleteAll();
