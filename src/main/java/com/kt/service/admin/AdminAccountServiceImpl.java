@@ -36,8 +36,6 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 	private final PasswordRequestRepository passwordRequestRepository;
 	private final EmailClient emailClient;
 
-	// FIXME: Admin도 회원탈퇴와 비밀번호 변경을 가능하게 할 것인지
-	// 회원 탈퇴와 비밀번호 변경은 AdminAccountTest 생성 X
 	@Override
 	public void updatePassword(
 		UUID accountId,
