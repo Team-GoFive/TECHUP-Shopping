@@ -47,7 +47,6 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	}
 
 	@Override
-	@Transactional
 	public void forceChangeStatus(
 		UUID orderProductId,
 		OrderProductStatus status
