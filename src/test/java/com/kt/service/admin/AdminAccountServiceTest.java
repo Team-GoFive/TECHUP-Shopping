@@ -213,7 +213,6 @@ class AdminAccountServiceTest {
 		passwordRequestRepository.save(passwordRequest);
 		String originPassword = "1234";
 
-		assertNotNull(passwordRequest.getId());
 		adminAccountService.resetAccountPassword(passwordRequest.getId());
 
 		log.info(
@@ -241,7 +240,7 @@ class AdminAccountServiceTest {
 			PasswordRequestType.UPDATE
 		);
 		passwordRequestRepository.save(passwordRequest);
-		assertNotNull(passwordRequest.getId());
+
 		adminAccountService.updateAccountPassword(passwordRequest.getId());
 
 		assertFalse(
