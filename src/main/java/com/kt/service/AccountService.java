@@ -18,10 +18,6 @@ public interface AccountService {
 		Pageable pageable
 	);
 
-	void resetAccountPassword(UUID passwordRequestId);
-
-	void updateAccountPassword(UUID passwordRequestId);
-
 	void updatePassword(
 		UUID accountId,
 		String currentPassword,

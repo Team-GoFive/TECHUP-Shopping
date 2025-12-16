@@ -1,6 +1,5 @@
 package com.kt.api.admin.account;
 
-import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 
@@ -21,14 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.CurrentUserCreator.getAdminUserDetails;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
-@DisplayName("계정 비밀번호 초기화 - GET /api/admin/accounts/password-requests")
+@DisplayName("계정 비밀번호 변경 및 초기화 요청 목록  - GET /api/admin/accounts/password-requests")
 public class AccountPasswordRequestSearchTest extends MockMvcTest {
 
 	@Autowired

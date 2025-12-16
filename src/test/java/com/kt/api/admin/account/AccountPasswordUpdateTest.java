@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("계정 비밀번호 초기화 - PATCH /api/admin/accounts/password-requests/{passwordRequestId}/update")
+@DisplayName("계정 비밀번호 변경(관리자 - 계정) - PATCH /api/admin/accounts/password-requests/{passwordRequestId}/update")
 public class AccountPasswordUpdateTest extends MockMvcTest {
 
 	@Autowired

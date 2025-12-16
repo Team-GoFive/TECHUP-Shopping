@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("계정 비밀번호 초기화 - PATCH /api/admin/accounts/password-requests/{passwordRequestId}/reset")
+@DisplayName("계정 비밀번호 초기화(관리자 - 계정) - PATCH /api/admin/accounts/password-requests/{passwordRequestId}/reset")
 public class AccountPasswordResetTest extends MockMvcTest {
 
 	@Autowired

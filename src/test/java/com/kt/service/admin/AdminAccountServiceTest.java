@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.constant.PasswordRequestStatus;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -202,6 +204,59 @@ class AdminAccountServiceTest {
 	}
 
 	@Test
+	void 관리자가_계정_비밀번호_초기화_성공() {
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			member1,
+			null,
+			PasswordRequestType.RESET
+		);
+		passwordRequestRepository.save(passwordRequest);
+		String originPassword = "1234";
+
+		adminAccountService.resetAccountPassword(passwordRequest.getId());
+
+		log.info(
+			"isMatch :: {}", passwordEncoder.matches(
+				originPassword, member1.getPassword()
+			)
+		);
+
+		assertFalse(
+			passwordEncoder.matches(
+				originPassword,
+				member1.getPassword()
+			)
+		);
+		log.info("passwordRequest status : {}", passwordRequest.getStatus());
+	}
+
+	@Test
+	void 관리자가_계정_비밀번호_변경_성공() {
+		String originPassword = "1234";
+		String updatedPassword = "1231231!";
+		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
+			member1,
+			updatedPassword,
+			PasswordRequestType.UPDATE
+		);
+		passwordRequestRepository.save(passwordRequest);
+
+		adminAccountService.updateAccountPassword(passwordRequest.getId());
+
+		assertFalse(
+			passwordEncoder.matches(originPassword, member1.getPassword())
+		);
+
+		log.info(
+			"isMatch :: {}", passwordEncoder.matches(
+				originPassword, member1.getPassword()
+			)
+		);
+		assertEquals(PasswordRequestStatus.COMPLETED, passwordRequest.getStatus());
+		log.info("passwordRequest status : {}", passwordRequest.getStatus());
+	}
+
+	@Test
 	void 배송기사계정_비밀번호변경_성공() {
 		CourierEntity courier = CourierEntity.create(
 			"배송기사테스터",
@@ -304,65 +359,12 @@ class AdminAccountServiceTest {
 	}
 
 	@Test
-	void 관리자_다른_계정_비밀번호_초기화_성공() {
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			member1,
-			null,
-			PasswordRequestType.RESET
-		);
-		passwordRequestRepository.save(passwordRequest);
-		String originPassword = "1234";
-
-		adminAccountService.resetAccountPassword(member1.getId());
-
-		log.info(
-			"isMatch :: {}", passwordEncoder.matches(
-				originPassword, member1.getPassword()
-			)
-		);
-
-		assertFalse(
-			passwordEncoder.matches(
-				originPassword,
-				member1.getPassword()
-			)
-		);
-		log.info("passwordRequest status : {}", passwordRequest.getStatus());
-	}
-
-	@Test
 	void 관리자_다른_계정_비밀번호_초기화_실패_요청사항_없음() {
 
 		assertThatThrownBy(
 			() -> adminAccountService.resetAccountPassword(member1.getId())
 		).isInstanceOf(CustomException.class);
 
-	}
-
-	@Test
-	void 관리자_다른_계정_비밀번호_변경_성공() {
-		String originPassword = "1234";
-		String updatedPassword = "1231231!";
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			member1,
-			updatedPassword,
-			PasswordRequestType.UPDATE
-		);
-		passwordRequestRepository.save(passwordRequest);
-
-		adminAccountService.updateAccountPassword(member1.getId());
-
-		log.info(
-			"isMatch :: {}", passwordEncoder.matches(
-				originPassword, member1.getPassword()
-			)
-		);
-
-		assertFalse(
-			passwordEncoder.matches(originPassword, member1.getPassword())
-		);
-
-		log.info("passwordRequest status : {}", passwordRequest.getStatus());
 	}
 
 	@Test
