@@ -3,7 +3,6 @@ package com.kt.controller.admin.order;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
@@ -11,7 +10,6 @@ import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
-import com.kt.security.DefaultCurrentUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,17 +43,5 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 	ResponseEntity<ApiResult<Void>> forceChangeStatus(
 		UUID orderProductId,
 		OrderProductRequest.ForceChangeStatus request
-	);
-
-	@Operation(
-		summary = "주문 취소",
-		description = "관리자의 주문 상품별 취소 관련 API",
-		parameters = {
-			@Parameter(name = "orderProductId", description = "주문 상품 ID")
-		}
-	)
-	ResponseEntity<ApiResult<Void>> cancelOrderProduct(
-		UUID orderProductId,
-		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	);
 }
