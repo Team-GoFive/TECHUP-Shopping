@@ -12,14 +12,13 @@ public class OrderProductCreator {
 		OrderEntity order,
 		ProductEntity product,
 		SellerEntity seller
-	){
+	) {
 		return OrderProductEntity.create(
 			5L,
 			5000L,
 			OrderProductStatus.CREATED,
 			order,
-			product,
-			seller
+			product
 		);
 	}
 }

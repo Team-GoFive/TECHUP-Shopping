@@ -107,8 +107,7 @@ class OrderServiceTest {
 			product.getPrice(),
 			OrderProductStatus.CREATED,
 			order,
-			product,
-			testSeller
+			product
 		);
 
 		order.addOrderProduct(orderProduct);

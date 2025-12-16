@@ -32,7 +32,7 @@ class PaymentEntityTest {
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -58,7 +58,7 @@ class PaymentEntityTest {
 			Gender.MALE
 		);
 
-		ProductEntity product= ProductEntity.create(
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
@@ -67,17 +67,16 @@ class PaymentEntityTest {
 		);
 
 		orderProductEntity = new OrderProductEntity(
-		5L,
-		5000L,
+			5L,
+			5000L,
 			OrderProductStatus.CREATED,
 			order,
-			product,
-			testSeller
+			product
 		);
 	}
 
 	@Test
-	void 객체생성_성공(){
+	void 객체생성_성공() {
 		PaymentEntity comparisonProduct = PaymentEntity.create(
 			50000L,
 			3000L,

@@ -71,8 +71,7 @@ class ShippingDetailEntityTest {
 			5000L,
 			OrderProductStatus.CREATED,
 			order,
-			product,
-			testSeller
+			product
 		);
 
 		testCourier = CourierEntity.create(

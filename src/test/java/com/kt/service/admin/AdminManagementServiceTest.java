@@ -157,8 +157,7 @@ class AdminManagementServiceTest {
 			5000L,
 			OrderProductStatus.CREATED,
 			testOrder,
-			testProduct,
-			testSeller
+			testProduct
 		);
 		orderProductRepository.save(testOrderProduct);
 	}
@@ -342,8 +341,7 @@ class AdminManagementServiceTest {
 			1000L,
 			OrderProductStatus.CREATED,
 			savedOrder,
-			savedProduct,
-			testSeller
+			savedProduct
 		);
 		orderProductRepository.save(orderProduct);
 

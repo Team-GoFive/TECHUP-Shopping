@@ -86,8 +86,7 @@ class AdminOrderServiceTest {
 				product.getPrice(),
 				OrderProductStatus.CREATED,
 				order,
-				product,
-				testSeller
+				product
 			)
 		);
 	}

@@ -29,19 +29,14 @@ public class OrderProductEntity extends BaseEntity {
 	@JoinColumn(name = "product_id", nullable = false)
 	private ProductEntity product;
 
-	@ManyToOne
-	@JoinColumn(name = "seller_id", nullable = false)
-	private SellerEntity seller;
-
 	public static OrderProductEntity create(
 		Long quantity,
 		Long unitPrice,
 		OrderProductStatus status,
 		OrderEntity order,
-		ProductEntity product,
-		SellerEntity seller
+		ProductEntity product
 	) {
-		return new OrderProductEntity(quantity, unitPrice, status, order, product, seller);
+		return new OrderProductEntity(quantity, unitPrice, status, order, product);
 	}
 
 	public void updateStatus(OrderProductStatus newStatus) {

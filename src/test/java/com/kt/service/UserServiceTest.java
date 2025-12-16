@@ -168,8 +168,7 @@ class UserServiceTest {
 			5000L,
 			OrderProductStatus.CREATED,
 			testOrder,
-			testProduct,
-			testSeller
+			testProduct
 		);
 		orderProductRepository.save(testOrderProduct);
 	}
@@ -487,8 +486,7 @@ class UserServiceTest {
 			1000L,
 			OrderProductStatus.CREATED,
 			savedOrder,
-			savedProduct,
-			testSeller
+			savedProduct
 		);
 		orderProductRepository.save(orderProduct);
 

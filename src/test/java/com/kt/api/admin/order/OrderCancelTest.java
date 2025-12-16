@@ -87,8 +87,7 @@ public class OrderCancelTest extends MockMvcTest {
 				product.getPrice(),
 				OrderProductStatus.SHIPPING_READY,
 				order,
-				product,
-				seller
+				product
 			)
 		);
 		// when & then

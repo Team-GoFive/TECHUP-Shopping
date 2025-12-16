@@ -20,7 +20,6 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
-import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
@@ -94,15 +93,13 @@ public class OrderServiceImpl implements OrderService {
 			UUID sellerId = item.sellerId();
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
-			SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
 				OrderProductStatus.CREATED,
 				order,
-				product,
-				seller
+				product
 			);
 
 			order.addOrderProduct(orderProduct);
