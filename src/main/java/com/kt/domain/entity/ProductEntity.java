@@ -2,6 +2,8 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import java.util.UUID;
+
 import com.kt.constant.ProductStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
@@ -11,6 +13,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,32 +39,40 @@ public class ProductEntity extends BaseEntity {
 	@JoinColumn(name = "category_id", nullable = false)
 	private CategoryEntity category;
 
+	@ManyToOne
+	@JoinColumn(name = "seller_id", nullable = false)
+	private SellerEntity seller;
+
 	protected ProductEntity(
 		String name,
 		Long price,
 		Long stock,
 		ProductStatus status,
-		CategoryEntity category
+		CategoryEntity category,
+		SellerEntity seller
 	) {
 		this.name = name;
 		this.price = price;
 		this.stock = stock;
 		this.status = status;
 		this.category = category;
+		this.seller = seller;
 	}
 
 	public static ProductEntity create(
 		final String name,
 		final Long price,
 		final Long stock,
-		final CategoryEntity category
+		final CategoryEntity category,
+		final SellerEntity seller
 	) {
 		return new ProductEntity(
 			name,
 			price,
 			stock,
 			ProductStatus.ACTIVATED,
-			category
+			category,
+			seller
 		);
 	}
 
@@ -70,14 +81,16 @@ public class ProductEntity extends BaseEntity {
 		final Long price,
 		final Long stock,
 		final ProductStatus status,
-		final CategoryEntity category
+		final CategoryEntity category,
+		final SellerEntity seller
 	) {
 		return new ProductEntity(
 			name,
 			price,
 			stock,
 			status,
-			category
+			category,
+			seller
 		);
 	}
 
@@ -110,7 +123,6 @@ public class ProductEntity extends BaseEntity {
 			activate();
 		}
 	}
-
 
 	public void addStock(Long quantity) {
 		this.stock += quantity;

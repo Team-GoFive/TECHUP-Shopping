@@ -12,7 +12,7 @@ import com.kt.domain.dto.response.ProductResponse;
 
 public interface AdminProductService {
 
-	void create(String name, Long price, Long stock, UUID categoryId);
+	void create(String name, Long price, Long stock, UUID categoryId, UUID sellerId);
 
 	void update(UUID productId, String name, Long price, Long stock, UUID categoryId);
 

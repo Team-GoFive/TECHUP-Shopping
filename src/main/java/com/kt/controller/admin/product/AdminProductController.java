@@ -24,7 +24,6 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.CurrentUser;
-import com.kt.service.ProductService;
 import com.kt.service.admin.AdminProductService;
 
 import jakarta.validation.Valid;
@@ -45,7 +44,8 @@ public class AdminProductController implements AdminProductSwaggerSupporter {
 			request.name(),
 			request.price(),
 			request.stock(),
-			request.categoryId()
+			request.categoryId(),
+			request.sellerId()
 		);
 		return empty();
 	}
