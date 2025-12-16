@@ -7,7 +7,8 @@ import java.time.Duration;
 @Getter
 public enum RedisKey {
 	SIGNUP_CODE("signup:code:", Duration.ofMinutes(3)),
-	SIGNUP_VERIFIED("signup:verified:", Duration.ofMinutes(5));
+	SIGNUP_VERIFIED("signup:verified:", Duration.ofMinutes(5)),
+	REFRESH_TOKEN("refresh-token:", Duration.ofHours(24));
 
 	private final String prefix;
 

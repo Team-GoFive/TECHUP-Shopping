@@ -12,6 +12,7 @@ import com.kt.domain.dto.request.LoginRequest;
 
 import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
@@ -28,13 +29,17 @@ import com.kt.repository.user.UserRepository;
 
 import com.mysema.commons.lang.Pair;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -109,6 +114,12 @@ public class AuthServiceImpl implements AuthService {
 			TokenType.REFRESH
 		);
 
+		redisCache.set(
+			RedisKey.REFRESH_TOKEN,
+			account.getId(),
+			refreshToken
+		);
+
 		return Pair.of(accessToken, refreshToken);
 	}
 
@@ -147,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void initPassword(PasswordManagementRequest.PasswordReset request) {
+	public void resetPassword(PasswordManagementRequest.PasswordReset request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(email);
@@ -200,7 +211,30 @@ public class AuthServiceImpl implements AuthService {
 		);
 
 		passwordRequestRepository.save(passwordRequest);
+	}
 
+
+	@Override
+	public Pair<String, String> reissueToken(TokenReissueRequest request) {
+		String requestRefreshToken = request.refreshToken();
+		UUID accountId = parseAccountId(requestRefreshToken);
+
+		validateRefreshToken(requestRefreshToken, accountId);
+
+		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
+
+		String reissuedAccessToken = createToken(account, TokenType.ACCESS);
+		String reissuedRefreshToken = createToken(account, TokenType.REFRESH);
+
+		redisCache.delete(RedisKey.REFRESH_TOKEN.key(account.getId()));
+
+		redisCache.set(
+			RedisKey.REFRESH_TOKEN,
+			account.getId(),
+			reissuedRefreshToken
+		);
+
+		return Pair.of(reissuedAccessToken, reissuedRefreshToken);
 	}
 
 	private String getRandomPassword() {
@@ -236,6 +270,40 @@ public class AuthServiceImpl implements AuthService {
 	private String getAuthenticationCode() {
 		int code = new Random().nextInt(900000) + 100000;
 		return String.valueOf(code);
+	}
+
+	private UUID parseAccountId(String refreshToken) {
+		try {
+
+			jwtTokenProvider.validateToken(refreshToken);
+			return UUID.fromString(jwtTokenProvider.getAccountId(refreshToken));
+
+		} catch (ExpiredJwtException e) {
+			throw new CustomException(ErrorCode.AUTH_REFRESH_EXPIRED);
+		} catch(JwtException | IllegalArgumentException e) {
+			throw new CustomException(ErrorCode.AUTH_INVALID);
+		}
+	}
+
+	private void validateRefreshToken(String requestToken, UUID accountId) {
+		String savedRefreshToken = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(accountId),
+			String.class
+		);
+		if (!StringUtils.hasText(savedRefreshToken))
+			throw new CustomException(ErrorCode.AUTH_REFRESH_EXPIRED);
+
+		if (!savedRefreshToken.equals(requestToken))
+			throw new CustomException(ErrorCode.AUTH_INVALID);
+	}
+
+	private String createToken(AbstractAccountEntity account, TokenType tokenType) {
+		return jwtTokenProvider.create(
+			account.getId(),
+			account.getEmail(),
+			account.getRole(),
+			tokenType
+		);
 	}
 
 }

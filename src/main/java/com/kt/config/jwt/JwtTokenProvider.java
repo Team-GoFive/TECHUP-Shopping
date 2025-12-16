@@ -73,6 +73,10 @@ public class JwtTokenProvider {
 		);
 	}
 
+	public String getAccountId(String token) {
+		return getClaims(token).getSubject();
+	}
+
 	private DefaultCurrentUser toCurrentUser(String token) {
 		Claims claims = getClaims(token);
 		UUID id = UUID.fromString(claims.getSubject());
