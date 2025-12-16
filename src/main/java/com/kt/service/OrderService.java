@@ -6,9 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
 
@@ -25,7 +23,7 @@ public interface OrderService {
 
 	void changeOrderAddress(UUID userId, UUID orderId, OrderRequest.Update orderRequest);
 
-	Page<AdminOrderResponse.Search> searchOrder(Pageable pageable);
+	Page<OrderResponse.Search> searchOrder(Pageable pageable);
 
-	AdminOrderResponse.Detail getOrderDetail(UUID orderId);
+	OrderResponse.Detail getOrderDetail(UUID orderId);
 }

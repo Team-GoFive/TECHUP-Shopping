@@ -9,7 +9,6 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
 
@@ -24,7 +23,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문 목록 조회",
 		description = "사용자가 주문 목록을 조회하는 API"
 	)
-	ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
+	ResponseEntity<ApiResult<PageResponse<OrderResponse.Search>>> searchOrders(
 		Paging paging
 	);
 
@@ -35,7 +34,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "orderId", description = "주문 ID")
 		}
 	)
-	ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
+	ResponseEntity<ApiResult<OrderResponse.Detail>> getOrderDetail(
 		UUID orderId
 	);
 
