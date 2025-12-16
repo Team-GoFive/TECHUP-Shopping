@@ -1,5 +1,8 @@
 package com.kt.config.jwt;
 
+import com.kt.constant.message.ErrorCode;
+import com.kt.exception.CustomException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,7 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
 		Exception ex = (Exception) request.getAttribute("exception");
-		if (ex == null) ex = authException;
+		if (ex == null)
+			ex = new CustomException(ErrorCode.AUTH_INVALID_ACCESS_PATH);
 		resolver.resolveException(request, response, null, ex);
 	}
 }
