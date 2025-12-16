@@ -74,45 +74,55 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 	}
 
 	@Override
-	public void resetAccountPassword(UUID accountId) {
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
-			account,
-			PasswordRequestType.RESET
+	public void resetAccountPassword(UUID passwordRequestId) {
+		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
+			passwordRequestId, PasswordRequestType.RESET
 		);
 
+		if (passwordRequest.getRequestType() != PasswordRequestType.RESET)
+			throw new CustomException(ErrorCode.BAD_REQUEST);
+
+		AbstractAccountEntity account = passwordRequest.getAccount();
+
 		String resetPassword = getRandomPassword();
-		passwordRequest.updateStatus(
-			PasswordRequestStatus.COMPLETED
-		);
 		account.resetPassword(passwordEncoder.encode(resetPassword));
+
+		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
+
 		emailClient.sendMail(
 			account.getEmail(),
 			MailTemplate.RESET_PASSWORD,
 			resetPassword
 		);
+
 	}
 
 	@Override
-	public void updateAccountPassword(UUID accountId) {
-		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
-		PasswordRequestEntity passwordRequest = getPendingPasswordRequest(
-			account,
-			PasswordRequestType.UPDATE
+	public void updateAccountPassword(UUID passwordRequestId) {
+		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
+			passwordRequestId, PasswordRequestType.UPDATE
 		);
 
-		String decryptPassword = EncryptUtil.decrypt(passwordRequest.getEncryptedPassword());
-		passwordRequest.updateStatus(
-			PasswordRequestStatus.COMPLETED
+		if (passwordRequest.getRequestType() != PasswordRequestType.UPDATE)
+			throw new CustomException(ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND);
+
+		AbstractAccountEntity account = passwordRequest.getAccount();
+
+		String requestedDecryptPassword = EncryptUtil.decrypt(
+			passwordRequest.getEncryptedPassword()
 		);
+
 		account.updatePassword(
-			passwordEncoder.encode(decryptPassword)
+			passwordEncoder.encode(requestedDecryptPassword)
 		);
+
+		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
 		passwordRequest.clearEncryptedPassword();
+
 		emailClient.sendMail(
 			account.getEmail(),
 			MailTemplate.UPDATE_PASSWORD,
-			decryptPassword
+			requestedDecryptPassword
 		);
 
 	}
@@ -123,25 +133,6 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 		Pageable pageable
 	) {
 		return accountRepository.searchPasswordRequests(request, pageable);
-	}
-
-	private PasswordRequestEntity getPendingPasswordRequest(
-		AbstractAccountEntity requiredAccount,
-		PasswordRequestType requestType
-	) {
-
-		ErrorCode errorCode = requestType == PasswordRequestType.UPDATE ?
-			ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND :
-			ErrorCode.PASSWORD_RESET_REQUESTS_NOT_FOUND;
-
-		return passwordRequestRepository
-			.findByAccountAndStatusAndRequestType(
-				requiredAccount,
-				PasswordRequestStatus.PENDING,
-				requestType
-			).orElseThrow(
-				() -> new CustomException(errorCode)
-			);
 	}
 
 	private String getRandomPassword() {

@@ -1,10 +1,6 @@
 package com.kt.service;
 
 import java.util.UUID;
-
-import com.kt.constant.PasswordRequestStatus;
-import com.kt.constant.PasswordRequestType;
-import com.kt.constant.mail.MailTemplate;
 import com.kt.domain.dto.request.AccountRequest;
 
 import com.kt.domain.dto.request.PasswordRequest;
@@ -12,12 +8,7 @@ import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 
-import com.kt.domain.entity.PasswordRequestEntity;
-import com.kt.infra.mail.EmailClient;
-import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
-
-import com.kt.util.EncryptUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,16 +22,12 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 	private final PasswordEncoder passwordEncoder;
 	private final AccountRepository accountRepository;
-	private final PasswordRequestRepository passwordRequestRepository;
-	private final EmailClient emailClient;
 
 	@Override
 	public void deleteAccount(UUID accountId) {
@@ -80,60 +67,6 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void resetAccountPassword(UUID passwordRequestId) {
-		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
-			passwordRequestId, PasswordRequestType.RESET
-		);
-
-		if (passwordRequest.getRequestType() != PasswordRequestType.RESET)
-			throw new CustomException(ErrorCode.BAD_REQUEST);
-
-		AbstractAccountEntity account = passwordRequest.getAccount();
-
-		String resetPassword = getRandomPassword();
-		account.resetPassword(passwordEncoder.encode(resetPassword));
-
-		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
-
-		emailClient.sendMail(
-			account.getEmail(),
-			MailTemplate.RESET_PASSWORD,
-			resetPassword
-		);
-
-	}
-
-	@Override
-	public void updateAccountPassword(UUID passwordRequestId) {
-		PasswordRequestEntity passwordRequest = passwordRequestRepository.findByIdOrThrow(
-			passwordRequestId, PasswordRequestType.UPDATE
-		);
-
-		if (passwordRequest.getRequestType() != PasswordRequestType.UPDATE)
-			throw new CustomException(ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND);
-
-		AbstractAccountEntity account = passwordRequest.getAccount();
-
-		String requestedDecryptPassword = EncryptUtil.decrypt(
-			passwordRequest.getEncryptedPassword()
-		);
-
-		account.updatePassword(
-			passwordEncoder.encode(requestedDecryptPassword)
-		);
-
-		passwordRequest.updateStatus(PasswordRequestStatus.COMPLETED);
-		passwordRequest.clearEncryptedPassword();
-
-		emailClient.sendMail(
-			account.getEmail(),
-			MailTemplate.UPDATE_PASSWORD,
-			requestedDecryptPassword
-		);
-
-	}
-
-	@Override
 	public Page<PasswordRequestResponse.Search> searchPasswordRequests(
 		PasswordRequest.Search request,
 		Pageable pageable
@@ -141,27 +74,4 @@ public class AccountServiceImpl implements AccountService {
 		return accountRepository.searchPasswordRequests(request, pageable);
 	}
 
-	private PasswordRequestEntity getPendingPasswordRequest(
-		AbstractAccountEntity requiredAccount,
-		PasswordRequestType requestType
-	) {
-
-		ErrorCode errorCode = requestType == PasswordRequestType.UPDATE ?
-			ErrorCode.PASSWORD_UPDATE_REQUESTS_NOT_FOUND :
-			ErrorCode.PASSWORD_RESET_REQUESTS_NOT_FOUND;
-
-		return passwordRequestRepository
-			.findByAccountAndStatusAndRequestType(
-				requiredAccount,
-				PasswordRequestStatus.PENDING,
-				requestType
-			).orElseThrow(
-				() -> new CustomException(errorCode)
-			);
-	}
-
-	private String getRandomPassword() {
-		int code = new Random().nextInt(900000) + 100000;
-		return String.valueOf(code);
-	}
 }
