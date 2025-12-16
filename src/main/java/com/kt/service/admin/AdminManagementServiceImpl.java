@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AdminAdminServiceImpl implements AdminAdminService {
+public class AdminManagementServiceImpl implements AdminManagementService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
