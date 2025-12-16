@@ -59,7 +59,6 @@ public class UserEntity extends AbstractAccountEntity {
 
 	@Column(nullable = false)
 	private LocalDate birth;
-
 	@Column(nullable = false)
 	private String mobile;
 
