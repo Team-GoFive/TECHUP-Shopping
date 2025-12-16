@@ -2,121 +2,123 @@ package com.kt.api.admin.order;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-// TODO: 2차 스프린트 때 모두 새로운 정책에 맞게 변경 필요.
-//
-// @DisplayName("주문 상태 강제 변경(어드민) - Update api/orders/{orderid}/change-status")
-// public class OrderUpdateTest extends MockMvcTest {
-//
-// 	@Autowired
-// 	OrderRepository orderRepository;
-//
-// 	OrderEntity savedOrder;
-//
-// 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
-// 		UUID.randomUUID(),
-// 		"test@example.com",
-// 		AccountRole.ADMIN
-// 	);
-//
-// 	@BeforeEach
-// 	void setUp() {
-//
-// 		OrderEntity order = OrderEntityCreator.createOrderEntity();
-// 		savedOrder = orderRepository.save(order);
-// 	}
-//
-// 	@Test
-// 	void 주문_상태_변경_성공_200() throws Exception {
-//
-// 		// given
-// 		OrderProductStatus newStatus = OrderProductStatus.PURCHASE_CONFIRMED;
-// 		var request = new OrderProductRequest.ChangeStatus(
-// 			newStatus
-// 		);
-// 		// when
-// 		ResultActions result = mockMvc.perform(
-// 			patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-// 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-// 				.contentType(MediaType.APPLICATION_JSON)
-// 				.content(objectMapper.writeValueAsString(request))
-// 		);
-//
-// 		// then
-// 		result.andDo(print())
-// 			.andExpect(status().isOk())
-// 			.andExpect(jsonPath("$.code").value("ok"))
-// 			.andExpect(jsonPath("$.message").value("성공"));
-//
-// 		OrderEntity updatedOrder = orderRepository.findByIdOrThrow(savedOrder.getId());
-// 	}
-//
-// 	@ParameterizedTest
-// 	@NullSource
-// 	void 주문_상태변경_실패__상태_null_400_BadRequest(
-// 		OrderStatus newStatus
-// 	) throws Exception {
-// 		mockMvc.perform(
-// 				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-// 					.contentType(MediaType.APPLICATION_JSON)
-// 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-// 					.content(objectMapper.writeValueAsString(newStatus))
-// 			)
-// 			.andDo(print())
-// 			.andExpect(status().isBadRequest());
-//
-// 	}
-//
-// 	@Test
-// 	void 주문_상태변경_실패_주문없음_404_NotFound() throws Exception {
-//
-// 		// given
-// 		UUID randomId = UUID.randomUUID();
-// 		var request = new OrderRequest.ChangeStatus(
-// 			OrderProductStatus.SHIPPING_COMPLETED
-// 		);
-//
-// 		// when
-// 		mockMvc.perform(
-// 				patch("/api/admin/orders/{orderId}/change-status", randomId)
-// 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-// 					.contentType(MediaType.APPLICATION_JSON)
-// 					.content(objectMapper.writeValueAsString(request))
-// 			)
-// 			.andDo(print())
-// 			.andExpect(status().isNotFound());
-// 	}
-//
-// 	@Test
-// 	void 주문_상태변경_실패__이미구매확정_400_BadRequest() throws Exception {
-//
-// 		// given
-// 		// savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
-// 		orderRepository.save(savedOrder);
-//
-// 		mockMvc.perform(
-// 				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-// 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-// 					.contentType(MediaType.APPLICATION_JSON)
-// 					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-// 			)
-// 			.andDo(print())
-// 			.andExpect(status().isBadRequest());
-// 	}
-//
-// 	@Test
-// 	void 주문_상태변경_실패__배송중_400_BadRequest() throws Exception {
-//
-// 		// given
-// 		// savedOrder.updateStatus(OrderStatus.SHIPPING);
-// 		orderRepository.save(savedOrder);
-//
-// 		mockMvc.perform(
-// 				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-// 					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-// 					.contentType(MediaType.APPLICATION_JSON)
-// 					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-// 			)
-// 			.andDo(print())
-// 			.andExpect(status().isBadRequest());
-// 	}
-// }
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+
+import com.kt.common.CategoryEntityCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.OrderEntityCreator;
+import com.kt.common.OrderProductCreator;
+import com.kt.common.ProductEntityCreator;
+import com.kt.constant.OrderProductStatus;
+import com.kt.domain.dto.request.OrderProductRequest;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.product.ProductRepository;
+
+@DisplayName("주문상품 상태 강제 변경(어드민) - PATCH /api/admin/orders/order-products/{orderProductId}/force-change-status")
+public class OrderUpdateTest extends MockMvcTest {
+
+	@Autowired
+	OrderRepository orderRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
+
+	private OrderProductEntity givenShippingReadyOrderProduct() {
+		CategoryEntity category = categoryRepository.save(
+			CategoryEntityCreator.createCategory()
+		);
+
+		ProductEntity product = ProductEntityCreator.createProduct(category);
+		productRepository.save(product);
+
+		OrderEntity order = OrderEntityCreator.createOrderEntity();
+		orderRepository.save(order);
+
+		OrderProductEntity orderProduct =
+			OrderProductCreator.createOrderProduct(order, product);
+
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		return orderProductRepository.save(orderProduct);
+	}
+
+	@Test
+	void 주문상품_상태_강제변경_성공_200() throws Exception {
+
+		// given
+		OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
+
+		OrderProductRequest.ForceChangeStatus request =
+			new OrderProductRequest.ForceChangeStatus(
+				OrderProductStatus.SHIPPING
+			);
+
+		// when & then
+		mockMvc.perform(
+				patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+					orderProduct.getId())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+			)
+			.andDo(print())
+			.andExpect(status().isOk());
+
+	}
+
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	void 주문상품_상태_강제변경_실패__잘못된_상태전이_400_BadRequest() throws Exception {
+		// given
+		OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
+
+		OrderProductRequest.ForceChangeStatus request =
+			new OrderProductRequest.ForceChangeStatus(
+				OrderProductStatus.PURCHASE_CONFIRMED
+			);
+
+		// when & then
+		mockMvc.perform(
+				patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+					orderProduct.getId())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+			)
+			.andExpect(status().isBadRequest());
+	}
+
+@Test
+@WithMockUser(roles = "MEMBER")
+void 주문상품_상태_강제변경_API_실패__권한_없음() throws Exception {
+	// given
+	OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
+
+	OrderProductRequest.ForceChangeStatus request =
+		new OrderProductRequest.ForceChangeStatus(
+			OrderProductStatus.SHIPPING
+		);
+
+	// when & then
+	mockMvc.perform(
+			patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+				orderProduct.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
+		)
+		.andExpect(status().isForbidden());
+}
+
+}

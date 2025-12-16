@@ -201,8 +201,52 @@ class AdminOrderServiceTest {
 		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
 	}
 
-	// TODO: 주문상품_상태_변경_성공
+	// TODO: 주문상품_상태_강제변경_성공
+	@Test
+	void 주문상품_상태_강제변경_성공() {
+		// given
+		UserEntity adminEntity = UserEntityCreator.createAdmin();
+		userRepository.save(adminEntity);
 
-	// TODO: 주문상품_상태_변경_실패__배송중
+		OrderEntity order = createOrder(adminEntity);
+
+		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+
+		// when
+		adminOrderService.forceChangeStatus(
+			orderProduct.getId(),
+			OrderProductStatus.SHIPPING
+		);
+
+		// then
+		OrderProductEntity updated =
+			orderProductRepository.findById(orderProduct.getId()).orElseThrow();
+
+		assertThat(updated.getStatus()).isEqualTo(OrderProductStatus.SHIPPING);
+	}
+
+	@Test
+	void 주문상품_상태_강제변경_실패__잘못된_상태_전이() {
+		// given
+		UserEntity adminEntity = UserEntityCreator.createAdmin();
+		userRepository.save(adminEntity);
+
+		OrderEntity order = createOrder(adminEntity);
+
+		OrderProductEntity orderProduct = createOrderWithProducts(order, 1L);
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+
+		// when & then
+		assertThatThrownBy(() ->
+			adminOrderService.forceChangeStatus(
+				orderProduct.getId(),
+				OrderProductStatus.PURCHASE_CONFIRMED
+			)
+		)
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.INVALID_FORCE_STATUS_TRANSITION.name());
+	}
+
 
 }
