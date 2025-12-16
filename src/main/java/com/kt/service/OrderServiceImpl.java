@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
 			product.decreaseStock(quantity);
 
-			OrderProductEntity orderProduct = new OrderProductEntity(
+			OrderProductEntity orderProduct = OrderProductEntity.create(
 				quantity,
 				product.getPrice(),
 				OrderProductStatus.CREATED,
@@ -114,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
 		}
-	  return order;
+		return order;
 
 	}
 
