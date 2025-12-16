@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Entity
+@Entity(name = "pay")
 @NoArgsConstructor(access = PROTECTED)
 public class PayEntity extends BaseEntity {
 
