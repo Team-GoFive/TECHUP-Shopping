@@ -40,7 +40,6 @@ class AdminCourierServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
 		testAdmin = UserEntityCreator.createAdmin();

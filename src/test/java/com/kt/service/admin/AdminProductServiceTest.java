@@ -28,7 +28,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.service.ProductService;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @Transactional
 class AdminProductServiceTest {
 
@@ -47,13 +47,6 @@ class AdminProductServiceTest {
 		this.adminProductService = adminProductService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-	}
-
-	@BeforeEach
-	void tearDown() {
-		orderProductRepository.deleteAll();
-		productRepository.deleteAll();
-		categoryRepository.deleteAll();
 	}
 
 	@Test

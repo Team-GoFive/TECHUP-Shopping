@@ -20,7 +20,7 @@ import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 class AdminCategoryServiceTest {
