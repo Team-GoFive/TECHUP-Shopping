@@ -38,7 +38,7 @@ import static com.kt.common.api.ApiResult.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-public class AdminManagementManagementController implements AdminManagementSwaggerSupporter {
+public class AdminManagementController implements AdminManagementSwaggerSupporter {
 
 	private final AdminManagementService adminManagementService;
 	private final AccountService accountService;
