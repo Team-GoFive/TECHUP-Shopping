@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.SendEmailTest;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.entity.UserEntity;
@@ -31,7 +31,7 @@ public class AuthSendAuthCodeTest extends MockMvcTest {
 	UserEntity testUser;
 
 	@Test
-	@Tag("sendEmail")
+	@SendEmailTest
 	void 인증번호_발송_성공__200__OK() throws Exception {
 		SignupRequest.SignupEmail request = new SignupRequest.SignupEmail(
 			EMAIL

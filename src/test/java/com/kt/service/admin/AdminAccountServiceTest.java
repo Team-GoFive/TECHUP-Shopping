@@ -5,11 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import com.kt.constant.PasswordRequestStatus;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.SendEmailTest;
 import com.kt.constant.Gender;
+import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
@@ -204,6 +203,7 @@ class AdminAccountServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	void 관리자가_계정_비밀번호_초기화_성공() {
 		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
 			member1,
@@ -231,6 +231,7 @@ class AdminAccountServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	void 관리자가_계정_비밀번호_변경_성공() {
 		String originPassword = "1234";
 		String updatedPassword = "1231231!";
