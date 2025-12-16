@@ -157,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void initPassword(PasswordManagementRequest.PasswordReset request) {
+	public void resetPassword(PasswordManagementRequest.PasswordReset request) {
 		String email = request.email();
 		AbstractAccountEntity account = accountRepository
 			.findByEmailOrThrow(email);

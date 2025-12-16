@@ -306,7 +306,7 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request
 			= new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.initPassword(request);
+		authService.resetPassword(request);
 
 		// then
 		assertEquals(false, passwordEncoder.matches(rawPassword, testMember.getPassword()));
@@ -320,7 +320,7 @@ public class AuthServiceTest {
 
 		CustomException exception = assertThrowsExactly(
 			CustomException.class, () ->
-				authService.initPassword(resetRequest)
+				authService.resetPassword(resetRequest)
 		);
 		assertEquals(ErrorCode.ACCOUNT_NOT_FOUND, exception.error());
 	}

@@ -18,7 +18,7 @@ public interface AuthService {
 
 	void verifySignupCode(SignupRequest.VerifySignupCode request);
 
-	void initPassword(PasswordManagementRequest.PasswordReset request);
+	void resetPassword(PasswordManagementRequest.PasswordReset request);
 
 	void requestPasswordReset(PasswordManagementRequest.PasswordReset request);
 

@@ -106,7 +106,7 @@ public class AuthController extends SwaggerAssistance {
 	public ResponseEntity<ApiResult<Void>> resetPassword(
 		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
 	) {
-		authService.initPassword(request);
+		authService.resetPassword(request);
 		return empty();
 	}
 
