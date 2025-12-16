@@ -57,6 +57,7 @@ public class OrderUpdateTest extends MockMvcTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "ADMIN")
 	void 주문상품_상태_강제변경_성공_200() throws Exception {
 
 		// given

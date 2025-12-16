@@ -92,10 +92,11 @@ public class OrderDetailTest extends MockMvcTest {
 		);
 
 		// then
-		actions.andDo(print());
 		actions.andExpect(status().isOk());
-		actions.andExpect(jsonPath("$.data.orderId").value(orderEntity.getId().toString()));
-		actions.andExpect(jsonPath("$.data.orderProducts.length()").value(1));
-		actions.andExpect(jsonPath("$.data.orderProducts[0].productId").value(testProduct.getId().toString()));
+		actions.andExpect(jsonPath("$.data.orderId")
+			.value(orderEntity.getId().toString()));
+		actions.andExpect(jsonPath("$.data.products.length()").value(1));
+		actions.andExpect(jsonPath("$.data.products[0].productId")
+			.value(testProduct.getId().toString()));
 	}
 }
