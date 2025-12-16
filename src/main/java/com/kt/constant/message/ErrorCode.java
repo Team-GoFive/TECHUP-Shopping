@@ -53,7 +53,7 @@ public enum ErrorCode {
 	COURIER_NOT_FOUND(HttpStatus.NOT_FOUND, "배송기사가 존재하지 않습니다."),
 	ORDER_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "주문에 대한 접근 권한이 없습니다."),
 	NOT_ADMIN(HttpStatus.BAD_REQUEST, "관리자 계정이 아닙니다."),
-	SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "판매가자 존재하지 않습니다."),
+	SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "판매자가 존재하지 않습니다."),
 	;
 
 	private final HttpStatus status;
