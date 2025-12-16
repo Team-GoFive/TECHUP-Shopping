@@ -10,8 +10,6 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.kt.config.jwt.JwtTokenProvider;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,9 +62,6 @@ public class AuthServiceTest {
 	RedisCache redisCache;
 	@Autowired
 	RedisTemplate redisTemplate;
-
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
 
 	UserEntity testMember;
 
@@ -488,11 +483,10 @@ public class AuthServiceTest {
 		log.info("Before reissued refreshToken :: {}", loginResult.getSecond());
 		log.info("After reissued refreshToken :: {}", reissued.getSecond());
 		log.info("Save In Redis redisRefreshToken :: {}", savedRefreshToken);
-
 	}
 
 	@Test
-	void 토큰_재발급_실패_Refresh_token_시간_만료() throws InterruptedException{
+	void 토큰_재발급_실패_Refresh_token_시간_만료() throws InterruptedException {
 		LoginRequest login = new LoginRequest(
 			testMember.getEmail(),
 			rawPassword
@@ -500,7 +494,7 @@ public class AuthServiceTest {
 
 		Pair<String, String> loginResult = authService.login(login);
 
-		Thread.sleep(5000);
+		Thread.sleep(4500);
 
 		TokenReissueRequest tokenReissueRequest =
 			new TokenReissueRequest(loginResult.getSecond());
