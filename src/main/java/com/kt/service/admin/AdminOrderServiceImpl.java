@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderProductStatusPolicy;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -89,6 +90,29 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	//
 	// 	order.updateStatus(newStatus);
 	// }
+
+	@Override
+	@Transactional
+	public void forceChangeStatus(
+		UUID orderProductId,
+		OrderProductStatus status
+	) {
+		OrderProductEntity orderProduct =
+			orderProductRepository.findByIdOrThrow(orderProductId);
+
+		OrderProductStatus currentStatus = orderProduct.getStatus();
+
+		if (currentStatus == status) {
+			throw new CustomException(ErrorCode.SAME_STATUS_CHANGE_NOT_ALLOWED);
+		}
+
+		if (!OrderProductStatusPolicy.canForceChange(currentStatus, status)) {
+			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
+		}
+
+		orderProduct.forceChangeStatus(status);
+	}
+
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
 		AccountRole role = order.getOrderBy().getRole();
