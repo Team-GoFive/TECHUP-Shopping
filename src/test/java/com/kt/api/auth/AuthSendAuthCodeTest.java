@@ -1,12 +1,8 @@
 package com.kt.api.auth;
 
-import com.kt.common.MockMvcTest;
-import com.kt.constant.redis.RedisKey;
-import com.kt.domain.dto.request.SignupRequest;
-import com.kt.domain.entity.UserEntity;
-import com.kt.infra.redis.RedisCache;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,22 +11,27 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import com.kt.common.MockMvcTest;
+import com.kt.common.SendEmailTest;
+import com.kt.constant.redis.RedisKey;
+import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.entity.UserEntity;
+import com.kt.infra.redis.RedisCache;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ActiveProfiles("test")
 @DisplayName("이메일 인증 코드 전송 - POST /api/auth/email/code")
 public class AuthSendAuthCodeTest extends MockMvcTest {
 
+	static final String EMAIL = "bjwnstkdbj@naver.com";
 	@Autowired
 	RedisCache redisCache;
-
 	UserEntity testUser;
-	static final String EMAIL = "bjwnstkdbj@naver.com";
 
 	@Test
+	@SendEmailTest
 	void 인증번호_발송_성공__200__OK() throws Exception {
 		SignupRequest.SignupEmail request = new SignupRequest.SignupEmail(
 			EMAIL

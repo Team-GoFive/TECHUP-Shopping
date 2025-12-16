@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.SendEmailTest;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.message.ErrorCode;
@@ -218,6 +219,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	void 이메일_인증_코드_발송_후_해당_이메일에_대한_redis_키_값_저장_성공() {
 		// when
 		SignupRequest.SignupEmail request = new SignupRequest.SignupEmail(testEmail);
@@ -282,6 +284,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	@Transactional
 	void 계정_비밀번호_초기화_성공() {
 
