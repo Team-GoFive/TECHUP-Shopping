@@ -27,9 +27,9 @@ import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
-import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
 	private final AddressRepository addressRepository;
-	private final AccountRepository accountRepository;
+	private final SellerRepository sellerRepository;
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 			UUID sellerId = item.sellerId();
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
-			SellerEntity seller = (SellerEntity)accountRepository.findByIdOrThrow(sellerId);
+			SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 
 			if (product.getStock() < quantity) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);

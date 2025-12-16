@@ -47,6 +47,8 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
+import com.kt.repository.seller.SellerRepository;
+
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
@@ -68,6 +70,8 @@ class UserServiceTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -88,6 +92,7 @@ class UserServiceTest {
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
 		accountRepository.deleteAll();
+		sellerRepository.deleteAll();
 	}
 
 	@BeforeEach
@@ -147,7 +152,7 @@ class UserServiceTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = ProductEntity.create(
 			"테스트상품명",

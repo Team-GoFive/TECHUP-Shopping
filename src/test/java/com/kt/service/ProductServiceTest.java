@@ -28,6 +28,7 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -37,22 +38,22 @@ class ProductServiceTest {
 	private final ProductService productService;
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	private final AccountRepository accountRepository;
+	private final SellerRepository sellerRepository;
 	private SellerEntity testSeller;
 
 	@Autowired
 	ProductServiceTest(ProductService productService, ProductRepository productRepository,
-		CategoryRepository categoryRepository, AccountRepository accountRepository) {
+		CategoryRepository categoryRepository, AccountRepository accountRepository, SellerRepository sellerRepository) {
 		this.productService = productService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-		this.accountRepository = accountRepository;
+		this.sellerRepository = sellerRepository;
 	}
 
 	@BeforeEach
 	void setUp() {
 		this.testSeller = SellerEntityCreator.createSeller();
-		this.accountRepository.save(testSeller);
+		this.sellerRepository.save(testSeller);
 	}
 
 	@Test

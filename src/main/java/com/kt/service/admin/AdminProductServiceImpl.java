@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	private final AccountRepository accountRepository;
+	private final SellerRepository sellerRepository;
 
 	// TODO: seller로 이전
 	@Override
@@ -45,7 +46,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
 		);
-		SellerEntity seller = (SellerEntity)accountRepository.findByIdOrThrow(sellerId);
+		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 		ProductEntity product = ProductEntity.create(name, price, stock, category, seller);
 		productRepository.save(product);
 	}

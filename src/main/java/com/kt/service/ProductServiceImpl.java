@@ -15,14 +15,14 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	private final AccountRepository accountRepository;
+	private final SellerRepository sellerRepository;
 
 	@Override
 	public void create(
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
 			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
 		);
-		SellerEntity seller = (SellerEntity) accountRepository.findByIdOrThrow(sellerId);
+		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 		ProductEntity product = ProductEntity.create(name, price, stock, category, seller);
 		productRepository.save(product);
 	}
