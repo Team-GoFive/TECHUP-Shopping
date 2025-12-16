@@ -2,20 +2,19 @@ name: pr-test
 on: pull_request
 
 env:
+  CI: true
   SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
   SERVER_PORT: ${{ secrets.SERVER_PORT }}
   SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
   SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
   SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  MAIL_USER_NAME: ${{ secrets.MAIL_USER_NAME }}
-  MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-  KT_JWT_SECRET: ${{ secrets.KT_JWT_SECRET }}
   REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  JWT_SECRET_KEY: ${{ secrets.KT_JWT_SECRET }}
   JWT_ACCESS_TIME: ${{ secrets.JWT_ACCESS_TIME }}
   JWT_REFRESH_TIME: ${{ secrets.JWT_REFRESH_TIME }}
   ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
 
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   pr-test:
@@ -52,13 +51,13 @@ jobs:
           gradle-version: wrapper
           arguments: test
 
-      - name: send slack notification
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,commit,author,ref,workflow,job,took
-          author_name: GitHub Actions
-        if: always()
+#      - name: send slack notification
+#        uses: 8398a7/action-slack@v3
+#        with:
+#          status: ${{ job.status }}
+#          fields: repo,commit,author,ref,workflow,job,took
+#          author_name: GitHub Actions
+#        if: always()
 
 
 

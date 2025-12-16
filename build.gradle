@@ -78,3 +78,10 @@ tasks.register("zip", Zip.class) {
     from("procfiles/Procfile") { into("") }
 }
 
+test {
+    useJUnitPlatform {
+        if (System.getenv('CI') == 'true') {
+            excludeTags 'sendEmail'
+        }
+    }
+}

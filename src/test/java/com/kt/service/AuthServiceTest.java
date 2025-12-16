@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -218,6 +219,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@Tag("sendEmail")
 	void 이메일_인증_코드_발송_후_해당_이메일에_대한_redis_키_값_저장_성공() {
 		// when
 		SignupRequest.SignupEmail request = new SignupRequest.SignupEmail(testEmail);
@@ -282,6 +284,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@Tag("sendEmail")
 	@Transactional
 	void 계정_비밀번호_초기화_성공() {
 

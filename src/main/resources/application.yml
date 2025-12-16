@@ -43,7 +43,7 @@ spring:
         max-redirects: 3
 
 jwt:
-  secret: ${KT_JWT_SECRET}
+  secret: ${JWT_SECRET_KEY}
   access-valid-time: ${JWT_ACCESS_TIME}
   refresh-valid-time: ${JWT_REFRESH_TIME}
 
