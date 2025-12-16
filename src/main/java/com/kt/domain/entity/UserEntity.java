@@ -45,6 +45,18 @@ public class UserEntity extends AbstractAccountEntity {
 	)
 	private PayEntity pay;
 
+
+	@OneToOne(
+		mappedBy = "user",
+		cascade = {
+			CascadeType.PERSIST,
+			CascadeType.REMOVE
+		},
+		orphanRemoval = true,
+		fetch = FetchType.LAZY
+	)
+	private BankAccountEntity bankAccount;
+
 	@Column(nullable = false)
 	private LocalDate birth;
 
@@ -69,6 +81,7 @@ public class UserEntity extends AbstractAccountEntity {
 		this.mobile = mobile;
 		this.status = UserStatus.ENABLED;
 		this.pay = PayEntity.create(this);
+		this.bankAccount = BankAccountEntity.create(this);
 	}
 
 	public static UserEntity create(
