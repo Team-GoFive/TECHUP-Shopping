@@ -5,17 +5,21 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 
+import com.kt.domain.entity.SellerEntity;
+
 public class OrderProductCreator {
 	public static OrderProductEntity createOrderProduct(
 		OrderEntity order,
-		ProductEntity product
+		ProductEntity product,
+		SellerEntity seller
 	){
-		return new OrderProductEntity(
+		return OrderProductEntity.create(
 			5L,
 			5000L,
 			OrderProductStatus.CREATED,
 			order,
-			product
+			product,
+			seller
 		);
 	}
 }

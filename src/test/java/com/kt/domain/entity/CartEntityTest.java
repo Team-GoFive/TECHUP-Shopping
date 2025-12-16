@@ -32,11 +32,21 @@ class CartEntityTest {
 		);
 
 		testCategory = CategoryEntity.create("테스트 카테고리", null);
+		SellerEntity testSeller = SellerEntity.create(
+			"판매자1",
+			"seller@test.com",
+			"1234",
+			"상점1",
+			"010-1234-5678",
+			"seller@test.com",
+			Gender.MALE
+		);
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			testCategory
+			testCategory,
+			testSeller
 		);
 	}
 

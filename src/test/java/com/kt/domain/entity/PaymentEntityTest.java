@@ -48,11 +48,22 @@ class PaymentEntityTest {
 			user
 		);
 
+		SellerEntity testSeller = SellerEntity.create(
+			"판매자1",
+			"seller@test.com",
+			"1234",
+			"상점1",
+			"010-1234-5678",
+			"seller@test.com",
+			Gender.MALE
+		);
+
 		ProductEntity product= ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			testCategory
+			testCategory,
+			testSeller
 		);
 
 		orderProductEntity = new OrderProductEntity(
@@ -60,7 +71,8 @@ class PaymentEntityTest {
 		5000L,
 			OrderProductStatus.CREATED,
 			order,
-			product
+			product,
+			testSeller
 		);
 	}
 

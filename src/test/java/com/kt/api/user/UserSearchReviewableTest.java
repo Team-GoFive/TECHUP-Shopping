@@ -1,5 +1,9 @@
 package com.kt.api.user;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -47,11 +51,14 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -66,13 +73,15 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
-
 
 	@Test
 	void 주문상품조회_성공__200_OK() throws Exception {
@@ -84,8 +93,8 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then
@@ -94,7 +103,6 @@ public class UserSearchReviewableTest extends MockMvcTest {
 			.andExpect(jsonPath("$.data.totalCount").value(1))
 			.andExpect(jsonPath("$.data.list[0].orderProductId").value(testOrderProduct.getId().toString()));
 	}
-
 
 	@Test
 	void 주문상품조회_실패__작성된리뷰존재_주문상품없음() throws Exception {
@@ -108,8 +116,8 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then
@@ -128,8 +136,8 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then

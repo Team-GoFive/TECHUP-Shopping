@@ -13,6 +13,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -30,8 +33,11 @@ public class ProductDetailTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	ProductEntity activatedProduct;
 	ProductEntity inActivatedProduct;
@@ -41,10 +47,13 @@ public class ProductDetailTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		activatedProduct = createProduct(testCategory);
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
+		activatedProduct = createProduct(testCategory, testSeller);
 		productRepository.save(activatedProduct);
 
-		inActivatedProduct = createProduct(testCategory);
+		inActivatedProduct = createProduct(testCategory, testSeller);
 		inActivatedProduct.inActivate();
 		productRepository.save(inActivatedProduct);
 	}

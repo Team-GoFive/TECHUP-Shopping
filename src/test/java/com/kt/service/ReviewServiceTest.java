@@ -4,6 +4,7 @@ import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.OrderEntityCreator.*;
 import static com.kt.common.OrderProductCreator.*;
 import static com.kt.common.ProductCreator.*;
+import static com.kt.common.SellerEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -21,6 +22,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.OrderStatus;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.message.ErrorCode;
@@ -30,10 +33,12 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
@@ -59,14 +64,20 @@ class ReviewServiceTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	OrderProductEntity testOrderProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		testUser = createMember();
 		userRepository.save(testUser);
+
+		testSeller = createSeller();
+		accountRepository.save(testSeller);
 
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
@@ -74,10 +85,10 @@ class ReviewServiceTest {
 		OrderEntity order = createOrderEntity(testUser);
 		orderRepository.save(order);
 
-		ProductEntity product = createProduct(category);
+		ProductEntity product = createProduct(category, testSeller);
 		productRepository.save(product);
 
-		testOrderProduct = createOrderProduct(order, product);
+		testOrderProduct = createOrderProduct(order, product, testSeller);
 		orderProductRepository.save(testOrderProduct);
 
 		order.getOrderProducts().add(testOrderProduct);

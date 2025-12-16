@@ -1,5 +1,9 @@
 package com.kt.api.user;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -47,15 +51,18 @@ public class UserSearchReviewTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser  = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.createMember();
 		userRepository.save(testUser);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
@@ -66,10 +73,13 @@ public class UserSearchReviewTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
 
@@ -83,8 +93,8 @@ public class UserSearchReviewTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/reviews/mine")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then
@@ -105,8 +115,8 @@ public class UserSearchReviewTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/reviews/mine")
 				.with(user(CurrentUserCreator.getMemberUserDetails()))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then

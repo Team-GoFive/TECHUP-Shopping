@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -35,8 +38,11 @@ public class ProductSoldOutTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
@@ -51,9 +57,12 @@ public class ProductSoldOutTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
 		products = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
-			products.add(createProduct(testCategory));
+			products.add(createProduct(testCategory, testSeller));
 		}
 		productRepository.saveAll(products);
 	}

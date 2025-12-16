@@ -1,5 +1,9 @@
 package com.kt.service.admin;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -25,12 +29,10 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -49,17 +51,18 @@ class AdminOrderServiceTest {
 	@Autowired
 	OrderProductRepository orderProductRepository;
 	@Autowired
-	ReviewRepository reviewRepository;
-	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AddressRepository addressRepository;
+	AccountRepository accountRepository;
 
 	CategoryEntity category;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setup() {
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -73,7 +76,7 @@ class AdminOrderServiceTest {
 
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
+		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 		product.decreaseStock(quantity);
 		productRepository.save(product);
 
@@ -83,7 +86,8 @@ class AdminOrderServiceTest {
 				product.getPrice(),
 				OrderProductStatus.CREATED,
 				order,
-				product
+				product,
+				testSeller
 			)
 		);
 	}

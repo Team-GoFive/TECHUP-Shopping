@@ -13,6 +13,9 @@ import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
@@ -31,8 +34,11 @@ public class ProductSearchTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
@@ -47,13 +53,16 @@ public class ProductSearchTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
 		products = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
-			products.add(createProduct(testCategory));
+			products.add(createProduct(testCategory, testSeller));
 		}
 
 		for (int i = 0; i < 5; i++) {
-			ProductEntity product = createProduct(testCategory);
+			ProductEntity product = createProduct(testCategory, testSeller);
 			product.inActivate();
 			products.add(product);
 		}

@@ -5,6 +5,11 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
+import org.junit.jupiter.api.BeforeEach;
 import com.kt.constant.AccountRole;
 
 import org.junit.jupiter.api.Test;
@@ -30,17 +35,24 @@ import com.kt.repository.product.ProductRepository;
 class ProductServiceTest {
 
 	private final ProductService productService;
-
 	private final ProductRepository productRepository;
-
 	private final CategoryRepository categoryRepository;
+	private final AccountRepository accountRepository;
+	private SellerEntity testSeller;
 
 	@Autowired
 	ProductServiceTest(ProductService productService, ProductRepository productRepository,
-		CategoryRepository categoryRepository) {
+		CategoryRepository categoryRepository, AccountRepository accountRepository) {
 		this.productService = productService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
+		this.accountRepository = accountRepository;
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.testSeller = SellerEntityCreator.createSeller();
+		this.accountRepository.save(testSeller);
 	}
 
 	@Test
@@ -54,11 +66,13 @@ class ProductServiceTest {
 		ProductRequest.Create request = new ProductRequest.Create(
 			productName,
 			productPrice,
-			10L
+			10L,
+			category.getId(),
+			testSeller.getId()
 		);
 
 		// when
-		productService.create(request.name(), request.price(), request.stock(), category.getId());
+		productService.create(request.name(), request.price(), request.stock(), request.categoryId(), request.sellerId());
 
 		// then
 		ProductEntity product = productRepository.findAll()
@@ -68,6 +82,7 @@ class ProductServiceTest {
 			.orElseThrow();
 
 		assertThat(product.getPrice()).isEqualTo(productPrice);
+		assertThat(product.getSeller().getId()).isEqualTo(testSeller.getId());
 	}
 
 	@Test
@@ -83,7 +98,8 @@ class ProductServiceTest {
 			"상품1",
 			1000L,
 			10L,
-			category
+			category,
+			testSeller
 		);
 
 		productRepository.save(product);
@@ -120,7 +136,8 @@ class ProductServiceTest {
 			"상품1",
 			1000L,
 			10L,
-			category
+			category,
+			testSeller
 		);
 		productRepository.save(product);
 
@@ -144,7 +161,8 @@ class ProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				category
+				category,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -174,7 +192,8 @@ class ProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categoryDog
+				categoryDog,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -184,7 +203,8 @@ class ProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -216,7 +236,8 @@ class ProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			productRepository.save(product);
 		}
@@ -241,7 +262,7 @@ class ProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -257,7 +278,7 @@ class ProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -273,7 +294,7 @@ class ProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -289,7 +310,7 @@ class ProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 		productService.inActivate(product.getId());
 
@@ -306,7 +327,7 @@ class ProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 		productService.activate(product.getId());
 
@@ -329,7 +350,8 @@ class ProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			products.add(product);
 		}

@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
 import com.kt.constant.AccountRole;
 
 import org.junit.jupiter.api.AfterEach;
@@ -63,6 +66,8 @@ class UserServiceTest {
 	ProductRepository productRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -70,6 +75,7 @@ class UserServiceTest {
 	OrderEntity testOrder;
 	ProductEntity testProduct;
 	OrderProductEntity testOrderProduct;
+	SellerEntity testSeller;
 	UUID userId;
 	UUID AdminId;
 
@@ -81,6 +87,7 @@ class UserServiceTest {
 		userRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
+		accountRepository.deleteAll();
 	}
 
 	@BeforeEach
@@ -139,11 +146,15 @@ class UserServiceTest {
 		CategoryEntity category = CategoryEntity.create("카테고리", null);
 		categoryRepository.save(category);
 
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			category
+			category,
+			testSeller
 		);
 		productRepository.save(testProduct);
 
@@ -152,7 +163,8 @@ class UserServiceTest {
 			5000L,
 			OrderProductStatus.CREATED,
 			testOrder,
-			testProduct
+			testProduct,
+			testSeller
 		);
 		orderProductRepository.save(testOrderProduct);
 	}
@@ -180,7 +192,8 @@ class UserServiceTest {
 			"테스트물건",
 			3L,
 			3L,
-			category
+			category,
+			testSeller
 		);
 
 		ProductEntity savedProduct = productRepository.save(product);
@@ -447,11 +460,32 @@ class UserServiceTest {
 		);
 		UserEntity savedUser = userRepository.save(user);
 
+		CategoryEntity category = categoryRepository.save(CategoryEntity.create("카테고리", null));
+
+		ProductEntity product = ProductEntity.create(
+			"삭제상품",
+			1000L,
+			5L,
+			category,
+			testSeller
+		);
+		ProductEntity savedProduct = productRepository.save(product);
+
 		OrderEntity order = OrderEntity.create(
 			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
 			savedUser
 		);
 		OrderEntity savedOrder = orderRepository.save(order);
+
+		OrderProductEntity orderProduct = OrderProductEntity.create(
+			1L,
+			1000L,
+			OrderProductStatus.CREATED,
+			savedOrder,
+			savedProduct,
+			testSeller
+		);
+		orderProductRepository.save(orderProduct);
 
 		// when
 		userService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());

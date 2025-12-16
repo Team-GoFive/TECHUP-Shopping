@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,15 +71,19 @@ class OrderServiceTest {
 	@Autowired
 	AddressRepository addressRepository;
 	@Autowired
+	AccountRepository accountRepository;
+	@Autowired
 	ShippingDetailRepository shippingDetailRepository;
 	@Autowired
 	CourierRepository courierRepository;
 
 	CategoryEntity category;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setup() {
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
+		testSeller = (SellerEntity)accountRepository.save(SellerEntityCreator.createSeller());
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -98,7 +106,8 @@ class OrderServiceTest {
 			product.getPrice(),
 			OrderProductStatus.CREATED,
 			order,
-			product
+			product,
+			testSeller
 		);
 
 		order.addOrderProduct(orderProduct);
@@ -113,12 +122,12 @@ class OrderServiceTest {
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
 		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
 
-		ProductEntity product1 = productRepository.save(ProductEntityCreator.createProduct(category));
-		ProductEntity product2 = productRepository.save(ProductEntityCreator.createProduct(category));
+		ProductEntity product1 = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
+		ProductEntity product2 = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(product1.getId(), 2L),
-			new OrderRequest.Item(product2.getId(), 3L)
+			new OrderRequest.Item(product1.getId(), 2L, testSeller.getId()),
+			new OrderRequest.Item(product2.getId(), 3L, testSeller.getId())
 		);
 
 		// when
@@ -140,7 +149,7 @@ class OrderServiceTest {
 
 		UUID invalidId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(invalidId, 1L));
+			new OrderRequest.Item(invalidId, 1L, testSeller.getId()));
 
 		// when, then
 		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items, address.getId()))
@@ -154,10 +163,10 @@ class OrderServiceTest {
 		// given
 		UserEntity user = userRepository.save(UserEntityCreator.createMember());
 		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category));
+		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(product.getId(), 99999999L)
+			new OrderRequest.Item(product.getId(), 99999999L, testSeller.getId())
 		);
 
 		// then

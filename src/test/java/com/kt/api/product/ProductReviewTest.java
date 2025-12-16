@@ -13,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.OrderProductStatus;
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -42,6 +46,8 @@ public class ProductReviewTest extends MockMvcTest {
 
 	@Autowired
 	AddressRepository addressRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	@Autowired
 	OrderService orderService;
@@ -53,6 +59,7 @@ public class ProductReviewTest extends MockMvcTest {
 	CategoryEntity testCategory;
 	ProductEntity testProduct;
 	AddressEntity address;
+	SellerEntity testSeller;
 
 	@Autowired
 	OrderProductRepository orderProductRepository;
@@ -68,14 +75,17 @@ public class ProductReviewTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		testProduct = createProduct(testCategory);
+		testSeller = SellerEntityCreator.createSeller();
+		accountRepository.save(testSeller);
+
+		testProduct = createProduct(testCategory, testSeller);
 
 		address = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		productRepository.save(testProduct);
 		for (int i = 0; i < 3; i++) {
 			List<OrderRequest.Item> items = List.of(
-				new OrderRequest.Item(testProduct.getId(), 1L)
+				new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
 			);
 			orderService.createOrder(testMember.getEmail(), items, address.getId());
 		}
