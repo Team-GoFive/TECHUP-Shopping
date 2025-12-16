@@ -56,7 +56,7 @@ public class EmailClient {
 			helper.setTo(email);
 			helper.setSubject(template.getSubject());
 			helper.setText(content, true);
-			// mailSender.send(message);
+			mailSender.send(message);
 		} catch (MessagingException exception) {
 			throw new CustomException(ErrorCode.EMAIL_SEND_FAILED);
 		}
