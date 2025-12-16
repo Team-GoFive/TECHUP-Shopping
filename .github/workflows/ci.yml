@@ -14,7 +14,7 @@ env:
   JWT_REFRESH_TIME: ${{ secrets.JWT_REFRESH_TIME }}
   ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
 
-#  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   pr-test:
@@ -51,13 +51,13 @@ jobs:
           gradle-version: wrapper
           arguments: test
 
-#      - name: send slack notification
-#        uses: 8398a7/action-slack@v3
-#        with:
-#          status: ${{ job.status }}
-#          fields: repo,commit,author,ref,workflow,job,took
-#          author_name: GitHub Actions
-#        if: always()
+      - name: send slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,commit,author,ref,workflow,job,took
+          author_name: GitHub Actions
+        if: always()
 
 
 
