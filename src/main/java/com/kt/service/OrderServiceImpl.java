@@ -96,13 +96,7 @@ public class OrderServiceImpl implements OrderService {
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 			SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 
-			if (product.getStock() < quantity) {
-				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
-			}
-
-			product.decreaseStock(quantity);
-
-			OrderProductEntity orderProduct = OrderProductEntity.create(
+			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
 				OrderProductStatus.CREATED,
@@ -115,7 +109,6 @@ public class OrderServiceImpl implements OrderService {
 			orderProductRepository.save(orderProduct);
 		}
 		return order;
-
 	}
 
 	@Transactional
