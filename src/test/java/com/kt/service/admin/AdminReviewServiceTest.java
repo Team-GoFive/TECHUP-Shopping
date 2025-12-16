@@ -8,7 +8,7 @@ import static com.kt.common.UserEntityCreator.*;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class AdminReviewServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	UserEntity testUser;
@@ -70,7 +70,7 @@ class AdminReviewServiceTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		OrderEntity order = createOrderEntity(testUser);
 		orderRepository.save(order);

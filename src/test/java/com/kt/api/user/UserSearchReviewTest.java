@@ -2,7 +2,7 @@ package com.kt.api.user;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,7 +52,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
@@ -74,7 +74,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);

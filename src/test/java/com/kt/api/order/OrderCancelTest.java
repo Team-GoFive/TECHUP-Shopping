@@ -17,7 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ public class OrderCancelTest extends MockMvcTest {
 	@Autowired
 	AddressRepository addressRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	UserEntity testMember;
 
@@ -78,7 +78,7 @@ public class OrderCancelTest extends MockMvcTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = createProduct(category, testSeller);
 		productRepository.save(testProduct);

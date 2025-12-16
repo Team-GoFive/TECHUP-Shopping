@@ -39,6 +39,7 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -62,6 +63,8 @@ class AdminUserServiceTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	UserEntity testUser;
 	UserEntity testUser2;
@@ -81,6 +84,7 @@ class AdminUserServiceTest {
 		userRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
+		sellerRepository.deleteAll();
 		accountRepository.deleteAll();
 	}
 
@@ -141,7 +145,7 @@ class AdminUserServiceTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = ProductEntity.create(
 			"테스트상품명",

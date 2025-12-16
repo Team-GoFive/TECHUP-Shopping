@@ -2,7 +2,7 @@ package com.kt.api.review.admin;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -54,7 +54,7 @@ public class ReviewDeleteTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
@@ -76,7 +76,7 @@ public class ReviewDeleteTest extends MockMvcTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);

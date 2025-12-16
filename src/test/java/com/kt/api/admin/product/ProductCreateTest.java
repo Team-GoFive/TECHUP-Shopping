@@ -24,7 +24,7 @@ import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 생성 (어드민) - POST /api/admin/products")
@@ -42,14 +42,14 @@ class ProductCreateTest extends MockMvcTest {
 		AccountRole.ADMIN
 	);
 	@Autowired
-	private AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	@BeforeEach
 	void setUp() {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 		testSeller = createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 	}
 
 	@ParameterizedTest

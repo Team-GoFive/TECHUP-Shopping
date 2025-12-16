@@ -11,9 +11,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,6 +26,7 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 삭제 (어드민) - DELETE /api/admin/products/{productId}")
@@ -36,7 +38,7 @@ public class ProductDeleteTest extends MockMvcTest {
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	CategoryEntity testCategory;
 	SellerEntity testSeller;
@@ -55,7 +57,7 @@ public class ProductDeleteTest extends MockMvcTest {
 		categoryRepository.save(testCategory);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = createProduct(testCategory, testSeller);
 		productRepository.save(testProduct);

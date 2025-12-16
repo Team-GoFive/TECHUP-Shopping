@@ -15,7 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
@@ -35,7 +35,7 @@ public class ProductSearchTest extends MockMvcTest {
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	CategoryEntity testCategory;
 	SellerEntity testSeller;
@@ -54,7 +54,7 @@ public class ProductSearchTest extends MockMvcTest {
 		categoryRepository.save(testCategory);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		products = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {

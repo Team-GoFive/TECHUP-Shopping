@@ -9,7 +9,7 @@ import java.util.List;
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,24 +45,24 @@ class AdminProductServiceTest {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
 	private final OrderProductRepository orderProductRepository;
-	private final AccountRepository accountRepository;
+	private final SellerRepository sellerRepository;
 	private SellerEntity testSeller;
 
 	@Autowired
 	AdminProductServiceTest(AdminProductService adminProductService, ProductRepository productRepository,
 		CategoryRepository categoryRepository, OrderProductRepository orderProductRepository,
-		AccountRepository accountRepository) {
+		SellerRepository sellerRepository) {
 		this.orderProductRepository = orderProductRepository;
 		this.adminProductService = adminProductService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-		this.accountRepository = accountRepository;
+		this.sellerRepository = sellerRepository;
 	}
 
 	@BeforeEach
 	void setUp() {
 		testSeller = createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 	}
 
 	@Test

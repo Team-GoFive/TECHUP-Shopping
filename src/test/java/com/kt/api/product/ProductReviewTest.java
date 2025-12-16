@@ -14,7 +14,6 @@ import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.OrderProductStatus;
 import com.kt.common.SellerEntityCreator;
-import com.kt.constant.OrderStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -25,7 +24,7 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -47,7 +46,7 @@ public class ProductReviewTest extends MockMvcTest {
 	@Autowired
 	AddressRepository addressRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	@Autowired
 	OrderService orderService;
@@ -76,7 +75,7 @@ public class ProductReviewTest extends MockMvcTest {
 		categoryRepository.save(testCategory);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = createProduct(testCategory, testSeller);
 
@@ -90,7 +89,8 @@ public class ProductReviewTest extends MockMvcTest {
 			orderService.createOrder(testMember.getEmail(), items, address.getId());
 		}
 
-		orderProductRepository.findAll().forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED));
+		orderProductRepository.findAll()
+			.forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED));
 
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {

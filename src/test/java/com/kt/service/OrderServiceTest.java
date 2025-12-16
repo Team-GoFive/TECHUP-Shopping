@@ -47,6 +47,7 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -71,11 +72,11 @@ class OrderServiceTest {
 	@Autowired
 	AddressRepository addressRepository;
 	@Autowired
-	AccountRepository accountRepository;
-	@Autowired
 	ShippingDetailRepository shippingDetailRepository;
 	@Autowired
 	CourierRepository courierRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	CategoryEntity category;
 	SellerEntity testSeller;
@@ -83,7 +84,7 @@ class OrderServiceTest {
 	@BeforeEach
 	void setup() {
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
-		testSeller = (SellerEntity)accountRepository.save(SellerEntityCreator.createSeller());
+		testSeller = sellerRepository.save(SellerEntityCreator.createSeller());
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -98,7 +99,7 @@ class OrderServiceTest {
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 
 		ProductEntity product = productRepository.save(
-			ProductEntityCreator.createProduct(category)
+			ProductEntityCreator.createProduct(category, testSeller)
 		);
 
 		OrderProductEntity orderProduct = OrderProductEntity.create(
@@ -114,7 +115,6 @@ class OrderServiceTest {
 
 		return orderProductRepository.save(orderProduct);
 	}
-
 
 	@Test
 	void 주문_생성_성공() {
@@ -321,6 +321,5 @@ class OrderServiceTest {
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.ORDER_ALREADY_SHIPPED.name());
 	}
-
 
 }

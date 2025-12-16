@@ -2,7 +2,6 @@ package com.kt.api.review;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
 
 import static com.kt.common.CurrentUserCreator.getMemberUserDetails;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,6 +35,7 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 수정 - PATCH /api/reviews/{reviewId}")
@@ -54,7 +54,7 @@ public class ReviewUpdateTest extends MockMvcTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	UserEntity testMember;
 	OrderProductEntity testOrderProduct;
@@ -75,7 +75,7 @@ public class ReviewUpdateTest extends MockMvcTest {
 		categoryRepository.save(category);
 
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);

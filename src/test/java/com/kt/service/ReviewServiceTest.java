@@ -22,8 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.constant.OrderStatus;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.message.ErrorCode;
@@ -38,10 +36,10 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
-import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -65,7 +63,7 @@ class ReviewServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	UserEntity testUser;
@@ -77,7 +75,7 @@ class ReviewServiceTest {
 		userRepository.save(testUser);
 
 		testSeller = createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);

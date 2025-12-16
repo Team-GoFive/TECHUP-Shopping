@@ -2,7 +2,7 @@ package com.kt.service.admin;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
+import com.kt.repository.seller.SellerRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,7 +53,7 @@ class AdminOrderServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 	@Autowired
-	AccountRepository accountRepository;
+	SellerRepository sellerRepository;
 
 	CategoryEntity category;
 	SellerEntity testSeller;
@@ -62,7 +62,7 @@ class AdminOrderServiceTest {
 	void setup() {
 		category = categoryRepository.save(CategoryEntityCreator.createCategory());
 		testSeller = SellerEntityCreator.createSeller();
-		accountRepository.save(testSeller);
+		sellerRepository.save(testSeller);
 	}
 
 	OrderEntity createOrder(UserEntity user) {
