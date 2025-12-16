@@ -50,9 +50,11 @@ public enum ErrorCode {
 	REVIEW_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "리뷰에 대한 접근 권한이 없습니다."),
 	REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 주문상품에 대한 리뷰가 이미 존재합니다."),
 	ACCOUNT_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "계정에 대한 접근 권한이 없습니다."),
-	Courier_NOT_FOUND(HttpStatus.NOT_FOUND, "배송기사가 존재하지 않습니다."),
+	COURIER_NOT_FOUND(HttpStatus.NOT_FOUND, "배송기사가 존재하지 않습니다."),
 	ORDER_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "주문에 대한 접근 권한이 없습니다."),
-	NOT_ADMIN(HttpStatus.BAD_REQUEST, "관리자 계정이 아닙니다.");
+	NOT_ADMIN(HttpStatus.BAD_REQUEST, "관리자 계정이 아닙니다."),
+	SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "판매가자 존재하지 않습니다."),
+	;
 
 	private final HttpStatus status;
 	private final String message;
