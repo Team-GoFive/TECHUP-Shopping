@@ -6,11 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 
 import com.kt.constant.AccountRole;
-import com.kt.constant.PasswordRequestStatus;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,15 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
-import com.kt.constant.PasswordRequestStatus;
-import com.kt.constant.PasswordRequestType;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.AccountRequest;
-import com.kt.domain.dto.request.PasswordRequest;
-import com.kt.domain.dto.response.PasswordRequestResponse;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.PasswordRequestRepository;
@@ -134,7 +127,7 @@ class AccountServiceTest {
 		// given
 
 		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			null,
 			null,
 			""
