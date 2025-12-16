@@ -20,12 +20,14 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.account.AccountRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -43,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
 	private final AddressRepository addressRepository;
+	private final AccountRepository accountRepository;
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -88,15 +91,24 @@ public class OrderServiceImpl implements OrderService {
 
 			UUID productId = item.productId();
 			Long quantity = item.quantity();
+			UUID sellerId = item.sellerId();
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
+			SellerEntity seller = (SellerEntity)accountRepository.findByIdOrThrow(sellerId);
+
+			if (product.getStock() < quantity) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+
+			product.decreaseStock(quantity);
 
 			OrderProductEntity orderProduct = new OrderProductEntity(
 				quantity,
 				product.getPrice(),
 				OrderProductStatus.CREATED,
 				order,
-				product
+				product,
+				seller
 			);
 
 			order.addOrderProduct(orderProduct);
@@ -110,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
 	public void reduceStock(UUID orderId) {
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAllByOrderId(orderId);
-		
+
 		for (OrderProductEntity orderProduct : orderProducts) {
 			ProductEntity product = orderProduct.getProduct();
 			Long quantity = orderProduct.getQuantity();
