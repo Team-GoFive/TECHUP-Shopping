@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.dto.response.QProductResponse_Search;
@@ -28,7 +28,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
 	@Override
 	public Page<ProductResponse.Search> search(
-		UserRole role,
+		AccountRole role,
 		Pageable pageable,
 		String keyword,
 		ProductSearchType type
@@ -63,8 +63,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 		return new PageImpl<>(content, pageable, total);
 	}
 
-	private BooleanExpression isActiveByRole(UserRole role) {
-		if (role == UserRole.ADMIN) {
+	private BooleanExpression isActiveByRole(AccountRole role) {
+		if (role == AccountRole.ADMIN) {
 			return null;
 		}
 		return product.status.eq(ProductStatus.ACTIVATED);

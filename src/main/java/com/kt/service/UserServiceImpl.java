@@ -3,13 +3,14 @@ package com.kt.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, UserRole role) {
+	public Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, AccountRole role) {
 		checkAdmin(userId);
 
 		return userRepository.searchUsers(pageable, keyword, role);
@@ -147,7 +148,7 @@ public class UserServiceImpl implements UserService {
 			request.name(),
 			request.email(),
 			passwordEncoder.encode(request.password()),
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			request.gender(),
 			request.birth(),
 			request.mobile()
@@ -213,7 +214,7 @@ public class UserServiceImpl implements UserService {
 	private void checkAdmin(UUID currentUserId) {
 		UserEntity user = userRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
-			user.getRole() == UserRole.ADMIN,
+			user.getRole() == AccountRole.ADMIN,
 			ErrorCode.NOT_ADMIN
 		);
 	}
@@ -221,14 +222,14 @@ public class UserServiceImpl implements UserService {
 	private void checkReadPermission(UUID currentId, UUID subjectId) {
 		UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 		Preconditions.validate(
-			currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
+			currentUser.getRole().equals(AccountRole.ADMIN) | currentId.equals(subjectId),
 			ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 		);
 	}
 
 	private void checkModifyPermission(UUID currentId, UUID subjectId) {
 		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
-		if (subjectUser.getRole() == UserRole.ADMIN) {
+		if (subjectUser.getRole() == AccountRole.ADMIN) {
 			Preconditions.validate(
 				currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
@@ -236,7 +237,7 @@ public class UserServiceImpl implements UserService {
 		} else {
 			UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 			Preconditions.validate(
-				currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
+				currentUser.getRole().equals(AccountRole.ADMIN) | currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 			);
 		}

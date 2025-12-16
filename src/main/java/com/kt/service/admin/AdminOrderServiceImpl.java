@@ -3,13 +3,13 @@ package com.kt.service.admin;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -91,11 +91,11 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 	// }
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
-		UserRole role = order.getOrderBy().getRole();
+		AccountRole role = order.getOrderBy().getRole();
 		UUID orderId = order.getOrderBy().getId();
 		UUID userId = user.getId();
 
-		if (role != UserRole.ADMIN && !orderId.equals(userId)) {
+		if (role != AccountRole.ADMIN && !orderId.equals(userId)) {
 			throw new CustomException(ErrorCode.ORDER_ACCESS_NOT_ALLOWED);
 		}
 	}

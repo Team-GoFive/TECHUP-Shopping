@@ -5,8 +5,8 @@ import static lombok.AccessLevel.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 
 import jakarta.persistence.CascadeType;
@@ -59,7 +59,6 @@ public class UserEntity extends AbstractAccountEntity {
 
 	@Column(nullable = false)
 	private LocalDate birth;
-
 	@Column(nullable = false)
 	private String mobile;
 
@@ -67,7 +66,7 @@ public class UserEntity extends AbstractAccountEntity {
 		String name,
 		String email,
 		String password,
-		UserRole role,
+		AccountRole role,
 		Gender gender,
 		LocalDate birth,
 		String mobile
@@ -88,7 +87,7 @@ public class UserEntity extends AbstractAccountEntity {
 		final String name,
 		final String email,
 		final String password,
-		final UserRole role,
+		final AccountRole role,
 		final Gender gender,
 		final LocalDate birth,
 		final String mobile

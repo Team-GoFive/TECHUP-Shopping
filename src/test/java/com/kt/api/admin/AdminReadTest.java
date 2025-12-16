@@ -6,21 +6,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
@@ -53,7 +49,7 @@ public class AdminReadTest extends MockMvcTest {
 			get("/api/admin")
 				.param("page", "1")
 				.param("size", "10")
-				.param("role", UserRole.ADMIN.name())
+				.param("role", AccountRole.ADMIN.name())
 				.param("userStatus", "")
 				.param("courierWorkStatus", "")
 				.param("searchKeyword", "")
@@ -83,7 +79,7 @@ public class AdminReadTest extends MockMvcTest {
 			get("/api/admin")
 				.param("page", "1")
 				.param("size", "10")
-				.param("role", UserRole.ADMIN.name())
+				.param("role", AccountRole.ADMIN.name())
 				.param("userStatus", "")
 				.param("courierWorkStatus", "")
 				.param("searchKeyword", "")

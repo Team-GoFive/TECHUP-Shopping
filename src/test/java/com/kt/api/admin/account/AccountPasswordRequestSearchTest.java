@@ -4,7 +4,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 
 import com.kt.constant.PasswordRequestType;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
 
@@ -77,7 +77,7 @@ public class AccountPasswordRequestSearchTest extends MockMvcTest {
 			get("/api/admin/accounts/password-requests")
 				.param("page", "1")
 				.param("size", "10")
-				.param("role", UserRole.MEMBER.name())
+				.param("role", AccountRole.MEMBER.name())
 				.param("status", "")
 				.param("requestType", "")
 				.param("searchKeyword", "")

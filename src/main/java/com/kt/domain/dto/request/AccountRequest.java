@@ -2,8 +2,8 @@ package com.kt.domain.dto.request;
 
 
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.CourierWorkStatus;
-import com.kt.constant.UserRole;
 
 import com.kt.constant.UserStatus;
 
@@ -21,7 +21,7 @@ public class AccountRequest {
 	}
 	@Schema(name="AccountSearchRequest")
 	public record Search(
-		UserRole role,
+		AccountRole role,
 		UserStatus userStatus,
 		CourierWorkStatus courierWorkStatus,
 		String searchKeyword

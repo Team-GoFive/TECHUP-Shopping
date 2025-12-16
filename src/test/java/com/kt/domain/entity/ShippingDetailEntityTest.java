@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 
 @ActiveProfiles("test")
 class ShippingDetailEntityTest {
@@ -25,7 +24,7 @@ class ShippingDetailEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

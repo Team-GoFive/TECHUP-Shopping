@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
+import com.kt.constant.AccountRole;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +19,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.account.AccountRepository;
-import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
@@ -45,7 +45,7 @@ public class AccountPasswordUpdateTest extends MockMvcTest {
 			"회원1",
 			"member@test.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

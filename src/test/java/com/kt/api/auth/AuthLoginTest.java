@@ -3,8 +3,6 @@ package com.kt.api.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;

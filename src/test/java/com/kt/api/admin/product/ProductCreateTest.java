@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
 import com.kt.common.MockMvcTest;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.repository.CategoryRepository;
@@ -35,7 +35,7 @@ class ProductCreateTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@test.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	@BeforeEach

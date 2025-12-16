@@ -3,13 +3,13 @@ package com.kt.service.admin;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
@@ -95,16 +95,16 @@ public class AdminProductServiceImpl implements AdminProductService {
 
 	// TODO: seller와 공존
 	@Override
-	public Page<ProductResponse.Search> search(UserRole role, String keyword, ProductSearchType type, Pageable pageable) {
+	public Page<ProductResponse.Search> search(AccountRole role, String keyword, ProductSearchType type, Pageable pageable) {
 		return productRepository.search(role, pageable, keyword, type);
 	}
 
 	// TODO: seller와 공존
 	@Override
-	public ProductResponse.Detail detail(UserRole role, UUID productId) {
+	public ProductResponse.Detail detail(AccountRole role, UUID productId) {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
 
-		if (role == UserRole.MEMBER && product.getStatus() != ProductStatus.ACTIVATED) {
+		if (role == AccountRole.MEMBER && product.getStatus() != ProductStatus.ACTIVATED) {
 			throw new CustomException(ErrorCode.PRODUCT_NOT_FOUND);
 		}
 

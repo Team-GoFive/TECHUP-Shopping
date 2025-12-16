@@ -1,11 +1,11 @@
 package com.kt.repository.user;
 
+import com.kt.constant.AccountRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.response.QUserResponse_Search;
 import com.kt.domain.dto.response.UserResponse;
@@ -24,7 +24,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	private final QUserEntity user = QUserEntity.userEntity;
 
 	@Override
-	public Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword, UserRole role) {
+	public Page<UserResponse.Search> searchUsers(Pageable pageable, String keyword, AccountRole role) {
 
 		BooleanExpression condition = isEnabled()
 			.and(containsName(keyword))
@@ -62,7 +62,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 		return (keyword == null || keyword.isBlank()) ? null : user.name.contains(keyword);
 	}
 
-	private BooleanExpression equalRole(UserRole role) {
+	private BooleanExpression equalRole(AccountRole role) {
 		return (role == null) ? null : user.role.eq(role);
 	}
 

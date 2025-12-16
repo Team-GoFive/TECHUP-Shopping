@@ -4,9 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
-import com.kt.constant.UserStatus;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.querydsl.core.annotations.QueryProjection;
@@ -22,7 +21,7 @@ public class UserResponse {
 		UUID id,
 		String name,
 		String email,
-		UserRole role,
+		AccountRole role,
 		Gender gender,
 		LocalDate birth,
 		String mobile
@@ -36,7 +35,7 @@ public class UserResponse {
 		UUID id,
 		String name,
 		String email,
-		UserRole role,
+		AccountRole role,
 		Gender gender,
 		LocalDate birth,
 		String mobile

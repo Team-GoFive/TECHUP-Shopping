@@ -20,7 +20,7 @@ import com.kt.common.OrderEntityCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -32,7 +32,6 @@ import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.OrderService;
 
 @DisplayName("주문 취소(어드민) - get api/orders/order-products/{orderProductId}")
 public class OrderCancelTest extends MockMvcTest {
@@ -42,7 +41,7 @@ public class OrderCancelTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	@Autowired

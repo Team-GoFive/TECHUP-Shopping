@@ -1,31 +1,7 @@
 package com.kt.api.admin.order;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.ResultActions;
-
-import com.kt.common.MockMvcTest;
-import com.kt.common.OrderEntityCreator;
-import com.kt.constant.OrderProductStatus;
-import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.OrderProductRequest;
-import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.entity.OrderEntity;
-import com.kt.repository.order.OrderRepository;
-import com.kt.security.DefaultCurrentUser;
 // TODO: 2차 스프린트 때 모두 새로운 정책에 맞게 변경 필요.
 //
 // @DisplayName("주문 상태 강제 변경(어드민) - Update api/orders/{orderid}/change-status")
@@ -39,7 +15,7 @@ import com.kt.security.DefaultCurrentUser;
 // 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 // 		UUID.randomUUID(),
 // 		"test@example.com",
-// 		UserRole.ADMIN
+// 		AccountRole.ADMIN
 // 	);
 //
 // 	@BeforeEach

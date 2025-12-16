@@ -2,8 +2,8 @@ package com.kt.common;
 
 import java.time.LocalDate;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.UserEntity;
 
 public class UserEntityCreator {
@@ -13,7 +13,7 @@ public class UserEntityCreator {
 			"회원1",
 			email,
 			encodedPassword,
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
@@ -25,7 +25,7 @@ public class UserEntityCreator {
 			"회원1",
 			"member@test.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
@@ -37,7 +37,7 @@ public class UserEntityCreator {
 			"관리자1",
 			"admin@test.com",
 			"1234",
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

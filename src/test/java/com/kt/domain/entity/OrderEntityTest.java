@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.constant.AccountRole;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.exception.FieldValidationException;
 
 @ActiveProfiles("test")
@@ -27,7 +28,7 @@ class OrderEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

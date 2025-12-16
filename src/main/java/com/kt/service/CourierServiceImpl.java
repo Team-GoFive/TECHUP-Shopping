@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
@@ -69,7 +69,7 @@ public class CourierServiceImpl implements CourierService {
 	private void verifyAccess(UUID currentId, UUID subjectId) {
 		AbstractAccountEntity currentUser = accountRepository.findByIdOrThrow(currentId);
 
-		if (currentUser.getRole() != UserRole.ADMIN) {
+		if (currentUser.getRole() != AccountRole.ADMIN) {
 			Preconditions.validate(
 				currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED

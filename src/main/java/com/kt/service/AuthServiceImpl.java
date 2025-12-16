@@ -1,10 +1,10 @@
 package com.kt.service;
 
 import com.kt.config.jwt.JwtTokenProvider;
+import com.kt.constant.AccountRole;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.TokenType;
-import com.kt.constant.UserRole;
 import com.kt.constant.mail.MailTemplate;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.redis.RedisKey;
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 			request.name(),
 			email,
 			passwordEncoder.encode(request.password()),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			request.gender(),
 			request.birth(),
 			request.mobile()
