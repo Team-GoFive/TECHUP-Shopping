@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
@@ -16,7 +16,7 @@ public interface UserService {
 
 	UserResponse.Orders getOrdersByUserId(UUID currentId, UUID subjectId);
 
-	Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, UserRole role);
+	Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, AccountRole role);
 
 	UserResponse.UserDetail getUserDetail(UUID currentId, UUID subjectId);
 

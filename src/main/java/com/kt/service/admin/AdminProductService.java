@@ -3,10 +3,10 @@ package com.kt.service.admin;
 import java.util.List;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 
@@ -26,7 +26,7 @@ public interface AdminProductService {
 
 	void toggleActive(UUID productId);
 
-	Page<ProductResponse.Search> search(UserRole role, String keyword, ProductSearchType type, Pageable pageable);
+	Page<ProductResponse.Search> search(AccountRole role, String keyword, ProductSearchType type, Pageable pageable);
 
-	ProductResponse.Detail detail(UserRole role, UUID productId);
+	ProductResponse.Detail detail(AccountRole role, UUID productId);
 }

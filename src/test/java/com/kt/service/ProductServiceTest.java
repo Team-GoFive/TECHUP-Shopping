@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kt.constant.AccountRole;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.ProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
@@ -151,7 +152,7 @@ class ProductServiceTest {
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
-		Page<ProductResponse.Search> search = productService.search(UserRole.ADMIN, null, null, pageRequest);
+		Page<ProductResponse.Search> search = productService.search(AccountRole.ADMIN, null, null, pageRequest);
 
 		// then
 		assertThat(search.getTotalElements()).isEqualTo(20);
@@ -192,7 +193,7 @@ class ProductServiceTest {
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
 		Page<ProductResponse.Search> search = productService.search(
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			"운동",
 			ProductSearchType.CATEGORY,
 			pageRequest
@@ -223,7 +224,7 @@ class ProductServiceTest {
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
 		Page<ProductResponse.Search> search = productService.search(
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			"5",
 			ProductSearchType.NAME,
 			pageRequest
@@ -244,7 +245,7 @@ class ProductServiceTest {
 		productRepository.save(product);
 
 		// when
-		ProductResponse.Detail detail = productService.detail(UserRole.ADMIN, product.getId());
+		ProductResponse.Detail detail = productService.detail(AccountRole.ADMIN, product.getId());
 
 		// then
 		assertThat(detail.name()).isEqualTo("상품");

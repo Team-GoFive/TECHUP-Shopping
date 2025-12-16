@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ShippingType;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
@@ -190,11 +190,11 @@ public class OrderServiceImpl implements OrderService {
 	// TODO: 관리자 전용 코드 삭제함 - 2차 스프린트 때 구현 예정
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
-		UserRole role = order.getOrderBy().getRole();
+		AccountRole role = order.getOrderBy().getRole();
 		UUID orderId = order.getOrderBy().getId();
 		UUID userId = user.getId();
 
-		if (role != UserRole.ADMIN && !orderId.equals(userId)) {
+		if (role != AccountRole.ADMIN && !orderId.equals(userId)) {
 			throw new CustomException(ErrorCode.ORDER_ACCESS_NOT_ALLOWED);
 		}
 	}

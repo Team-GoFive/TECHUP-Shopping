@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class DefaultCurrentUser implements UserDetails, CurrentUser {
 
 	private UUID id;
 	private String email;
-	private UserRole role;
+	private AccountRole role;
 
 	@Override
 	public UUID getId() {
@@ -29,7 +29,7 @@ public class DefaultCurrentUser implements UserDetails, CurrentUser {
 	}
 
 	@Override
-	public UserRole getRole() {
+	public AccountRole getRole() {
 		return role;
 	}
 

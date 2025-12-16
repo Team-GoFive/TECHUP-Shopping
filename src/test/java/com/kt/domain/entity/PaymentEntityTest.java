@@ -4,14 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
 class PaymentEntityTest {
@@ -29,7 +28,7 @@ class PaymentEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

@@ -1,11 +1,6 @@
 package com.kt.domain.dto.response;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
-import com.kt.constant.CourierWorkStatus;
-import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.constant.UserStatus;
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -17,7 +12,7 @@ public class AccountResponse {
 		String name,
 		String email,
 		UserStatus userStatus,
-		UserRole role
+		AccountRole role
 	) {
 		@QueryProjection
 		public Search {

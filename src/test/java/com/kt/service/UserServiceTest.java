@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.SignupRequest;
@@ -88,7 +89,7 @@ class UserServiceTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -98,7 +99,7 @@ class UserServiceTest {
 			"주문자테스터2",
 			"dohyun@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -108,7 +109,7 @@ class UserServiceTest {
 			"어드민테스터",
 			"dohyun@naver.com",
 			"1234",
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -162,7 +163,7 @@ class UserServiceTest {
 			"김도현",
 			"ddd",
 			"111",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"0101010"
@@ -246,7 +247,7 @@ class UserServiceTest {
 
 		// when
 		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터",
-			UserRole.MEMBER);
+			AccountRole.MEMBER);
 
 		// then
 		assertThat(result).isNotNull();
@@ -258,7 +259,7 @@ class UserServiceTest {
 
 		// when
 		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민",
-			UserRole.ADMIN);
+			AccountRole.ADMIN);
 
 		// then
 		assertThat(result).isNotNull();
@@ -383,7 +384,7 @@ class UserServiceTest {
 
 		assertThat(admin.getName()).isEqualTo("어드민생성");
 		assertThat(admin.getEmail()).isEqualTo("admin@test.com");
-		assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
+		assertThat(admin.getRole()).isEqualTo(AccountRole.ADMIN);
 		assertThat(admin.getPassword()).isNotEqualTo("1234");
 	}
 
@@ -439,7 +440,7 @@ class UserServiceTest {
 			"삭제",
 			"aaa",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1111, 1, 1),
 			"111"

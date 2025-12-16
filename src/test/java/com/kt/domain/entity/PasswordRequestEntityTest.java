@@ -2,7 +2,7 @@ package com.kt.domain.entity;
 
 import com.kt.constant.Gender;
 import com.kt.constant.PasswordRequestType;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 
 import com.kt.exception.FieldValidationException;
 import com.kt.util.EncryptUtil;
@@ -33,7 +33,7 @@ public class PasswordRequestEntityTest {
 			"테스트유저",
 			"test@email.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

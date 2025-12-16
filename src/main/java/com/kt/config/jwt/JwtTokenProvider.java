@@ -2,8 +2,8 @@ package com.kt.config.jwt;
 
 import com.kt.config.properties.jwt.JwtProperties;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.TokenType;
-import com.kt.constant.UserRole;
 
 import com.kt.security.AuthenticationToken;
 
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
 	private static final String ROLE_CLAIM_KEY = "role";
 	private static final String EMAIL_CLAIM_KEY = "email";
 
-	public String create(UUID id, String email, UserRole role, TokenType tokenType) {
+	public String create(UUID id, String email, AccountRole role, TokenType tokenType) {
 		Date issuedAt = new Date();
 		Duration validTime = tokenType == TokenType.ACCESS ?
 			jwtProperties.getAccessValidTime() : jwtProperties.getRefreshValidTime();
@@ -81,7 +81,7 @@ public class JwtTokenProvider {
 		Claims claims = getClaims(token);
 		UUID id = UUID.fromString(claims.getSubject());
 		String email = claims.get(EMAIL_CLAIM_KEY, String.class);
-		UserRole role = UserRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
+		AccountRole role = AccountRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
 		return new DefaultCurrentUser(id, email, role);
 	}
 

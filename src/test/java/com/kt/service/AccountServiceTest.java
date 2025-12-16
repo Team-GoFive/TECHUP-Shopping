@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.constant.AccountRole;
+import com.kt.constant.PasswordRequestStatus;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -20,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.Gender;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.request.PasswordRequest;
@@ -69,7 +71,7 @@ class AccountServiceTest {
 			"회원",
 			"bjwnstkdbj@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(2000, 1, 1),
 			"111111"
@@ -78,7 +80,7 @@ class AccountServiceTest {
 			"관리자",
 			"aaa",
 			"1234",
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			Gender.MALE,
 			LocalDate.of(2000, 1, 1),
 			"111111"
@@ -110,7 +112,7 @@ class AccountServiceTest {
 		// given
 
 		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			null,
 			null,
 			"회원"
@@ -154,7 +156,7 @@ class AccountServiceTest {
 		// given
 
 		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.COURIER,
+			AccountRole.COURIER,
 			null,
 			null,
 			""
@@ -177,7 +179,7 @@ class AccountServiceTest {
 			"회원테스터",
 			"wjd123@naver.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -228,7 +230,7 @@ class AccountServiceTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"

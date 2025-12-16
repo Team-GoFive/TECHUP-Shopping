@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -41,7 +41,7 @@ public class ProductSoldOutTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@test.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	ArrayList<ProductEntity> products;

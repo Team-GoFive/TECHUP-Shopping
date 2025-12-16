@@ -2,7 +2,7 @@ package com.kt.common;
 
 import java.util.UUID;
 
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.security.DefaultCurrentUser;
 
 public class CurrentUserCreator {
@@ -11,7 +11,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
 			email,
-			UserRole.ADMIN
+			AccountRole.ADMIN
 		);
 	}
 
@@ -19,7 +19,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
 			"admin@naver.com",
-			UserRole.ADMIN
+			AccountRole.ADMIN
 		);
 	}
 
@@ -27,7 +27,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			adminId,
 			"admin@naver.com",
-			UserRole.ADMIN
+			AccountRole.ADMIN
 		);
 	}
 
@@ -35,7 +35,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
 			"member@naver.com",
-			UserRole.MEMBER
+			AccountRole.MEMBER
 		);
 	}
 
@@ -43,7 +43,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			userId,
 			"member@naver.com",
-			UserRole.MEMBER
+			AccountRole.MEMBER
 		);
 	}
 
@@ -51,7 +51,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			UUID.randomUUID(),
 			email,
-			UserRole.MEMBER
+			AccountRole.MEMBER
 		);
 	}
 
@@ -59,7 +59,7 @@ public class CurrentUserCreator {
 		return new DefaultCurrentUser(
 			courierId,
 			"courier@naver.com",
-			UserRole.COURIER
+			AccountRole.COURIER
 		);
 	}
 }

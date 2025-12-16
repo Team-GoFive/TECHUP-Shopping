@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.order.OrderRepository;
@@ -35,7 +35,7 @@ public class OrderListTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 	@Autowired
 	private UserRepository userRepository;

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.constant.UserStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.UserResponse;
@@ -82,7 +82,7 @@ class AdminUserServiceTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -92,7 +92,7 @@ class AdminUserServiceTest {
 			"주문자테스터2",
 			"dohyun@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -102,7 +102,7 @@ class AdminUserServiceTest {
 			"어드민테스터",
 			"dohyun@naver.com",
 			"1234",
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -156,7 +156,7 @@ class AdminUserServiceTest {
 			"김도현",
 			"ddd",
 			"111",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"0101010"
@@ -197,7 +197,7 @@ class AdminUserServiceTest {
 
 		// when
 		Page<UserResponse.Search> result = adminUserService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터",
-			UserRole.MEMBER);
+			AccountRole.MEMBER);
 
 		// then
 		assertThat(result).isNotNull();
@@ -209,7 +209,7 @@ class AdminUserServiceTest {
 
 		// when
 		Page<UserResponse.Search> result = adminUserService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민",
-			UserRole.ADMIN);
+			AccountRole.ADMIN);
 
 		// then
 		assertThat(result).isNotNull();
@@ -299,7 +299,7 @@ class AdminUserServiceTest {
 			"삭제",
 			"aaa",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1111, 1, 1),
 			"111"

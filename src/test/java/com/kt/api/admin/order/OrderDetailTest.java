@@ -16,7 +16,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.order.OrderRepository;
@@ -31,7 +31,7 @@ public class OrderDetailTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	@Autowired

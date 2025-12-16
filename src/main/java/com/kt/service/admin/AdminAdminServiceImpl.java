@@ -2,11 +2,12 @@ package com.kt.service.admin;
 
 import java.util.UUID;
 
+import com.kt.constant.AccountRole;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.UserRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
@@ -33,7 +34,7 @@ public class AdminAdminServiceImpl implements AdminAdminService {
 			request.name(),
 			request.email(),
 			passwordEncoder.encode(request.password()),
-			UserRole.ADMIN,
+			AccountRole.ADMIN,
 			request.gender(),
 			request.birth(),
 			request.mobile()
@@ -69,7 +70,7 @@ public class AdminAdminServiceImpl implements AdminAdminService {
 	private void checkAdmin(UUID currentUserId) {
 		UserEntity user = userRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
-			user.getRole() == UserRole.ADMIN,
+			user.getRole() == AccountRole.ADMIN,
 			ErrorCode.NOT_ADMIN
 		);
 	}
@@ -96,14 +97,14 @@ public class AdminAdminServiceImpl implements AdminAdminService {
 	private void checkReadPermission(UUID currentId, UUID subjectId) {
 		UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 		Preconditions.validate(
-			currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
+			currentUser.getRole().equals(AccountRole.ADMIN) | currentId.equals(subjectId),
 			ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 		);
 	}
 
 	private void checkModifyPermission(UUID currentId, UUID subjectId) {
 		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
-		if (subjectUser.getRole() == UserRole.ADMIN) {
+		if (subjectUser.getRole() == AccountRole.ADMIN) {
 			Preconditions.validate(
 				currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
@@ -111,7 +112,7 @@ public class AdminAdminServiceImpl implements AdminAdminService {
 		} else {
 			UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
 			Preconditions.validate(
-				currentUser.getRole().equals(UserRole.ADMIN) | currentId.equals(subjectId),
+				currentUser.getRole().equals(AccountRole.ADMIN) | currentId.equals(subjectId),
 				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
 			);
 		}
