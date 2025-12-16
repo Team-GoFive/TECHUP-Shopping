@@ -174,7 +174,6 @@ class OrderServiceTest {
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
 
-	// TODO: 위치 변경 필요
 	@Test
 	void 주문상품_조회() {
 		// given

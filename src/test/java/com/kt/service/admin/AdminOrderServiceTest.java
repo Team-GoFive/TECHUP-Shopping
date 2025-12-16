@@ -201,7 +201,6 @@ class AdminOrderServiceTest {
 		assertThat(detail.products().get(0).quantity()).isEqualTo(3L);
 	}
 
-	// TODO: 주문상품_상태_강제변경_성공
 	@Test
 	void 주문상품_상태_강제변경_성공() {
 		// given
