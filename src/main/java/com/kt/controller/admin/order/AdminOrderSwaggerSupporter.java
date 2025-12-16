@@ -9,6 +9,7 @@ import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.common.support.SwaggerSupporter;
+import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.security.DefaultCurrentUser;
 
@@ -34,17 +35,17 @@ public interface AdminOrderSwaggerSupporter extends SwaggerSupporter {
 	)
 	ResponseEntity<ApiResult<AdminOrderResponse.Detail>> getOrderDetail(UUID orderId);
 
-	// @Operation(
-	// 	summary = "주문상품 상태 변경",
-	// 	description = "관리자의 주문상태 변경 관련 API",
-	// 	parameters = {
-	// 		@Parameter(name = "orderProductId", description = "주문상품 ID")
-	// 	}
-	// )
-	// ResponseEntity<ApiResult<Void>> updateOrderProductStatus(
-	// 	UUID orderProductId,
-	// 	OrderProductRequest.ChangeStatus request
-	// );
+	@Operation(
+		summary = "주문상품 상태 강제 변경",
+		description = "관리자의 주문싱픔 상태 변경 관련 API (CS 기능)",
+		parameters = {
+			@Parameter(name = "orderProductId", description = "주문상품 ID")
+		}
+	)
+	ResponseEntity<ApiResult<Void>> forceChangeStatus(
+		UUID orderProductId,
+		OrderProductRequest.ForceChangeStatus request
+	);
 
 	@Operation(
 		summary = "주문 취소",
