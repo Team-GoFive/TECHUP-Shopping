@@ -52,8 +52,8 @@ public enum ErrorCode {
 	ACCOUNT_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "계정에 대한 접근 권한이 없습니다."),
 	COURIER_NOT_FOUND(HttpStatus.NOT_FOUND, "배송기사가 존재하지 않습니다."),
 	ORDER_ACCESS_NOT_ALLOWED(HttpStatus.FORBIDDEN, "주문에 대한 접근 권한이 없습니다."),
-	NOT_ADMIN(HttpStatus.BAD_REQUEST, "관리자 계정이 아닙니다."),
 	SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "판매자가 존재하지 않습니다."),
+	ADMIN_PERMISSION_REQUIRED(HttpStatus.FORBIDDEN, "관리자 계정이 아닙니다."),
 	SAME_STATUS_CHANGE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "현재 상태와 동일한 상태로는 변경할 수 없습니다."),
 	INVALID_FORCE_STATUS_TRANSITION(HttpStatus.BAD_REQUEST,"강제 변경이 허용되지 않은 상태 전이입니다.");
 

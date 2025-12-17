@@ -123,7 +123,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 		UserEntity user = userRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
 			user.getRole() == AccountRole.ADMIN,
-			ErrorCode.NOT_ADMIN
+			ErrorCode.ADMIN_PERMISSION_REQUIRED
 		);
 	}
 

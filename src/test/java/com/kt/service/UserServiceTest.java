@@ -422,7 +422,7 @@ class UserServiceTest {
 			() -> userService.createAdmin(testUser.getId(), request)
 		)
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
+			.hasMessageContaining(ErrorCode.ADMIN_PERMISSION_REQUIRED.name());
 	}
 
 	@Test
@@ -446,7 +446,7 @@ class UserServiceTest {
 			() -> userService.deleteAdmin(testAdmin.getId(), testUser.getId())
 		)
 			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.NOT_ADMIN.name());
+			.hasMessageContaining(ErrorCode.ADMIN_PERMISSION_REQUIRED.name());
 	}
 
 	@Test
