@@ -1,5 +1,6 @@
 package com.kt.service.seller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -57,7 +58,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 	}
 
 	@Override
-	public void inActive(UUID productId, UUID sellerId) {
+	public void inActivate(UUID productId, UUID sellerId) {
 		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
 		product.inActivate();
 	}
@@ -66,6 +67,14 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public void toggleActive(UUID productId, UUID sellerId) {
 		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
 		product.toggleActive();
+	}
+
+	@Override
+	public void soldOutProducts(List<UUID> productIds, UUID sellerId) {
+		for (UUID productId : productIds) {
+			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+			product.inActivate();
+		}
 	}
 
 	@Override
