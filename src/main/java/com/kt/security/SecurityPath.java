@@ -24,7 +24,7 @@ public final class SecurityPath {
 		"/api/couriers/**"
 	};
 	public static final String[] SELLER = {
-		"/api/sellers/**"
+		"/api/seller/**"
 	};
 	public static final Map<String, String[]> ROLE_PATHS = Map.of(
 		"ROLE_MEMBER", MEMBER,
