@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = userRepository.findByIdOrThrow(currentUserId);
 		Preconditions.validate(
 			user.getRole() == AccountRole.ADMIN,
-			ErrorCode.NOT_ADMIN
+			ErrorCode.ADMIN_PERMISSION_REQUIRED
 		);
 	}
 

@@ -13,7 +13,6 @@ import com.kt.constant.ShippingType;
 import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -175,21 +174,23 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<AdminOrderResponse.Search> searchOrder(Pageable pageable) {
+	public Page<OrderResponse.Search> searchOrder(Pageable pageable) {
 		return orderRepository.findAll(pageable)
-			.map(AdminOrderResponse.Search::from);
+			.map(OrderResponse.Search::from);
 	}
 
 	@Override
-	public AdminOrderResponse.Detail getOrderDetail(UUID orderId) {
+	@Transactional(readOnly = true)
+	public OrderResponse.Detail getOrderDetail(UUID orderId) {
 
 		OrderEntity order = orderRepository.findDetailWithProducts(orderId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-		return AdminOrderResponse.Detail.from(order, order.getOrderProducts());
+		return OrderResponse.Detail.from(
+			order,
+			order.getOrderProducts()
+		);
 	}
-
-	// TODO: 관리자 전용 코드 삭제함 - 2차 스프린트 때 구현 예정
 
 	private void hasOrderCancelPermission(UserEntity user, OrderEntity order) {
 		AccountRole role = order.getOrderBy().getRole();

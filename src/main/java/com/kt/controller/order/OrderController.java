@@ -20,7 +20,6 @@ import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.OrderService;
@@ -37,7 +36,7 @@ public class OrderController implements OrderSwaggerSupporter {
 
 	@Override
 	@GetMapping
-	public ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
+	public ResponseEntity<ApiResult<PageResponse<OrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
 		return ApiResult.page(
@@ -47,11 +46,11 @@ public class OrderController implements OrderSwaggerSupporter {
 
 	@Override
 	@GetMapping("/{orderId}")
-	public ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
+	public ResponseEntity<ApiResult<OrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
 		return ApiResult.wrap(
-			orderService.getOrderProducts(orderId)
+			orderService.getOrderDetail(orderId)
 		);
 	}
 

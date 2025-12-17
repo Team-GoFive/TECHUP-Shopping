@@ -56,4 +56,8 @@ public class OrderProductEntity extends BaseEntity {
 		this.order = order;
 	}
 
+	public void forceChangeStatus(OrderProductStatus status) {
+		this.status = status;
+	}
+
 }
