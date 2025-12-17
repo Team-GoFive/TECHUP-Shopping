@@ -1,6 +1,5 @@
 package com.kt.domain.entity;
 
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -49,11 +48,22 @@ class ShippingDetailEntityTest {
 			null
 		);
 
-		ProductEntity product= ProductEntity.create(
+		SellerEntity testSeller = SellerEntity.create(
+			"판매자1",
+			"seller@test.com",
+			"1234",
+			"상점1",
+			"010-1234-5678",
+			"seller@test.com",
+			Gender.MALE
+		);
+
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
 			5L,
-			tempCategory
+			tempCategory,
+			testSeller
 		);
 
 		testOrderProduct = new OrderProductEntity(
@@ -73,7 +83,7 @@ class ShippingDetailEntityTest {
 	}
 
 	@Test
-	void 객체생성_성공(){
+	void 객체생성_성공() {
 		ShippingDetailEntity shippingDetailEntity = ShippingDetailEntity.create(
 			testCourier,
 			testOrderProduct

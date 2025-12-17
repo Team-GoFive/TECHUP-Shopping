@@ -51,13 +51,13 @@ public class EmailClient {
 					case MailTemplate.UPDATE_PASSWORD -> content = "<div> 변경된 비밀번호 : " + velue + "</div>";
 				}
 			}
-			String sender = ((JavaMailSenderImpl) mailSender).getUsername();
+			String sender = ((JavaMailSenderImpl)mailSender).getUsername();
 			helper.setFrom(sender);
 			helper.setTo(email);
 			helper.setSubject(template.getSubject());
 			helper.setText(content, true);
 			mailSender.send(message);
-		} catch(MessagingException exception) {
+		} catch (MessagingException exception) {
 			throw new CustomException(ErrorCode.EMAIL_SEND_FAILED);
 		}
 

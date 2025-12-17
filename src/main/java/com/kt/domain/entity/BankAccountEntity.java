@@ -26,19 +26,19 @@ public class BankAccountEntity extends BaseEntity {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
-		name = "user_id",
+		name = "account_id",
 		nullable = false,
 		unique = true
 	)
-	private UserEntity user;
+	private AbstractAccountEntity account;
 
-	protected BankAccountEntity(UserEntity user) {
+	protected BankAccountEntity(AbstractAccountEntity account) {
 		this.balance = 0L;
-		this.user = user;
+		this.account = account;
 	}
 
-	public static BankAccountEntity create(final UserEntity user) {
-		return new BankAccountEntity(user);
+	public static BankAccountEntity create(final AbstractAccountEntity account) {
+		return new BankAccountEntity(account);
 	}
 
 }

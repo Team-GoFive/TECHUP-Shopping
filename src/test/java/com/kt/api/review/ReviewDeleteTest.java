@@ -1,10 +1,13 @@
 package com.kt.api.review;
 
-import static com.kt.common.CurrentUserCreator.*;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.kt.common.CurrentUserCreator.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +34,7 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 삭제 - DELETE /api/reviews/{reviewId}")
@@ -48,11 +52,14 @@ public class ReviewDeleteTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
 	UserEntity testMember;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -67,10 +74,13 @@ public class ReviewDeleteTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
 

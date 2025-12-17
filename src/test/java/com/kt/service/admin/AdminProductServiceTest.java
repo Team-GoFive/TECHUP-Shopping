@@ -1,9 +1,15 @@
 package com.kt.service.admin;
 
+import static com.kt.common.SellerEntityCreator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.dto.request.AdminProductRequest;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,26 +31,38 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 class AdminProductServiceTest {
 
 	private final AdminProductService adminProductService;
-
 	private final ProductRepository productRepository;
-
 	private final CategoryRepository categoryRepository;
-
 	private final OrderProductRepository orderProductRepository;
+	private final SellerRepository sellerRepository;
+	private SellerEntity testSeller;
 
 	@Autowired
 	AdminProductServiceTest(AdminProductService adminProductService, ProductRepository productRepository,
-		CategoryRepository categoryRepository, OrderProductRepository orderProductRepository) {
+		CategoryRepository categoryRepository, OrderProductRepository orderProductRepository,
+		SellerRepository sellerRepository) {
 		this.orderProductRepository = orderProductRepository;
 		this.adminProductService = adminProductService;
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
+		this.sellerRepository = sellerRepository;
+	}
+
+	@BeforeEach
+	void setUp() {
+		testSeller = createSeller();
+		sellerRepository.save(testSeller);
 	}
 
 	@Test
@@ -52,17 +70,19 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity category = CategoryEntity.create("카테고리", null);
 		categoryRepository.save(category);
-
 		String productName = "상품1";
 		long productPrice = 1000L;
-		ProductRequest.Create request = new ProductRequest.Create(
+		AdminProductRequest.Create request = new AdminProductRequest.Create(
 			productName,
 			productPrice,
-			10L
+			10L,
+			category.getId(),
+			testSeller.getId()
 		);
 
 		// when
-		adminProductService.create(request.name(), request.price(), request.stock(), category.getId());
+		adminProductService.create(request.name(), request.price(), request.stock(), request.categoryId(),
+			request.sellerId());
 
 		// then
 		ProductEntity product = productRepository.findAll()
@@ -72,6 +92,7 @@ class AdminProductServiceTest {
 			.orElseThrow();
 
 		assertThat(product.getPrice()).isEqualTo(productPrice);
+		assertThat(product.getSeller().getId()).isEqualTo(testSeller.getId());
 	}
 
 	@Test
@@ -87,13 +108,14 @@ class AdminProductServiceTest {
 			"상품1",
 			1000L,
 			10L,
-			category
+			category,
+			testSeller
 		);
 
 		productRepository.save(product);
 
 		// when
-		ProductRequest.Update request = new ProductRequest.Update(
+		AdminProductRequest.Update request = new AdminProductRequest.Update(
 			"수정된상품명",
 			2000L,
 			20L,
@@ -124,7 +146,8 @@ class AdminProductServiceTest {
 			"상품1",
 			1000L,
 			10L,
-			category
+			category,
+			testSeller
 		);
 		productRepository.save(product);
 
@@ -148,7 +171,8 @@ class AdminProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				category
+				category,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -178,7 +202,8 @@ class AdminProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categoryDog
+				categoryDog,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -188,7 +213,8 @@ class AdminProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			products.add(product);
 		}
@@ -220,7 +246,8 @@ class AdminProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			productRepository.save(product);
 		}
@@ -245,7 +272,7 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -261,7 +288,7 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -277,7 +304,7 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
 		// when
@@ -293,7 +320,7 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 		adminProductService.inActivate(product.getId());
 
@@ -310,7 +337,7 @@ class AdminProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports);
+		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 		adminProductService.activate(product.getId());
 
@@ -333,7 +360,8 @@ class AdminProductServiceTest {
 				"상품" + i,
 				1000L,
 				10L,
-				categorySports
+				categorySports,
+				testSeller
 			);
 			products.add(product);
 		}

@@ -1,5 +1,9 @@
 package com.kt.api.review;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.account.AccountRepository;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,6 +33,7 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 조회 - GET /api/reviews?productId")
@@ -46,9 +51,12 @@ public class ReviewSearchTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -63,13 +71,15 @@ public class ReviewSearchTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
-
 
 	@Test
 	void 상품리뷰조회_성공__200_OK() throws Exception {
@@ -80,15 +90,15 @@ public class ReviewSearchTest extends MockMvcTest {
 
 		// when
 		ResultActions actions = mockMvc.perform(get("/api/reviews")
-				.with(user("테스트용임다"))
-				.param("productId", testOrderProduct.getProduct().getId().toString())
-				.param("page", "1")
-				.param("size", "10")
+			.with(user("테스트용임다"))
+			.param("productId", testOrderProduct.getProduct().getId().toString())
+			.param("page", "1")
+			.param("size", "10")
 		);
 
 		// then
 		actions.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
-		.andExpect(jsonPath("$.data.list[0].content").value(review.getContent()));
+			.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
+			.andExpect(jsonPath("$.data.list[0].content").value(review.getContent()));
 	}
 }

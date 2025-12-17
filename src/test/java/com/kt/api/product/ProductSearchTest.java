@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -23,6 +27,7 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @DisplayName("상품 목록 조회 - GET /api/products")
 public class ProductSearchTest extends MockMvcTest {
@@ -32,8 +37,11 @@ public class ProductSearchTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	ArrayList<ProductEntity> products;
 
@@ -42,14 +50,17 @@ public class ProductSearchTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
 		products = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
-			products.add(createProduct(testCategory));
+			products.add(createProduct(testCategory, testSeller));
 		}
 
 		// 비활성화 상품 추가
 		for (int i = 0; i < 5; i++) {
-			ProductEntity product = createProduct(testCategory);
+			ProductEntity product = createProduct(testCategory, testSeller);
 			product.inActivate();
 			products.add(product);
 		}

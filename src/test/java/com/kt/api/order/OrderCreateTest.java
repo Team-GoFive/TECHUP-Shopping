@@ -15,6 +15,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +52,8 @@ public class OrderCreateTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	ArrayList<ProductEntity> products = new ArrayList<>();
 
@@ -56,6 +61,7 @@ public class OrderCreateTest extends MockMvcTest {
 	AddressEntity address;
 	ProductEntity testProduct1;
 	ProductEntity testProduct2;
+	SellerEntity testSeller;
 	@Autowired
 	private AddressRepository addressRepository;
 
@@ -67,10 +73,13 @@ public class OrderCreateTest extends MockMvcTest {
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
 
-		testProduct1 = createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct1 = createProduct(category, testSeller);
 		productRepository.save(testProduct1);
 
-		testProduct2 = createProduct(category);
+		testProduct2 = createProduct(category, testSeller);
 		productRepository.save(testProduct2);
 
 		products.add(testProduct1);
@@ -83,7 +92,7 @@ public class OrderCreateTest extends MockMvcTest {
 	void 주문_생성_성공__200_OK() throws Exception {
 		// when
 		OrderRequest request = new OrderRequest(
-			List.of(new OrderRequest.Item(testProduct1.getId(), 1L)), address.getId()
+			List.of(new OrderRequest.Item(testProduct1.getId(), 1L, testSeller.getId())), address.getId()
 		);
 
 		ResultActions actions = mockMvc.perform(
@@ -104,8 +113,8 @@ public class OrderCreateTest extends MockMvcTest {
 		// when
 		OrderRequest request = new OrderRequest(
 			List.of(
-				new OrderRequest.Item(testProduct1.getId(), 1L),
-				new OrderRequest.Item(testProduct2.getId(), 2L)),
+				new OrderRequest.Item(testProduct1.getId(), 1L, testSeller.getId()),
+				new OrderRequest.Item(testProduct2.getId(), 2L, testSeller.getId())),
 			address.getId()
 		);
 

@@ -18,6 +18,7 @@ import com.kt.common.CategoryEntityCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.ProductEntityCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.AccountRole;
@@ -25,11 +26,13 @@ import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
@@ -38,6 +41,7 @@ public class OrderCancelTest extends MockMvcTest {
 
 	OrderEntity savedOrder;
 	UserEntity savedUser;
+	SellerEntity savedSeller;
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
@@ -54,6 +58,8 @@ public class OrderCancelTest extends MockMvcTest {
 	private OrderProductRepository orderProductRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
+	@Autowired
+	private SellerRepository sellerRepository;
 
 	@Test
 	void 주문상품_취소__성공_200() throws Exception {
@@ -64,12 +70,15 @@ public class OrderCancelTest extends MockMvcTest {
 		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
 		savedOrder = orderRepository.save(order);
 
+		SellerEntity seller = SellerEntityCreator.createSeller();
+		savedSeller = sellerRepository.save(seller);
+
 		CategoryEntity category = categoryRepository.save(
 			CategoryEntityCreator.createCategory()
 		);
 
 		ProductEntity product = productRepository.save(
-			ProductEntityCreator.createProduct(category)
+			ProductEntityCreator.createProduct(category, seller)
 		);
 
 		OrderProductEntity orderProduct = orderProductRepository.save(

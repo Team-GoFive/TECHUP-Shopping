@@ -6,6 +6,9 @@ import static com.kt.common.OrderProductCreator.*;
 import static com.kt.common.ProductCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,9 +54,12 @@ class AdminReviewServiceTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -63,13 +69,16 @@ class AdminReviewServiceTest {
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
 
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
 		OrderEntity order = createOrderEntity(testUser);
 		orderRepository.save(order);
 
-		ProductEntity product = createProduct(category);
+		ProductEntity product = createProduct(category, testSeller);
 		productRepository.save(product);
 
-		testOrderProduct = createOrderProduct(order, product);
+		testOrderProduct = createOrderProduct(order, product, testSeller);
 		orderProductRepository.save(testOrderProduct);
 
 		order.getOrderProducts().add(testOrderProduct);

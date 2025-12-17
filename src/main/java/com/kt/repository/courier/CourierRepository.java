@@ -21,7 +21,7 @@ public interface CourierRepository extends JpaRepository<CourierEntity, UUID>, C
 	}
 
 	default CourierEntity findByIdOrThrow(UUID courierId) {
-		return findById(courierId).orElseThrow(() -> new CustomException(ErrorCode.Courier_NOT_FOUND));
+		return findById(courierId).orElseThrow(() -> new CustomException(ErrorCode.COURIER_NOT_FOUND));
 	}
 
 }

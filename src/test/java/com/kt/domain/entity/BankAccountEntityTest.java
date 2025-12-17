@@ -18,6 +18,6 @@ public class BankAccountEntityTest {
 
 		assertNotNull(bankAccount);
 		assertEquals(0L, bankAccount.getBalance());
-		assertEquals(bankAccount.getUser(), testUser);
+		assertEquals(bankAccount.getAccount(), testUser);
 	}
 }

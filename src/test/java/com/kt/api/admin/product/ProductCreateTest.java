@@ -1,6 +1,7 @@
 package com.kt.api.admin.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.SellerEntityCreator.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -21,7 +22,9 @@ import com.kt.common.MockMvcTest;
 import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.AdminProductRequest;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 생성 (어드민) - POST /api/admin/products")
@@ -31,17 +34,22 @@ class ProductCreateTest extends MockMvcTest {
 	CategoryRepository categoryRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@test.com",
 		AccountRole.ADMIN
 	);
+	@Autowired
+	SellerRepository sellerRepository;
 
 	@BeforeEach
 	void setUp() {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
+		testSeller = createSeller();
+		sellerRepository.save(testSeller);
 	}
 
 	@ParameterizedTest
@@ -53,7 +61,8 @@ class ProductCreateTest extends MockMvcTest {
 			invalidName,
 			1000L,
 			100000L,
-			testCategory.getId()
+			testCategory.getId(),
+			testSeller.getId()
 		);
 
 		mockMvc.perform(post("/api/admin/products")
@@ -73,7 +82,8 @@ class ProductCreateTest extends MockMvcTest {
 			"상품명",
 			price,
 			100000L,
-			testCategory.getId()
+			testCategory.getId(),
+			testSeller.getId()
 		);
 
 		mockMvc.perform(post("/api/admin/products")
@@ -93,7 +103,8 @@ class ProductCreateTest extends MockMvcTest {
 			"상품명",
 			1000L,
 			stock,
-			testCategory.getId()
+			testCategory.getId(),
+			testSeller.getId()
 		);
 
 		mockMvc.perform(post("/api/admin/products")
@@ -113,7 +124,8 @@ class ProductCreateTest extends MockMvcTest {
 			"상품명",
 			1000L,
 			1000L,
-			categoryId
+			categoryId,
+			testSeller.getId()
 		);
 
 		mockMvc.perform(post("/api/admin/products")
@@ -130,7 +142,8 @@ class ProductCreateTest extends MockMvcTest {
 			"상품명",
 			1000L,
 			100000L,
-			testCategory.getId()
+			testCategory.getId(),
+			testSeller.getId()
 		);
 
 		mockMvc.perform(post("/api/admin/products")

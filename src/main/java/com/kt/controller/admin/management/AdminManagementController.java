@@ -1,4 +1,4 @@
-package com.kt.controller.admin;
+package com.kt.controller.admin.management;
 
 import java.util.UUID;
 
@@ -28,8 +28,7 @@ import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.AccountService;
-import com.kt.service.UserService;
-import com.kt.service.admin.AdminAdminService;
+import com.kt.service.admin.AdminManagementService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +38,9 @@ import static com.kt.common.api.ApiResult.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-public class AdminController implements AdminSwaggerSupporter {
+public class AdminManagementController implements AdminManagementSwaggerSupporter {
 
-	private final AdminAdminService adminAdminService;
+	private final AdminManagementService adminManagementService;
 	private final AccountService accountService;
 
 	@Override
@@ -65,7 +64,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@PathVariable UUID adminId
 	) {
 		return wrap(
-			adminAdminService.getAdminDetail(currentUser.getId(), adminId)
+			adminManagementService.getAdminDetail(currentUser.getId(), adminId)
 		);
 	}
 
@@ -73,9 +72,9 @@ public class AdminController implements AdminSwaggerSupporter {
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createAdmin(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
- 		@RequestBody @Valid SignupRequest.SignupUser request
+		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
-		adminAdminService.createAdmin(currentUser.getId(), request);
+		adminManagementService.createAdmin(currentUser.getId(), request);
 		return empty();
 	}
 
@@ -86,7 +85,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@RequestBody @Valid UserRequest.UpdateDetails request,
 		@PathVariable UUID adminId
 	) {
-		adminAdminService.updateDetail(currentUser.getId(), adminId, request);
+		adminManagementService.updateDetail(currentUser.getId(), adminId, request);
 		return empty();
 	}
 
@@ -96,7 +95,7 @@ public class AdminController implements AdminSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID adminId
 	) {
-		adminAdminService.deleteAdmin(defaultCurrentUser.getId(), adminId);
+		adminManagementService.deleteAdmin(defaultCurrentUser.getId(), adminId);
 		return empty();
 	}
 

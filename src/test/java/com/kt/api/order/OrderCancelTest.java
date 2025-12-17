@@ -15,6 +15,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -53,12 +59,15 @@ public class OrderCancelTest extends MockMvcTest {
 	OrderProductRepository orderProductRepository;
 	@Autowired
 	AddressRepository addressRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	UserEntity testMember;
 
 	ProductEntity testProduct;
 
 	AddressEntity testAddress;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() {
@@ -68,13 +77,16 @@ public class OrderCancelTest extends MockMvcTest {
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
 
-		testProduct = createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
 		testAddress = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(testProduct.getId(), 1L)
+			new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
 		);
 		orderService.createOrder(testMember.getEmail(), items, testAddress.getId());
 	}
