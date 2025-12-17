@@ -1,6 +1,7 @@
 package com.kt.repository.product;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,6 +39,43 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 		booleanBuilder.and(isActiveByRole(role));
 		booleanBuilder.and(containsKeyword(keyword, type));
 		// jpaQueryFactory
+		List<ProductResponse.Search> content = jpaQueryFactory
+			.select(new QProductResponse_Search(
+				product.id,
+				product.name,
+				product.price,
+				product.status,
+				product.category.id,
+				product.stock
+			))
+			.from(product)
+			.join(category).on(category.id.eq(product.category.id))
+			.where(booleanBuilder)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		int total = jpaQueryFactory.select(product.id)
+			.from(product)
+			.join(category).on(category.id.eq(product.category.id))
+			.where(booleanBuilder)
+			.fetch().size();
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public Page<ProductResponse.Search> searchForSeller(
+		Pageable pageable,
+		String keyword,
+		ProductSearchType type,
+		UUID sellerId
+	) {
+
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		booleanBuilder.and(containsKeyword(keyword, type));
+		booleanBuilder.and(product.seller.id.eq(sellerId));
+
 		List<ProductResponse.Search> content = jpaQueryFactory
 			.select(new QProductResponse_Search(
 				product.id,
