@@ -23,10 +23,14 @@ public final class SecurityPath {
 	public static final String[] COURIER = {
 		"/api/couriers/**"
 	};
+	public static final String[] SELLER = {
+		"/api/sellers/**"
+	};
 	public static final Map<String, String[]> ROLE_PATHS = Map.of(
 		"ROLE_MEMBER", MEMBER,
 		"ROLE_ADMIN", ADMIN,
-		"ROLE_COURIER", COURIER
+		"ROLE_COURIER", COURIER,
+		"ROLE_SELLER", SELLER
 	);
 
 	private SecurityPath() {
