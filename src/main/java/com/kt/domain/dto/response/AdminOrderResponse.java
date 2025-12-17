@@ -23,14 +23,14 @@ public class AdminOrderResponse {
 		Long unitPrice,
 		OrderProductStatus status
 	) {
-		public static OrderProductItem of(OrderProductEntity orderProductEntity) {
+		public static OrderProductItem of(OrderProductEntity orderProduct) {
 			return new OrderProductItem(
-				orderProductEntity.getId(),
-				orderProductEntity.getProduct().getId(),
-				orderProductEntity.getProduct().getName(),
-				orderProductEntity.getQuantity(),
-				orderProductEntity.getUnitPrice(),
-				orderProductEntity.getStatus());
+				orderProduct.getId(),
+				orderProduct.getProduct().getId(),
+				orderProduct.getProduct().getName(),
+				orderProduct.getQuantity(),
+				orderProduct.getUnitPrice(),
+				orderProduct.getStatus());
 		}
 	}
 
