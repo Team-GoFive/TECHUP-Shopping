@@ -2,10 +2,20 @@ package com.kt.service.seller;
 
 import java.util.UUID;
 
-import com.kt.domain.dto.response.OrderResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-// TODO: 다음 작업 단위에서 구현
+import com.kt.constant.OrderProductStatus;
+import com.kt.domain.dto.response.SellerOrderResponse;
+
 public interface SellerOrderService {
-	// OrderResponse.OrderProducts getOrderProducts(UUID productId, UUID sellerId);
+
+	// TODO: OrderProductStatus.PAID 추가되면 취소 조건 변경
+	void cancelOrderProduct(UUID orderProductId, UUID sellerId);
+
+	void confirmPaidOrderProduct(UUID orderProductId, UUID sellerId);
+
+	Page<SellerOrderResponse.Search> searchOrderProducts(Pageable pageable, OrderProductStatus status,
+		UUID orderProductId, UUID sellerID);
 
 }
