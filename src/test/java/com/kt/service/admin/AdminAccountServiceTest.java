@@ -111,7 +111,7 @@ class AdminAccountServiceTest {
 			AccountRole.MEMBER,
 			null,
 			null,
-			"회원"
+			"유저"
 		);
 
 		// when

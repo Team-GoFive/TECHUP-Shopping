@@ -25,7 +25,7 @@ public interface AdminUserService {
 
 	UserResponse.Orders getOrdersByUserId(UUID targetUserId);
 
-	void updateUserDetail(UUID currentUserId, UUID targetUserId, UserRequest.UpdateDetails details);
+	void updateUserDetail(UUID requestedUserId, UserRequest.Update request);
 
 	void retireUser(UUID subjectId);
 

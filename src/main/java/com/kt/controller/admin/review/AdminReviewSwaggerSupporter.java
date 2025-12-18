@@ -34,7 +34,6 @@ public interface AdminReviewSwaggerSupporter {
 		summary = "리뷰 삭제", description = "관리자가 리뷰를 삭제합니다."
 	)
 	ResponseEntity<ApiResult<Void>> delete(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	);
 }

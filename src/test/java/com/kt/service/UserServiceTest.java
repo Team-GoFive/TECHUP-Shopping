@@ -3,9 +3,7 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-import com.kt.common.AdminCreator;
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.SellerEntity;
@@ -22,17 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserStatus;
-import com.kt.constant.message.ErrorCode;
-import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
@@ -43,7 +36,6 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -87,8 +79,6 @@ class UserServiceTest {
 	ProductEntity testProduct;
 	OrderProductEntity testOrderProduct;
 	SellerEntity testSeller;
-	UUID userId;
-	UUID AdminId;
 
 	@AfterEach
 	void clearUp() {
@@ -132,10 +122,8 @@ class UserServiceTest {
 		);
 
 		userRepository.save(testUser);
-		UserEntity savedUser = userRepository.save(testUser2);
-		AdminEntity savedAdmin = adminRepository.save(testAdmin);
-		userId = savedUser.getId();
-		AdminId = savedAdmin.getId();
+		userRepository.save(testUser2);
+		adminRepository.save(testAdmin);
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -179,19 +167,6 @@ class UserServiceTest {
 
 	@Test
 	void 내_주문_조회() {
-		UserEntity user = UserEntity.create(
-			"김도현",
-			"ddd",
-			"111",
-			AccountRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"0101010"
-		);
-
-		UserEntity savedUser = userRepository.save(user);
-
-		userId = savedUser.getId();
 
 		CategoryEntity category = CategoryEntity.create("카테고리", null);
 		categoryRepository.save(category);
@@ -203,20 +178,27 @@ class UserServiceTest {
 			category,
 			testSeller
 		);
-
-		ProductEntity savedProduct = productRepository.save(product);
-
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-			savedUser
+		productRepository.save(product);
+		ReceiverVO receiver = ReceiverVO.create(
+			"이름",
+			"번호",
+			"도시",
+			"시군구",
+			"동",
+			"상세"
 		);
+		OrderEntity order = OrderEntity.create(receiver, testUser);
+
 		orderRepository.save(order);
+
 		// when
-		UserResponse.Orders foundOrder = userService.getOrdersByUserId(userId, userId);
+		UserResponse.Orders foundOrder = userService.getOrdersByUserId(
+			testUser.getId()
+		);
 
 		// then
 		assertThat(foundOrder).isNotNull();
-		assertThat(foundOrder.userId()).isEqualTo(userId);
+		assertThat(foundOrder.userId()).isEqualTo(testUser.getId());
 		assertThat(foundOrder.orders()).isNotEmpty();
 	}
 
@@ -264,178 +246,34 @@ class UserServiceTest {
 	}
 
 	@Test
-	void 유저_리스트_조회() {
-
-		// when
-		Page<UserResponse.Search> result = userService.getUsers(
-			testAdmin.getId(),
-			Pageable.ofSize(10),
-			"테스터",
-			AccountRole.MEMBER
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
-	}
-
-	@Test
-	void 어드민_리스트_조회() {
-
-		// when
-		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "어드민",
-			AccountRole.ADMIN);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
 	void 유저_상세_본인조회() {
-		UserResponse.UserDetail savedUser = userService.getUserDetail(userId, userId);
+		UserResponse.UserDetail result =
+			userService.detail(testUser.getId());
 
 		// then
-		assertThat(userId).isNotNull();
-		assertThat(savedUser.name()).isEqualTo("주문자테스터2");
-	}
 
-	@Test
-	void 어드민_상세_본인조회() {
-		UserResponse.UserDetail savedUser = userService.getAdminDetail(AdminId, AdminId);
-
-		// then
-		assertThat(AdminId).isNotNull();
-		assertThat(savedUser.name()).isEqualTo("어드민테스터");
-	}
-
-	@Test
-	void 유저_상세_조회__실패_다른사람조회() {
-		assertThatThrownBy(
-			() -> userService.getUserDetail(userId, AdminId)
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
-	}
-
-	@Test
-	void 어드민_상세_다른어드민조회__성공() {
-		AdminEntity someAdmin = AdminCreator.create();
-		adminRepository.save(someAdmin);
-
-		// when
-		UserResponse.UserDetail savedUser = userService.getAdminDetail(someAdmin.getId(), AdminId);
-
-		// then
-		assertThat(AdminId).isNotNull();
-		assertThat(savedUser.name()).isEqualTo("어드민테스터");
-	}
-
-	@Test
-	void 유저_상태_변경_disabled() {
-		// when
-		userService.disableUser(testAdmin.getId(), testUser.getId());
-		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
-
-		// then
-		assertThat(foundedUser).isNotNull();
-		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DISABLED);
-	}
-
-	@Test
-	void 유저_상태_변경__실패_어드민아님() {
-		// then
-		assertThatThrownBy(
-			() -> userService.disableUser(testUser2.getId(), testUser.getId())
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
-	}
-
-	@Test
-	void 유저_상태_변경_enabled() {
-
-		// when
-		userService.disableUser(testAdmin.getId(), testUser.getId());
-		userService.enableUser(testAdmin.getId(), testUser.getId());
-		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
-
-		// then
-		assertThat(foundedUser).isNotNull();
-		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.ENABLED);
-
+		assertThat(result.name()).isEqualTo("주문자테스터1");
 	}
 
 	@Test
 	void 유저_상태_변경_retired() {
 
 		// when
-		userService.retireUser(testAdmin.getId(), testUser.getId());
-		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
+		userService.retireUser(testUser.getId());
+
 		// then
-		assertThat(foundedUser).isNotNull();
-		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.RETIRED);
+		Assertions.assertEquals(UserStatus.RETIRED, testUser.getStatus());
 
 	}
 
 	@Test
 	void 유저_상태_변경_delete() {
 		// when
-		userService.deleteUser(testUser.getId(), testUser.getId());
+		userService.deleteUser(testUser.getId());
 		UserEntity foundedUser = userRepository.findById(testUser.getId()).orElseThrow();
 		// then
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
-	}
-
-	@Test
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	void 유저_하드_딜리트_성공() {
-		// given
-		UserEntity user = UserEntity.create(
-			"삭제",
-			"aaa",
-			"1234",
-			AccountRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1111, 1, 1),
-			"111"
-		);
-		UserEntity savedUser = userRepository.save(user);
-
-		CategoryEntity category = categoryRepository.save(CategoryEntity.create("카테고리", null));
-
-		ProductEntity product = ProductEntity.create(
-			"삭제상품",
-			1000L,
-			5L,
-			category,
-			testSeller
-		);
-		ProductEntity savedProduct = productRepository.save(product);
-
-		OrderEntity order = OrderEntity.create(
-			ReceiverVO.create("이름", "번호", "도시", "시군구", "동", "상세"),
-			savedUser
-		);
-		OrderEntity savedOrder = orderRepository.save(order);
-
-		OrderProductEntity orderProduct = OrderProductEntity.create(
-			1L,
-			1000L,
-			OrderProductStatus.CREATED,
-			savedOrder,
-			savedProduct
-		);
-		orderProductRepository.save(orderProduct);
-
-		// when
-		userService.deleteUserPermanently(testAdmin.getId(), savedUser.getId());
-
-		// then
-		assertThat(userRepository.existsById(savedUser.getId())).isFalse();
-		OrderEntity foundOrder = orderRepository.findById(savedOrder.getId()).orElse(null);
-		assertThat(foundOrder).isNotNull();
 	}
 
 	@Test
@@ -449,19 +287,19 @@ class UserServiceTest {
 
 	@Test
 	void 내정보수정_성공() {
-		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
+		UserRequest.Update updateRequest = new UserRequest.Update(
 			"변경된테스터",
+			"update@test.com",
 			"010-5678-1234",
-			LocalDate.of(1955, 3, 5),
-			Gender.FEMALE
+			LocalDate.of(1955, 3, 5)
 		);
 
-		userService.updateUserDetailSelf(
+		userService.update(
 			testUser.getId(),
-			updateDetails
+			updateRequest
 		);
 
-		Assertions.assertEquals(testUser.getName(), updateDetails.name());
-		Assertions.assertEquals(testUser.getMobile(), updateDetails.mobile());
+		Assertions.assertEquals(testUser.getName(), updateRequest.name());
+		Assertions.assertEquals(testUser.getMobile(), updateRequest.mobile());
 	}
 }

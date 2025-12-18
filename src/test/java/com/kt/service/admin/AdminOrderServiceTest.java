@@ -1,8 +1,6 @@
 package com.kt.service.admin;
 
-import com.kt.common.AdminCreator;
 import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.admin.AdminRepository;
 import com.kt.repository.seller.SellerRepository;
@@ -62,12 +60,17 @@ class AdminOrderServiceTest {
 
 	CategoryEntity category;
 	SellerEntity testSeller;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setup() {
-		category = categoryRepository.save(CategoryEntityCreator.createCategory());
+		category = CategoryEntityCreator.createCategory();
 		testSeller = SellerEntityCreator.createSeller();
+		testUser = UserEntityCreator.create();
+
+		category = categoryRepository.save(category);
 		sellerRepository.save(testSeller);
+		userRepository.save(testUser);
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -81,7 +84,10 @@ class AdminOrderServiceTest {
 
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
+		ProductEntity product = ProductEntityCreator.createProduct(category, testSeller);
+
+		productRepository.save(product);
+
 		product.decreaseStock(quantity);
 		productRepository.save(product);
 
@@ -94,66 +100,6 @@ class AdminOrderServiceTest {
 				product
 			)
 		);
-	}
-
-	@Test
-	void 주문_취소_성공() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.create());
-		OrderEntity order = orderRepository.save(
-			OrderEntity.create(ReceiverCreator.createReceiver(), user)
-		);
-
-		OrderProductEntity orderProduct1 = createOrderWithProducts(order, 3L);
-		OrderProductEntity orderProduct2 = createOrderWithProducts(order, 2L);
-
-		orderProduct1.updateStatus(OrderProductStatus.SHIPPING_READY);
-		orderProduct2.updateStatus(OrderProductStatus.SHIPPING_READY);
-
-		long beforeStock1 = orderProduct1.getProduct().getStock();
-		long beforeStock2 = orderProduct2.getProduct().getStock();
-
-		// when
-		adminOrderService.cancelOrderProduct(user.getId(), orderProduct1.getId());
-		adminOrderService.cancelOrderProduct(user.getId(), orderProduct2.getId());
-
-		// then
-		OrderProductEntity canceled1 =
-			orderProductRepository.findById(orderProduct1.getId()).orElseThrow();
-		OrderProductEntity canceled2 =
-			orderProductRepository.findById(orderProduct2.getId()).orElseThrow();
-
-		assertThat(canceled1.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
-		assertThat(canceled2.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
-
-		long afterStock1 = productRepository
-			.findById(orderProduct1.getProduct().getId())
-			.orElseThrow().getStock();
-		long afterStock2 = productRepository
-			.findById(orderProduct2.getProduct().getId())
-			.orElseThrow()
-			.getStock();
-
-		assertThat(afterStock1).isEqualTo(beforeStock1 + 3L);
-		assertThat(afterStock2).isEqualTo(beforeStock2 + 2L);
-	}
-
-	@Test
-	void 주문_취소_실패__이미_구매확정() {
-		// given
-		UserEntity testUser = UserEntityCreator.create();
-		userRepository.save(testUser);
-		OrderEntity order = orderRepository.save(
-			OrderEntity.create(ReceiverCreator.createReceiver(), testUser)
-		);
-
-		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
-
-		// when & then
-		assertThatThrownBy(() -> adminOrderService.cancelOrderProduct(testUser.getId(), orderProduct.getId()))
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ORDER_ALREADY_CONFIRMED.name());
 	}
 
 	@Test
@@ -209,11 +155,8 @@ class AdminOrderServiceTest {
 
 	@Test
 	void 주문상품_상태_강제변경_성공() {
-		// given
-		AdminEntity adminEntity = AdminCreator.create();
-		adminRepository.save(adminEntity);
 
-		OrderEntity order = createOrder(adminEntity);
+		OrderEntity order = createOrder(testUser);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
 		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
@@ -233,11 +176,7 @@ class AdminOrderServiceTest {
 
 	@Test
 	void 주문상품_상태_강제변경_실패__잘못된_상태_전이() {
-		// given
-		AdminEntity adminEntity = AdminCreator.create();
-		adminRepository.save(adminEntity);
-
-		OrderEntity order = createOrder(adminEntity);
+		OrderEntity order = createOrder(testUser);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 1L);
 		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);

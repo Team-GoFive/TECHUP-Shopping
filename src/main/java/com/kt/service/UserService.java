@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
@@ -13,28 +12,16 @@ import com.kt.domain.dto.response.UserResponse;
 public interface UserService {
 	Page<OrderProductResponse.SearchReviewable> getReviewableOrderProducts(Pageable pageable, UUID userId);
 
-	UserResponse.Orders getOrdersByUserId(UUID currentId, UUID subjectId);
+	UserResponse.Orders getOrdersByUserId(UUID currentUserId);
 
-	Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, AccountRole role);
+	UserResponse.UserDetail detail(UUID currentUserId);
 
-	UserResponse.UserDetail getUserDetail(UUID currentId, UUID subjectId);
+	UserResponse.UserDetail getUserDetailSelf(UUID currentUserId);
 
-	UserResponse.UserDetail getUserDetailSelf(UUID currentId);
+	void deleteUser(UUID currentUserId);
 
-	UserResponse.UserDetail getAdminDetail(UUID currentId, UUID subjectId);
-
-	void disableUser(UUID currentId, UUID subjectId);
-
-	void enableUser(UUID currentId, UUID subjectId);
-
-	void deleteUser(UUID currentId, UUID subjectId);
-
-	void deleteUserPermanently(UUID currentId, UUID id);
-
-	void retireUser(UUID adminId, UUID targetUserId);
+	void retireUser(UUID currentUserId);
 
 
-	void updateUserDetail(UUID currentUserId, UUID targetUserId, UserRequest.UpdateDetails details);
-
-	void updateUserDetailSelf(UUID currentUserId, UserRequest.UpdateDetails details);
+	void update(UUID currentUserId, UserRequest.Update request);
 }

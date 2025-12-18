@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.constant.AccountRole;
-import com.kt.repository.admin.AdminRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +28,6 @@ public class AdminUserServiceImpl implements AdminUserService {
 
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
-	private final AdminRepository adminRepository;
 
 	@Override
 	public Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, AccountRole role) {
@@ -46,19 +44,17 @@ public class AdminUserServiceImpl implements AdminUserService {
 
 	@Override
 	public void updateUserDetail(
-		UUID currentId,
-		UUID subjectId,
-		UserRequest.UpdateDetails details
+		UUID requestedUserId,
+		UserRequest.Update details
 	) {
-		checkModifyPermission(currentId, subjectId);
 
-		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
+		UserEntity user = userRepository.findByIdOrThrow(requestedUserId);
 
-		subjectUser.updateDetails(
+		user.update(
 			details.name(),
+			details.email(),
 			details.mobile(),
-			details.birth(),
-			details.gender()
+			details.birth()
 		);
 	}
 
@@ -107,19 +103,4 @@ public class AdminUserServiceImpl implements AdminUserService {
 		userRepository.delete(user);
 	}
 
-	private void checkModifyPermission(UUID currentId, UUID subjectId) {
-		UserEntity subjectUser = userRepository.findByIdOrThrow(subjectId);
-		if (subjectUser.getRole() == AccountRole.ADMIN) {
-			Preconditions.validate(
-				currentId.equals(subjectId),
-				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
-			);
-		} else {
-			UserEntity currentUser = userRepository.findByIdOrThrow(currentId);
-			Preconditions.validate(
-				currentUser.getRole().equals(AccountRole.ADMIN) | currentId.equals(subjectId),
-				ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED
-			);
-		}
-	}
 }

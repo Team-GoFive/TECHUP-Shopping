@@ -2,13 +2,15 @@ package com.kt.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import com.kt.common.AdminCreator;
 import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.account.AccountRepository;
@@ -81,7 +83,6 @@ class AdminManagementServiceTest {
 	ProductEntity testProduct;
 	OrderProductEntity testOrderProduct;
 	SellerEntity testSeller;
-	UUID userId;
 
 	@AfterEach
 	void clearUp() {
@@ -98,15 +99,7 @@ class AdminManagementServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = UserEntity.create(
-			"주문자테스터1",
-			"wjd123@naver.com",
-			"1234",
-			AccountRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
-		);
+		testUser = UserEntityCreator.create();
 
 		testUser2 = UserEntity.create(
 			"주문자테스터2",
@@ -197,11 +190,11 @@ class AdminManagementServiceTest {
 		);
 		orderRepository.save(order);
 		// when
-		UserResponse.Orders foundOrder = adminUserService.getOrdersByUserId(userId);
+		UserResponse.Orders foundOrder = adminUserService.getOrdersByUserId(testUser.getId());
 
 		// then
 		assertThat(foundOrder).isNotNull();
-		assertThat(foundOrder.userId()).isEqualTo(userId);
+		assertThat(foundOrder.userId()).isEqualTo(testUser.getId());
 		assertThat(foundOrder.orders()).isNotEmpty();
 	}
 
@@ -218,24 +211,12 @@ class AdminManagementServiceTest {
 	}
 
 	@Test
-	void 어드민_리스트_조회() {
-
-		// when
-		Page<UserResponse.Search> result = adminUserService.getUsers(Pageable.ofSize(10), "어드민",
-			AccountRole.ADMIN);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
 	void 유저_상세_본인조회() {
-		UserResponse.UserDetail savedUser = adminUserService.getUserDetail(userId);
+		UserResponse.UserDetail savedUser = adminUserService.getUserDetail(testUser.getId());
 
 		// then
-		assertThat(userId).isNotNull();
-		assertThat(savedUser.name()).isEqualTo("주문자테스터2");
+		assertNotNull(savedUser.id());
+		assertThat(savedUser.name()).isEqualTo("테스트유저");
 	}
 
 	@Test

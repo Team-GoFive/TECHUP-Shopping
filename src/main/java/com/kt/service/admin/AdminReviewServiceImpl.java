@@ -7,14 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.message.ErrorCode;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
-import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.ReviewEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.exception.CustomException;
-import com.kt.repository.account.AccountRepository;
 import com.kt.repository.review.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class AdminReviewServiceImpl implements AdminReviewService {
 
 	private final ReviewRepository reviewRepository;
-	private final AccountRepository accountRepository;
 
 	@Override
 	public ReviewResponse.Search getReview(UUID orderProductId) {
@@ -37,13 +31,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 	}
 
 	@Override
-	public void delete(
-		String email,
-		UUID reviewId
-	) {
+	public void delete(UUID reviewId) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (!hasReviewAccessPermission(email, review))
-			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.delete();
 	}
 
@@ -67,16 +56,5 @@ public class AdminReviewServiceImpl implements AdminReviewService {
 	@Override
 	public Page<ReviewResponse.Search> getReviewsByUserId(Pageable pageable, UUID userId) {
 		return reviewRepository.searchReviewsByUserId(pageable, userId);
-	}
-
-	private boolean hasReviewAccessPermission(String email, ReviewEntity review) {
-		AbstractAccountEntity reviewEditor = accountRepository.findByEmailOrThrow(email);
-
-		UserEntity reviewOwner = review
-			.getOrderProduct()
-			.getOrder()
-			.getOrderBy();
-
-		return reviewEditor.getEmail().equals(reviewOwner.getEmail());
 	}
 }

@@ -28,14 +28,14 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 상세 조회 (어드민) - GET /api/admin/{adminId}")
+@DisplayName("관리자 상세 조회 (어드민) - GET /api/admin")
 public class AdminDetailTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	AdminRepository adminRepository;
+
 	AdminEntity testAdmin;
-	AdminEntity testAdmin2;
 	UserEntity testUser;
 	DefaultCurrentUser adminsDetails;
 
@@ -44,9 +44,7 @@ public class AdminDetailTest extends MockMvcTest {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 		testAdmin = AdminCreator.create("테스트어드민1","admin1@test.com");
-		testAdmin2 = AdminCreator.create("테스트어드민2","admin2@test.com");
 		adminRepository.save(testAdmin);
-		adminRepository.save(testAdmin2);
 		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 
@@ -54,7 +52,7 @@ public class AdminDetailTest extends MockMvcTest {
 	void 관리자_상세_조회_성공__200_OK() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
-			get("/api/admin/{adminId}", testAdmin.getId())
+			get("/api/admin")
 				.with(user(adminsDetails))
 		);
 
@@ -66,7 +64,7 @@ public class AdminDetailTest extends MockMvcTest {
 				jsonPath("$.code").value("ok"),
 				jsonPath("$.message").value("성공"),
 				jsonPath("$.data").exists(),
-				jsonPath("$.data.id").value(testAdmin.getId().toString()),
+				jsonPath("$.data.name").value(testAdmin.getName()),
 				jsonPath("$.data.email").value(testAdmin.getEmail())
 			).andReturn();
 
@@ -78,7 +76,7 @@ public class AdminDetailTest extends MockMvcTest {
 	void 관리자_상세_조회_실패__일반계정에서_시도_403_FORBIDDEN() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(
-			get("/api/admin/{adminId}", testAdmin.getId())
+			get("/api/admin")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 		);
 

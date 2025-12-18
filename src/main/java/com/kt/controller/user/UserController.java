@@ -44,11 +44,11 @@ public class UserController implements UserSwaggerSupporter {
 
 	@Override
 	@PutMapping
-	public ResponseEntity<ApiResult<Void>> updateUserBySelf(
+	public ResponseEntity<ApiResult<Void>> update(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
-		@RequestBody @Valid UserRequest.UpdateDetails request
+		@RequestBody @Valid UserRequest.Update request
 	){
-		userService.updateUserDetailSelf(
+		userService.update(
 			defaultCurrentUser.getId(),
 			request
 		);

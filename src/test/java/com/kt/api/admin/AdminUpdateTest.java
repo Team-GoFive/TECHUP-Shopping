@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import com.kt.common.AdminCreator;
 
+import com.kt.domain.dto.request.AdminRequest;
 import com.kt.domain.entity.AdminEntity;
 
 import com.kt.repository.admin.AdminRepository;
@@ -36,7 +37,7 @@ import com.kt.security.DefaultCurrentUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admin/{adminsId}")
+@DisplayName("관리자 정보 수정 (어드민) - PUT /api/admin")
 public class AdminUpdateTest extends MockMvcTest {
 
 	@Autowired
@@ -60,16 +61,14 @@ public class AdminUpdateTest extends MockMvcTest {
 	void 관리자_업데이트_성공__200_OK() throws Exception {
 
 		// given
-		var requset = new UserRequest.UpdateDetails(
-			"김도현",
-			"010-1234-1234",
-			LocalDate.now(),
-			Gender.FEMALE
+		var requset = new AdminRequest.Update(
+			"어드민_업데이트",
+			"admin_update@test.com"
 		);
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			put("/api/admin/{adminId}", testAdmin.getId())
+			put("/api/admin")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requset))
 			.with(user(adminsDetails))
@@ -82,9 +81,9 @@ public class AdminUpdateTest extends MockMvcTest {
 				jsonPath("$.message").value("성공")
 			).andReturn();
 
-		UserEntity foundedUser = userRepository.findByIdOrThrow(testAdmin.getId());
+		AdminEntity updatedAdmin = adminRepository.findByAdminCode(AdminEntity.SYSTEM_ADMIN_CODE);
 
-		assertThat(foundedUser.getName()).isEqualTo("김도현");
+		assertThat(updatedAdmin.getName()).isEqualTo("어드민_업데이트");
 		String responseJson = result.getResponse().getContentAsString();
 		log.info("response : {}", responseJson);
 	}
@@ -92,11 +91,9 @@ public class AdminUpdateTest extends MockMvcTest {
 	@Test
 	void 관리자_업데이트_실패__404_NotFound() throws Exception {
 		// given
-		var requset = new UserRequest.UpdateDetails(
+		AdminRequest.Update requset = new AdminRequest.Update(
 			"김도현",
-			"010-1234-1234",
-			LocalDate.now(),
-			Gender.FEMALE
+			"test_123@test.com"
 		);
 
 		// when
@@ -114,18 +111,16 @@ public class AdminUpdateTest extends MockMvcTest {
 	@Test
 	void 관리자_업데이트_실패__일반_유저계정에서_시도_403_FORBIDDEN() throws Exception {
 		// given
-		var requset = new UserRequest.UpdateDetails(
+		AdminRequest.Update request = new AdminRequest.Update(
 			"김도현",
-			"010-1234-1234",
-			LocalDate.now(),
-			Gender.FEMALE
+			"test_123@test.com"
 		);
 
 		// when
 		ResultActions actions = mockMvc.perform(
-			put("/api/admin/{adminId}", testAdmin.getId())
+			put("/api/admin", testAdmin.getId())
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(requset))
+			.content(objectMapper.writeValueAsString(request))
 			.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
 		);
 
