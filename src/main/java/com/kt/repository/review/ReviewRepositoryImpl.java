@@ -10,7 +10,9 @@ import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.QReviewResponse_Search;
+import com.kt.domain.dto.response.QSellerReviewResponse_search;
 import com.kt.domain.dto.response.ReviewResponse;
+import com.kt.domain.dto.response.SellerReviewResponse;
 import com.kt.domain.entity.QCategoryEntity;
 import com.kt.domain.entity.QOrderEntity;
 import com.kt.domain.entity.QOrderProductEntity;
@@ -35,15 +37,17 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 	private final QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
 
 	private BooleanExpression containsKeyword(String keyword, ProductSearchType type) {
-		if (type == null) return null;
-		if (Strings.isBlank(keyword)) return null;
-		return (type == ProductSearchType.CATEGORY)?
-			category.name.containsIgnoreCase(keyword):
+		if (type == null)
+			return null;
+		if (Strings.isBlank(keyword))
+			return null;
+		return (type == ProductSearchType.CATEGORY) ?
+			category.name.containsIgnoreCase(keyword) :
 			product.name.containsIgnoreCase(keyword);
 	}
 
 	@Override
-	public Page<ReviewResponse.Search> searchReviews(Pageable pageable, String keyword, ProductSearchType type){
+	public Page<ReviewResponse.Search> searchReviews(Pageable pageable, String keyword, ProductSearchType type) {
 
 		BooleanBuilder booleanBuilder = new BooleanBuilder();
 		booleanBuilder.and(containsKeyword(keyword, type));
@@ -125,6 +129,50 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 			.join(product).on(product.id.eq(orderProduct.product.id))
 			.join(review).on(orderProduct.id.eq(review.orderProduct.id))
 			.where(orderProduct.product.id.eq(product.id))
+			.fetch().size();
+
+		return new PageImpl<>(contents, pageable, total);
+	}
+
+	@Override
+	public Page<SellerReviewResponse.search> searchReviewsForSeller(
+		Pageable pageable,
+		UUID sellerId,
+		UUID productId
+	) {
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+		booleanBuilder.and(product.seller.id.eq(sellerId));
+
+		if (productId != null) {
+			booleanBuilder.and(product.id.eq(productId));
+		}
+
+		List<SellerReviewResponse.search> contents = jpaQueryFactory
+			.select(new QSellerReviewResponse_search(
+				product.id,
+				product.name,
+				user.id,
+				user.name,
+				review.id,
+				review.content
+			))
+			.from(product)
+			.join(orderProduct).on(orderProduct.product.id.eq(product.id))
+			.join(review).on(review.orderProduct.id.eq(orderProduct.id))
+			.join(order).on(order.id.eq(orderProduct.order.id))
+			.join(user).on(user.id.eq(order.orderBy.id))
+			.where(booleanBuilder)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		int total = jpaQueryFactory
+			.select(review.id.count())
+			.from(product)
+			.join(orderProduct).on(orderProduct.product.id.eq(product.id))
+			.join(review).on(review.orderProduct.id.eq(orderProduct.id))
+			.where(booleanBuilder)
 			.fetch().size();
 
 		return new PageImpl<>(contents, pageable, total);
