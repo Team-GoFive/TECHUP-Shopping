@@ -27,7 +27,6 @@ import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,12 +42,11 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
 	private final AddressRepository addressRepository;
-	private final SellerRepository sellerRepository;
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
 		List<OrderProductEntity> orderProducts = orderProductRepository.findWithProductByOrderId(orderId);
-		return OrderResponse.OrderProducts.of(orderId, orderProducts);
+		return OrderResponse.OrderProducts.from(orderId, orderProducts);
 	}
 
 	// TODO: @Lock 붙이기
@@ -89,7 +87,6 @@ public class OrderServiceImpl implements OrderService {
 
 			UUID productId = item.productId();
 			Long quantity = item.quantity();
-			UUID sellerId = item.sellerId();
 
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 
