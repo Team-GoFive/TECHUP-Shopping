@@ -30,7 +30,7 @@ public class SellerReviewController {
 	private final SellerReviewService sellerReviewService;
 
 	@GetMapping
-	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.search>>> getAllReviews(
+	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.Search>>> getAllReviews(
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@Valid @ParameterObject Paging paging
 	) {
@@ -42,7 +42,7 @@ public class SellerReviewController {
 	}
 
 	@GetMapping("/{productId}")
-	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.search>>> getReviewsByProduct(
+	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.Search>>> getReviewsByProduct(
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@Valid @ParameterObject Paging paging,
 		@PathVariable UUID productId

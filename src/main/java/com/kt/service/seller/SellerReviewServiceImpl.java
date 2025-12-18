@@ -25,12 +25,12 @@ public class SellerReviewServiceImpl implements SellerReviewService {
 	private final ProductRepository productRepository;
 
 	@Override
-	public Page<SellerReviewResponse.search> getAllReviews(Pageable pageable, UUID sellerId) {
+	public Page<SellerReviewResponse.Search> getAllReviews(Pageable pageable, UUID sellerId) {
 		return reviewRepository.searchReviewsForSeller(pageable, sellerId, null);
 	}
 
 	@Override
-	public Page<SellerReviewResponse.search> getReviewsByProduct(Pageable pageable, UUID sellerId, UUID productId) {
+	public Page<SellerReviewResponse.Search> getReviewsByProduct(Pageable pageable, UUID sellerId, UUID productId) {
 		checkSellerId(sellerId, productId);
 		return reviewRepository.searchReviewsForSeller(pageable, sellerId, productId);
 	}

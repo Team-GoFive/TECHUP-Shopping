@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.querydsl.core.annotations.QueryProjection;
 
 public class SellerReviewResponse {
-	public record search(
+	public record Search(
 		UUID productId,
 		String productName,
 		UUID userId,
@@ -14,7 +14,7 @@ public class SellerReviewResponse {
 		String content
 	) {
 		@QueryProjection
-		public search {
+		public Search {
 
 		}
 	}

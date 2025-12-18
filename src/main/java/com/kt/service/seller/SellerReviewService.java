@@ -9,7 +9,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.SellerReviewResponse;
 
 public interface SellerReviewService {
-	Page<SellerReviewResponse.search> getAllReviews(Pageable pageable, UUID sellerId);
+	Page<SellerReviewResponse.Search> getAllReviews(Pageable pageable, UUID sellerId);
 
-	Page<SellerReviewResponse.search> getReviewsByProduct(Pageable pageable, UUID sellerId, UUID productId);
+	Page<SellerReviewResponse.Search> getReviewsByProduct(Pageable pageable, UUID sellerId, UUID productId);
 }

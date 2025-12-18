@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.QReviewResponse_Search;
-import com.kt.domain.dto.response.QSellerReviewResponse_search;
+import com.kt.domain.dto.response.QSellerReviewResponse_Search;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.domain.dto.response.SellerReviewResponse;
 import com.kt.domain.entity.QCategoryEntity;
@@ -135,8 +135,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 	}
 
 	@Override
-	public Page<SellerReviewResponse.search> searchReviewsForSeller(
-		Pageable pageable,
+	public Page<SellerReviewResponse.Search> searchReviewsForSeller(Pageable pageable,
 		UUID sellerId,
 		UUID productId
 	) {
