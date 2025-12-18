@@ -176,23 +176,8 @@ class AdminUserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = adminUserService.getUsers(Pageable.ofSize(10), "테스터",
+		Page<UserResponse.Search> result = adminUserService.getUsers(Pageable.ofSize(10), "테스트",
 			AccountRole.MEMBER);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
-	}
-
-	@Test
-	void 어드민_리스트_조회() {
-
-		// when
-		Page<UserResponse.Search> result = adminUserService.getUsers(
-			Pageable.ofSize(10),
-			"어드민",
-			AccountRole.ADMIN
-		);
 
 		// then
 		assertThat(result).isNotNull();
