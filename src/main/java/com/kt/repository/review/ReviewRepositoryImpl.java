@@ -147,8 +147,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 			booleanBuilder.and(product.id.eq(productId));
 		}
 
-		List<SellerReviewResponse.search> contents = jpaQueryFactory
-			.select(new QSellerReviewResponse_search(
+		List<SellerReviewResponse.Search> contents = jpaQueryFactory
+			.select(new QSellerReviewResponse_Search(
 				product.id,
 				product.name,
 				user.id,
