@@ -14,6 +14,7 @@ public enum ErrorCode {
 	INVALID_DOMAIN_FIELD(HttpStatus.BAD_REQUEST, "도메인 필드 오류 : {0}"),
 	BODY_FIELD_ERROR(HttpStatus.BAD_REQUEST, "바디 필드 오류 : {0}"),
 	ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 계정입니다"),
+	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 관리자 계정입니다"),
 	AUTH_ACCESS_EXPIRED(HttpStatus.UNAUTHORIZED, "엑세스 토큰이 만료되었습니다."),
 	AUTH_REFRESH_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다. 재로그인이 필요합니다."),
 	AUTH_CODE_UNAVAILABLE(HttpStatus.UNAUTHORIZED, "인증 시간이 만료되었거나, 해당 이메일로 전송된 인증 코드가 없습니다."),

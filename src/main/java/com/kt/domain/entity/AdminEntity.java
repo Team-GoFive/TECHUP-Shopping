@@ -59,4 +59,9 @@ public class AdminEntity extends AbstractAccountEntity {
 	) {
 		return new AdminEntity(name, email, password, gender);
 	}
+
+	public void update(String name, String email) {
+		this.name = name;
+		this.email = email;
+	}
 }
