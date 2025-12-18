@@ -92,7 +92,7 @@ public class OrderEntity extends BaseEntity {
 		}
 
 		boolean anyPaid = orderProducts.stream()
-			.anyMatch(orderProduct -> orderProduct.getStatus() == OrderProductStatus.SHIPPING_READY);
+			.anyMatch(orderProduct -> orderProduct.getStatus() == OrderProductStatus.PAID);
 
 		if (anyPaid) {
 			return OrderDerivedStatus.PAID;

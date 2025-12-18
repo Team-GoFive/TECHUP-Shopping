@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 			Long quantity = orderProduct.getQuantity();
 
 			product.decreaseStock(quantity);
-			orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+			orderProduct.updateStatus(OrderProductStatus.PAID);
 		}
 	}
 

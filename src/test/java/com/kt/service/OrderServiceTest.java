@@ -183,7 +183,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PAID);
 
 		// when
 		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(order.getId());
@@ -206,8 +206,8 @@ class OrderServiceTest {
 		OrderProductEntity orderProduct1 = createOrderWithProducts(order, 3L);
 		OrderProductEntity orderProduct2 = createOrderWithProducts(order, 2L);
 
-		orderProduct1.updateStatus(OrderProductStatus.SHIPPING_READY);
-		orderProduct2.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct1.updateStatus(OrderProductStatus.PAID);
+		orderProduct2.updateStatus(OrderProductStatus.PAID);
 
 		long beforeStock1 = orderProduct1.getProduct().getStock();
 		long beforeStock2 = orderProduct2.getProduct().getStock();
