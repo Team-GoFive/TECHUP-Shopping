@@ -60,6 +60,7 @@ public enum ErrorCode {
 	INVALID_FORCE_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "강제 변경이 허용되지 않은 상태 전이입니다."),
 	INVALID_ORDER_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 판매자 확정이 불가합니다."),
 	ORDER_PRODUCT_NOT_OWNER(HttpStatus.FORBIDDEN, "판매자의 주문 상품이 아닙니다."),
+	PRODUCT_NOT_OWNER(HttpStatus.FORBIDDEN, "판매자의 상품이 아닙니다."),
 	;
 
 	private final HttpStatus status;
