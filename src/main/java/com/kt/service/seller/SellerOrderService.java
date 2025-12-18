@@ -10,7 +10,6 @@ import com.kt.domain.dto.response.SellerOrderResponse;
 
 public interface SellerOrderService {
 
-	// TODO: OrderProductStatus.PAID 추가되면 취소 조건 변경
 	void cancelOrderProduct(UUID orderProductId, UUID sellerId);
 
 	void confirmPaidOrderProduct(UUID orderProductId, UUID sellerId);
