@@ -218,11 +218,11 @@ class AdminManagementServiceTest {
 
 	@Test
 	void 유저_상세_본인조회() {
-		UserResponse.UserDetail savedUser = adminUserService.getUserDetail(testUser.getId());
+		UserResponse.UserDetail userDetail = adminUserService.getUserDetail(testUser.getId());
 
 		// then
-		assertNotNull(savedUser.id());
-		assertThat(savedUser.name()).isEqualTo("테스트유저");
+		assertNotNull(userDetail.id());
+		assertThat(userDetail.name()).isEqualTo("주문자테스터1");
 	}
 
 	@Test
