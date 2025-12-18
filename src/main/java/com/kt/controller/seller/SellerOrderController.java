@@ -11,8 +11,10 @@ import com.kt.security.DefaultCurrentUser;
 import com.kt.service.seller.SellerOrderService;
 
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +38,7 @@ public class SellerOrderController {
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@RequestParam(required = false) UUID orderProductId,
 		@RequestParam(required = false) OrderProductStatus status,
-		Paging paging
+		@Valid @ParameterObject Paging paging
 	) {
 		return page(
 			sellerOrderService.searchOrderProducts(
