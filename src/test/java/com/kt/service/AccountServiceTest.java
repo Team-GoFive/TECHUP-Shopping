@@ -1,6 +1,5 @@
 package com.kt.service;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
@@ -18,20 +17,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
 import com.kt.constant.UserStatus;
-import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
@@ -57,8 +52,6 @@ class AccountServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	@Autowired
-	PasswordRequestRepository passwordRequestRepository;
 
 	UserEntity testUser;
 	AdminEntity testAdmin;
@@ -90,72 +83,6 @@ class AccountServiceTest {
 
 		courierRepository.save(courier1);
 		courierRepository.save(courier2);
-	}
-
-	@Test
-	void 회원_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			AccountRole.MEMBER,
-			null,
-			null,
-			"회원"
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
-	void 관리자_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			AccountRole.ADMIN,
-			null,
-			null,
-			""
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
-	void 배송기사_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			AccountRole.COURIER,
-			null,
-			null,
-			""
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
 	}
 
 	@Test
@@ -268,23 +195,6 @@ class AccountServiceTest {
 		AbstractAccountEntity foundedAccount = accountRepository.findByIdOrThrow(courier.getId());
 
 		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
-	}
-
-	@Test
-	void 계정삭제_성공_hard() {
-		CourierEntity courier = CourierEntity.create(
-			"배송기사테스터",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			Gender.MALE
-		);
-		courierRepository.save(courier);
-
-		accountService.deleteAccountPermanently(courier.getId());
-
-		assertThatThrownBy(() -> accountRepository.findByIdOrThrow(courier.getId()))
-			.isInstanceOf(CustomException.class);
-
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.kt.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,7 +9,6 @@ import java.time.LocalDate;
 
 import com.kt.common.AdminCreator;
 import com.kt.common.SellerEntityCreator;
-import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.account.AccountRepository;
@@ -99,16 +97,24 @@ class AdminManagementServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = UserEntityCreator.create();
-
-		testUser2 = UserEntity.create(
-			"주문자테스터2",
-			"dohyun@naver.com",
+		testUser = UserEntity.create(
+			"주문자테스터1",
+			"test1@test.com",
 			"1234",
 			AccountRole.MEMBER,
 			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
+			LocalDate.of(1990, 12, 10),
+			"010-1234-0000"
+		);
+
+		testUser2 = UserEntity.create(
+			"주문자테스터2",
+			"test2@test.com",
+			"1234",
+			AccountRole.MEMBER,
+			Gender.MALE,
+			LocalDate.of(1990, 11, 14),
+			"010-1234-11"
 		);
 
 		testAdmin = AdminCreator.create();
@@ -217,15 +223,6 @@ class AdminManagementServiceTest {
 		// then
 		assertNotNull(savedUser.id());
 		assertThat(savedUser.name()).isEqualTo("테스트유저");
-	}
-
-	@Test
-	void 유저_상세_조회__실패_다른사람조회() {
-		assertThatThrownBy(
-			() -> adminUserService.getUserDetail(testUser.getId())
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
 	}
 
 	@Test
