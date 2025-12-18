@@ -47,7 +47,7 @@ class AccountReadTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		secondTestCourier = CourierEntityCreator.createCourierEntity();
 		thirdTestCourier = CourierEntity.create(

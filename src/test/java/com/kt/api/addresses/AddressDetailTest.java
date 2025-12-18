@@ -28,7 +28,7 @@ class AddressDetailTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = UserEntityCreator.createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 	}
 

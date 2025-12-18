@@ -3,7 +3,6 @@ package com.kt.api.order;
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -11,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+
+import com.kt.common.UserEntityCreator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +70,7 @@ public class OrderCancelTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		CategoryEntity category = createCategory();
@@ -119,7 +120,7 @@ public class OrderCancelTest extends MockMvcTest {
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
 		saved.getOrderProducts().get(0)
-		.updateStatus(OrderProductStatus.PENDING_APPROVE);
+		.updateStatus(OrderProductStatus.SHIPPING_READY);
 
 		if(saved.getOrderProducts().size() > 1) {
 			saved.getOrderProducts().subList(1, saved.getOrderProducts().size())

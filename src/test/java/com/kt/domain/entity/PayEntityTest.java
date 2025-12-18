@@ -15,7 +15,7 @@ public class PayEntityTest {
 
 	@Test
 	void pay_객체생성_성공() {
-		UserEntity testUser = UserEntityCreator.createMember();
+		UserEntity testUser = UserEntityCreator.create();
 		PayEntity pay = testUser.getPay();
 		assertNotNull(pay);
 		log.info("tesetUserName : {}, pay.getUser() : {}",

@@ -6,6 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +20,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.kt.common.CourierEntityCreator;
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.repository.courier.CourierRepository;
-import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("배송기사 상세 조회 (어드민) - GET /api/admin/couriers/{courierId}")
@@ -28,7 +30,7 @@ public class CourierDetailTest extends MockMvcTest {
 	@Autowired
 	CourierRepository courierRepository;
 	@Autowired
-	UserRepository userRepository;
+	AdminRepository adminRepository;
 	CourierEntity testCourier;
 
 	@BeforeEach
@@ -36,8 +38,8 @@ public class CourierDetailTest extends MockMvcTest {
 		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
-		UserEntity testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		AdminEntity testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 		adminDetails  = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 

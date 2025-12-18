@@ -42,11 +42,11 @@ public class AccountPasswordRequestSearchTest extends MockMvcTest {
 	static final String ORIGIN_PASSWORD = "1231231!";
 	@BeforeEach
 	void setUp() {
-		testUser1 = UserEntityCreator.createMember(
+		testUser1 = UserEntityCreator.create(
 			"test1@naver.com",
 			passwordEncoder.encode(ORIGIN_PASSWORD)
 		);
-		testUser2 = UserEntityCreator.createMember(
+		testUser2 = UserEntityCreator.create(
 			"test2@naver.com",
 			passwordEncoder.encode(ORIGIN_PASSWORD)
 		);
@@ -62,7 +62,7 @@ public class AccountPasswordRequestSearchTest extends MockMvcTest {
 		);
 
 		PasswordRequestEntity secondPasswordRequest = PasswordRequestEntity.create(
-			testUser1,
+			testUser2,
 			null,
 			PasswordRequestType.RESET
 		);

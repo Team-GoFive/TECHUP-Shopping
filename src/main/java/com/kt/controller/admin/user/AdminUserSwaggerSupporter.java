@@ -22,7 +22,7 @@ public interface AdminUserSwaggerSupporter extends SwaggerSupporter {
 		@Parameter(name = "회원 Id")
 	}
 	)
-	ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(
+	ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserDetail(
 		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	);

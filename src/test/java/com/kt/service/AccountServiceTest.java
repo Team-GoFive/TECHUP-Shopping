@@ -5,7 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.common.AdminCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.AccountRole;
+
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +50,8 @@ class AccountServiceTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
+	AdminRepository adminRepository;
+	@Autowired
 	AccountRepository accountRepository;
 	@Autowired
 	CourierRepository courierRepository;
@@ -52,35 +60,19 @@ class AccountServiceTest {
 	@Autowired
 	PasswordRequestRepository passwordRequestRepository;
 
-	UserEntity member1;
-	UserEntity admin1;
+	UserEntity testUser;
+	AdminEntity testAdmin;
 	CourierEntity courier1;
 	CourierEntity courier2;
 
 
 	@BeforeEach
 	void setUp() {
-		member1 = UserEntity.create(
-			"회원",
-			"bjwnstkdbj@naver.com",
-			"1234",
-			AccountRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"111111"
-		);
-		admin1 = UserEntity.create(
-			"관리자",
-			"aaa",
-			"1234",
-			AccountRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"111111"
-		);
+		testUser = UserEntityCreator.create();
+		testAdmin = AdminCreator.create();
 
-		userRepository.save(member1);
-		userRepository.save(admin1);
+		userRepository.save(testUser);
+		adminRepository.save(testAdmin);
 
 		courier1 = CourierEntity.create(
 			"기사1",

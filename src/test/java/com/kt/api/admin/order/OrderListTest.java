@@ -43,7 +43,7 @@ public class OrderListTest extends MockMvcTest {
 	@Test
 	void 주문_리스트_조회_성공_200() throws Exception {
 		// given
-		UserEntity user = UserEntityCreator.createMember();
+		UserEntity user = UserEntityCreator.create();
 
 		savedUser = userRepository.save(user);
 		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);

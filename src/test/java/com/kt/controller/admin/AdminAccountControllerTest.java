@@ -10,7 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.kt.common.AdminCreator;
 import com.kt.constant.AccountRole;
+
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +47,7 @@ class AdminAccountControllerTest extends MockMvcTest {
 	CourierEntity testCourier;
 	CourierEntity secondTestCourier;
 	CourierEntity thirdTestCourier;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 	DefaultCurrentUser authority;
 
 	@Autowired
@@ -50,22 +55,16 @@ class AdminAccountControllerTest extends MockMvcTest {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	AdminRepository adminRepository;
+	@Autowired
 	private CourierRepository courierRepository;
 	@Autowired
 	private AccountRepository accountRepository;
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"admintest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			AccountRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1999, 1, 1),
-			"01012340001"
-		);
-		userRepository.save(testAdmin);
+		testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 
 		testUser = UserEntity.create(
 			"테스트유저1",

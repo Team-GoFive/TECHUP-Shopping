@@ -62,7 +62,7 @@ public class UserSearchReviewTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();

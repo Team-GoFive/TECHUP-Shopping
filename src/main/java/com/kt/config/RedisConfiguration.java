@@ -51,7 +51,7 @@ public class RedisConfiguration {
 		var uri = String.format("redis://%s", host);
 
 		config
-			.useSingleServer().setAddress(uri);
+			.useSingleServer().setAddress(uri).setPassword("1234");
 		return Redisson.create(config);
 	}
 

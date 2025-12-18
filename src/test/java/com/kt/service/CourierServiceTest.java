@@ -2,6 +2,12 @@ package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.kt.common.AdminCreator;
+
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,16 +39,18 @@ class CourierServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AdminRepository adminRepository;
 
 	CourierEntity testCourier;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 	}
 
 	@Test

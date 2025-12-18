@@ -15,9 +15,10 @@ public class OrderEntityCreator {
 			"길",
 			"상세"
 		);
+		UserEntity testUser = UserEntityCreator.create();
 		return OrderEntity.create(
 			receiverVO,
-			UserEntityCreator.createMember()
+			testUser
 		);
 	}
 

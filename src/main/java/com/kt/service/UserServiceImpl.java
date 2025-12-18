@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import com.kt.constant.AccountRole;
 
+import com.kt.repository.admin.AdminRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.UserRequest;
-import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
 	private final OrderProductRepository orderProductRepository;
+	private final AdminRepository adminRepository;
 	private final OrderRepository orderRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -141,39 +143,12 @@ public class UserServiceImpl implements UserService {
 
 	// TODO: for admin
 	@Override
-	public void createAdmin(UUID userId, SignupRequest.SignupUser request) {
-		checkAdmin(userId);
-
-		UserEntity admin = UserEntity.create(
-			request.name(),
-			request.email(),
-			passwordEncoder.encode(request.password()),
-			AccountRole.ADMIN,
-			request.gender(),
-			request.birth(),
-			request.mobile()
-		);
-		userRepository.save(admin);
-	}
-
-	// TODO: for admin
-	@Override
 	public void deleteUserPermanently(UUID currentId, UUID subjectId) {
 		checkModifyPermission(currentId, subjectId);
 
 		UserEntity user = userRepository.findByIdOrThrow(subjectId);
 		orderRepository.clearUser(user.getId());
 		userRepository.delete(user);
-	}
-
-	// TODO: for admin
-	@Override
-	public void deleteAdmin(UUID currentId, UUID adminId) {
-		checkAdmin(adminId);
-		checkModifyPermission(currentId, adminId);
-
-		UserEntity user = userRepository.findByIdOrThrow(adminId);
-		user.delete();
 	}
 
 	// TODO: for admin

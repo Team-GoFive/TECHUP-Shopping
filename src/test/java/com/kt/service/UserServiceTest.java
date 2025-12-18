@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.kt.common.AdminCreator;
 import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.account.AccountRepository;
 import com.kt.constant.AccountRole;
+
+import com.kt.repository.admin.AdminRepository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -73,9 +77,12 @@ class UserServiceTest {
 	@Autowired
 	SellerRepository sellerRepository;
 
+	@Autowired
+	AdminRepository adminRepository;
+
 	UserEntity testUser;
 	UserEntity testUser2;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 	OrderEntity testOrder;
 	ProductEntity testProduct;
 	OrderProductEntity testOrderProduct;
@@ -117,19 +124,16 @@ class UserServiceTest {
 			"010-1234-5678"
 		);
 
-		testAdmin = UserEntity.create(
+		testAdmin = AdminEntity.create(
 			"어드민테스터",
 			"dohyun@naver.com",
 			"1234",
-			AccountRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1990, 1, 1),
-			"010-1234-5678"
+			Gender.MALE
 		);
 
 		userRepository.save(testUser);
 		UserEntity savedUser = userRepository.save(testUser2);
-		UserEntity savedAdmin = userRepository.save(testAdmin);
+		AdminEntity savedAdmin = adminRepository.save(testAdmin);
 		userId = savedUser.getId();
 		AdminId = savedAdmin.getId();
 
@@ -263,8 +267,12 @@ class UserServiceTest {
 	void 유저_리스트_조회() {
 
 		// when
-		Page<UserResponse.Search> result = userService.getUsers(testAdmin.getId(), Pageable.ofSize(10), "테스터",
-			AccountRole.MEMBER);
+		Page<UserResponse.Search> result = userService.getUsers(
+			testAdmin.getId(),
+			Pageable.ofSize(10),
+			"테스터",
+			AccountRole.MEMBER
+		);
 
 		// then
 		assertThat(result).isNotNull();
@@ -312,8 +320,8 @@ class UserServiceTest {
 
 	@Test
 	void 어드민_상세_다른어드민조회__성공() {
-		UserEntity someAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(someAdmin);
+		AdminEntity someAdmin = AdminCreator.create();
+		adminRepository.save(someAdmin);
 
 		// when
 		UserResponse.UserDetail savedUser = userService.getAdminDetail(someAdmin.getId(), AdminId);
@@ -378,75 +386,6 @@ class UserServiceTest {
 		// then
 		assertThat(foundedUser).isNotNull();
 		assertThat(foundedUser.getStatus()).isEqualTo(UserStatus.DELETED);
-	}
-
-	@Test
-	void 어드민_유저_생성() {
-		// given
-		SignupRequest.SignupUser request = new SignupRequest.SignupUser(
-			"어드민생성",
-			"admin@test.com",
-			"1234",
-			Gender.MALE,
-			LocalDate.of(1995, 5, 5),
-			"010-5555-5555"
-		);
-
-		// when
-		userService.createAdmin(testAdmin.getId(), request);
-
-		// then
-		UserEntity admin = userRepository.findByEmail("admin@test.com")
-			.orElse(null);
-
-		assertThat(admin.getName()).isEqualTo("어드민생성");
-		assertThat(admin.getEmail()).isEqualTo("admin@test.com");
-		assertThat(admin.getRole()).isEqualTo(AccountRole.ADMIN);
-		assertThat(admin.getPassword()).isNotEqualTo("1234");
-	}
-
-	@Test
-	void 어드민_유저_생성__실패_어드민아님() {
-		// given
-		SignupRequest.SignupUser request = new SignupRequest.SignupUser(
-			"어드민생성",
-			"admin@test.com",
-			"1234",
-			Gender.MALE,
-			LocalDate.of(1995, 5, 5),
-			"010-5555-5555"
-		);
-
-		// then
-		assertThatThrownBy(
-			() -> userService.createAdmin(testUser.getId(), request)
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ADMIN_PERMISSION_REQUIRED.name());
-	}
-
-	@Test
-	void 어드민_삭제_성공() {
-		userService.deleteAdmin(testAdmin.getId(), testAdmin.getId());
-		Assertions.assertEquals(UserStatus.DELETED, testAdmin.getStatus());
-	}
-
-	@Test
-	void 어드민_삭제__실패_일반계정() {
-		assertThatThrownBy(
-			() -> userService.deleteAdmin(testUser.getId(), testAdmin.getId())
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ACCOUNT_ACCESS_NOT_ALLOWED.name());
-	}
-
-	@Test
-	void 어드민_삭제__실패_대상이_어드민아님() {
-		assertThatThrownBy(
-			() -> userService.deleteAdmin(testAdmin.getId(), testUser.getId())
-		)
-			.isInstanceOf(CustomException.class)
-			.hasMessageContaining(ErrorCode.ADMIN_PERMISSION_REQUIRED.name());
 	}
 
 	@Test

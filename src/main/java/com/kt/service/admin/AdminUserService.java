@@ -11,24 +11,22 @@ import com.kt.domain.dto.response.UserResponse;
 
 public interface AdminUserService {
 
-	UserResponse.UserDetail getUserDetail(UUID currentId, UUID subjectId);
+	UserResponse.UserDetail getUserDetail(UUID targetUserId);
 
-	void disableUser(UUID currentId, UUID subjectId);
+	void disableUser(UUID targetUserId);
 
-	void enableUser(UUID currentId, UUID subjectId);
+	void enableUser(UUID targetUserId);
 
-	void deleteUser(UUID currentId, UUID subjectId);
+	void deleteUser(UUID targetUserId);
 
-	void deleteUserPermanently(UUID currentId, UUID id);
+	void deleteUserPermanently(UUID targetUserId);
 
-	Page<UserResponse.Search> getUsers(UUID userId, Pageable pageable, String keyword, AccountRole role);
+	Page<UserResponse.Search> getUsers(Pageable pageable, String keyword, AccountRole role);
 
-	// TODO: 아래 메서드 AdminUserController 내 메서드 구현 필요
-	UserResponse.Orders getOrdersByUserId(UUID currentId, UUID subjectId);
+	UserResponse.Orders getOrdersByUserId(UUID targetUserId);
 
 	void updateUserDetail(UUID currentUserId, UUID targetUserId, UserRequest.UpdateDetails details);
 
-	// 어드민이 탈퇴 가능하게 할것인지?
-	void retireUser(UUID currentId, UUID subjectId);
+	void retireUser(UUID subjectId);
 
 }

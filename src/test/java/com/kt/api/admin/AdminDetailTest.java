@@ -6,6 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,20 +32,21 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminDetailTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
-
-	UserEntity testAdmin;
-	UserEntity testAdmin2;
+	@Autowired
+	AdminRepository adminRepository;
+	AdminEntity testAdmin;
+	AdminEntity testAdmin2;
 	UserEntity testUser;
 	DefaultCurrentUser adminsDetails;
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
-		testAdmin2 = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin2);
+		testAdmin = AdminCreator.create("테스트어드민1","admin1@test.com");
+		testAdmin2 = AdminCreator.create("테스트어드민2","admin2@test.com");
+		adminRepository.save(testAdmin);
+		adminRepository.save(testAdmin2);
 		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 

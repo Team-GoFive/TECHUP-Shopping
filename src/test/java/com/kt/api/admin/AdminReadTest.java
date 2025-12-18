@@ -6,6 +6,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,17 +33,19 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminReadTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AdminRepository adminRepository;
 
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 	UserEntity testUser;
 	DefaultCurrentUser adminsDetails;
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
+		testAdmin = AdminCreator.create();
 		userRepository.save(testUser);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		adminRepository.save(testAdmin);
 		adminsDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 

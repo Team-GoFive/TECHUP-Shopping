@@ -63,7 +63,7 @@ class AdminReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = createMember();
+		testUser = create();
 		userRepository.save(testUser);
 
 		CategoryEntity category = createCategory();
