@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -41,4 +42,7 @@ public class BankAccountTransactionEntity extends BaseEntity {
 
 	@Column(precision = 19, scale = 0, nullable = false)
 	private BigDecimal balanceSnapshot;
+
+	@Column(nullable = false)
+	private UUID targetId;
 }
