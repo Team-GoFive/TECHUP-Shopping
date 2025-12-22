@@ -84,7 +84,7 @@ public class OrderCancelTest extends MockMvcTest {
 	@Test
 	void 판매자_주문_상품_취소_성공__200_OK() throws Exception {
 		// given
-		testOrderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		testOrderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 		orderProductRepository.save(testOrderProduct);
 
 		// when
