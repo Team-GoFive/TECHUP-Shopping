@@ -16,6 +16,7 @@ public class ValidationUtil {
 	static final String PASSWORD_MIN_LENGTH_MESSAGE = "은(는) 60자 이상이여야 합니다";
 	static final String INVALID_ENUM_VALUE_MESSAGE = "{0} 값이 유효하지 않습니다. 허용값 {1}";
 	static final String PASSWORD_KEYWORD = "비밀번호";
+
 	public static void validateNotNullAndBlank(String value, String fieldName) {
 		if (!StringUtils.hasText(value)) {
 			String errorMessage = getFormatterMessage(NOT_BLANK_MESSAGE, fieldName);
@@ -23,7 +24,7 @@ public class ValidationUtil {
 		}
 	}
 
-	public static void validateCollectPassword(String value, String fieldName) {
+	public static void validateAccountPassword(String value, String fieldName) {
 		validateNotNullAndBlank(value, fieldName);
 		if (fieldName.equals(PASSWORD_KEYWORD)) {
 			if (value.length() < 60) {
