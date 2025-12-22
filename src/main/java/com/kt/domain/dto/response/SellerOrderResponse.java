@@ -9,6 +9,9 @@ import com.querydsl.core.annotations.QueryProjection;
 
 public class SellerOrderResponse {
 	public record Search(
+		UUID orderId,
+		UUID ordererId,
+		String ordererName,
 		UUID orderProductId,
 		UUID productId,
 		String productName,

@@ -95,6 +95,9 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 	) {
 		List<SellerOrderResponse.Search> content = jpaQueryFactory
 			.select(new QSellerOrderResponse_Search(
+				orderProduct.order.id,
+				orderProduct.order.orderBy.id,
+				orderProduct.order.orderBy.name,
 				orderProduct.id,
 				product.id,
 				product.name,
