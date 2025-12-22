@@ -14,6 +14,15 @@ public final class OrderProductStatusPolicy {
 			OrderProductStatus.SHIPPING_READY,
 			EnumSet.of(
 				OrderProductStatus.SHIPPING,
+				OrderProductStatus.CANCELED,
+				OrderProductStatus.PENDING_APPROVE
+			)
+		);
+
+		FORCE_CHANGE_ALLOWED_MAP.put(
+			OrderProductStatus.PENDING_APPROVE,
+			EnumSet.of(
+				OrderProductStatus.SHIPPING_READY,
 				OrderProductStatus.CANCELED
 			)
 		);

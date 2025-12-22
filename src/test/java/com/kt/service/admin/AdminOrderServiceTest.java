@@ -129,7 +129,7 @@ class AdminOrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		AdminOrderResponse.Detail detail = adminOrderService.getOrderDetail(order.getId());
@@ -151,19 +151,19 @@ class AdminOrderServiceTest {
 		OrderEntity order = createOrder(adminEntity);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		adminOrderService.forceChangeStatus(
 			orderProduct.getId(),
-			OrderProductStatus.SHIPPING
+			OrderProductStatus.SHIPPING_READY
 		);
 
 		// then
 		OrderProductEntity updated =
 			orderProductRepository.findById(orderProduct.getId()).orElseThrow();
 
-		assertThat(updated.getStatus()).isEqualTo(OrderProductStatus.SHIPPING);
+		assertThat(updated.getStatus()).isEqualTo(OrderProductStatus.SHIPPING_READY);
 	}
 
 	@Test
@@ -175,7 +175,7 @@ class AdminOrderServiceTest {
 		OrderEntity order = createOrder(adminEntity);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 1L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when & then
 		assertThatThrownBy(() ->
