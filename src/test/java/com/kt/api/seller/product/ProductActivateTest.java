@@ -5,6 +5,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.ProductStatus;
+import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.SellerEntity;
@@ -19,7 +20,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.List;
+import java.util.UUID;
 
 import static com.kt.common.CategoryEntityCreator.createCategory;
 import static com.kt.common.ProductEntityCreator.createProduct;
@@ -30,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-@DisplayName("판매자 상품 활성화 - PATCH /api/seller/products/{productId}/activate")
+@DisplayName("판매자 상품 활성화 - PATCH /api/seller/products/activate")
 public class ProductActivateTest extends MockMvcTest {
 
 	@Autowired
@@ -49,7 +54,7 @@ public class ProductActivateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.create();
+		testUser = UserEntityCreator.createMember();
 		userRepository.save(testUser);
 
 		testSeller = SellerEntityCreator.createSeller();
@@ -68,8 +73,14 @@ public class ProductActivateTest extends MockMvcTest {
 		product.inActivate();
 		productRepository.save(product);
 
+		List<UUID> productIds = List.of(product.getId());
+
+		SellerProductRequest.Activate request = new SellerProductRequest.Activate(productIds);
+
 		// when
-		ResultActions actions = mockMvc.perform(patch("/api/seller/products/{productId}/activate", product.getId())
+		ResultActions actions = mockMvc.perform(patch("/api/seller/products/activate")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
 				.with(user(sellerDetails)))
 			.andDo(print());
 
