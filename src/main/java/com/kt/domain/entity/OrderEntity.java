@@ -64,6 +64,13 @@ public class OrderEntity extends BaseEntity {
 		orderProduct.assignOrder(this);
 	}
 
+	public boolean isOwnedBy(UserEntity user) {
+		if (user == null || this.orderBy == null) {
+			return false;
+		}
+		return this.orderBy.getId().equals(user.getId());
+	}
+
 	public OrderDerivedStatus getDerivedStatus() {
 
 		if (orderProducts.isEmpty()) {
