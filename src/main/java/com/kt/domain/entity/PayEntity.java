@@ -1,6 +1,8 @@
 package com.kt.domain.entity;
 
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.common.BaseEntity;
+import com.kt.exception.CustomException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,5 +44,13 @@ public class PayEntity extends BaseEntity {
 	public static PayEntity create(final UserEntity user) {
 		return new PayEntity(user);
 	}
+
+	public void refund(long amount) {
+		if (amount <= 0) {
+			throw new CustomException(ErrorCode.INVALID_DOMAIN_FIELD);
+		}
+		this.balance += amount;
+	}
+
 
 }

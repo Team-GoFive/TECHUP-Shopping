@@ -61,8 +61,13 @@ public enum ErrorCode {
 	INVALID_FORCE_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "강제 변경이 허용되지 않은 상태 전이입니다."),
 	INVALID_ORDER_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 판매자 확정이 불가합니다."),
 	ORDER_PRODUCT_NOT_OWNER(HttpStatus.FORBIDDEN, "판매자의 주문 상품이 아닙니다."),
-	;
+	ALREADY_REFUNDED(HttpStatus.BAD_REQUEST, "이미 환불이 완료되었습니다."),
+	REFUND_NOT_ALLOWED(HttpStatus.FORBIDDEN, "환불이 불가능합니다."),
+	REFUND_ALREADY_REQUESTED(HttpStatus.BAD_REQUEST, "환불 진행 중입니다."),
+	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Payment가 존재하지 않습니다."),
+	PAY_NOT_FOUND(HttpStatus.NOT_FOUND, "Pay가 존재하지 않습니다.")
 
+;
 	private final HttpStatus status;
 	private final String message;
 
