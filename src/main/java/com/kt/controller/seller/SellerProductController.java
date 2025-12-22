@@ -99,23 +99,23 @@ public class SellerProductController implements SellerProductSwaggerController {
 	}
 
 	@Override
-	@PatchMapping("/{productId}/activate")
+	@PatchMapping("/activate")
 	public ResponseEntity<ApiResult<Void>> activate(
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@PathVariable UUID productId
+		@RequestBody @Valid SellerProductRequest.Activate request
 	) {
-		sellerProductService.activate(productId, defaultCurrentUser.getId());
+		sellerProductService.activate(request.productIds(), defaultCurrentUser.getId());
 		return empty();
 	}
 
 	@Override
-	@PatchMapping("/{productId}/in-activate")
+	@PatchMapping("/in-activate")
 	public ResponseEntity<ApiResult<Void>> inactivate(
 		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@PathVariable UUID productId
+		@RequestBody @Valid SellerProductRequest.InActivate request
 	) {
 		sellerProductService.inActivate(
-			productId,
+			request.productIds(),
 			defaultCurrentUser.getId()
 		);
 		return empty();

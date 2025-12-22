@@ -108,7 +108,7 @@ public interface SellerProductSwaggerController extends SwaggerSupporter {
 		@Parameter(hidden = true)
 		DefaultCurrentUser defaultCurrentUser,
 
-		UUID productId
+		@RequestBody @Valid SellerProductRequest.Activate request
 	);
 
 	@Operation(
@@ -123,7 +123,9 @@ public interface SellerProductSwaggerController extends SwaggerSupporter {
 		@Parameter(hidden = true)
 		DefaultCurrentUser defaultCurrentUser,
 
-		UUID productId
+		@RequestBody @Valid
+		SellerProductRequest.InActivate request
+
 	);
 
 	@Operation(
