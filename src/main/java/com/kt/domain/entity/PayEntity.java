@@ -11,6 +11,8 @@ import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -18,8 +20,8 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class PayEntity extends BaseEntity {
 
-	@Column(nullable = false)
-	private Long balance;
+	@Column(precision = 19, scale = 0, nullable = false)
+	private BigDecimal balance;
 
 	@Version
 	private Long version;
@@ -32,8 +34,8 @@ public class PayEntity extends BaseEntity {
 	)
 	private UserEntity user;
 
-	protected PayEntity(UserEntity user) {
-		this.balance = 0L;
+	private PayEntity(UserEntity user) {
+		this.balance = BigDecimal.ZERO;
 		this.user = user;
 	}
 
