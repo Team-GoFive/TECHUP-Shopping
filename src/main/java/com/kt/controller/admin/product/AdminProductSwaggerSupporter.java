@@ -24,7 +24,6 @@ public interface AdminProductSwaggerSupporter extends SwaggerSupporter {
 		description = "관리자의 상품 조회 관련 API",
 		parameters = {
 			@Parameter(name = "keyword", description = "검색 키워드"),
-			@Parameter(name = "type", description = "상품 / 카테고리 검색 여부 선택")
 		}
 	)
 	ResponseEntity<ApiResult<PageResponse<ProductResponse.Search>>> search(

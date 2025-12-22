@@ -54,7 +54,6 @@ public interface SellerProductSwaggerController extends SwaggerSupporter {
 		description = "판매자의 상품 목록을 조회합니다.",
 		parameters = {
 			@Parameter(name = "keyword", description = "검색 키워드"),
-			@Parameter(name = "type", description = "검색 타입 (PRODUCT / CATEGORY)")
 		}
 	)
 	ResponseEntity<ApiResult<PageResponse<ProductResponse.Search>>> search(
