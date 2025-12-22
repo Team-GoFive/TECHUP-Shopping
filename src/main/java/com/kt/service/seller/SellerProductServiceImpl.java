@@ -77,7 +77,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public void soldOutProducts(List<UUID> productIds, UUID sellerId) {
 		for (UUID productId : productIds) {
 			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-			product.inActivate();
+			product.decreaseStock(product.getStock());
 		}
 	}
 
