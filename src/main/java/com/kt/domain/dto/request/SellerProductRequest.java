@@ -36,4 +36,16 @@ public class SellerProductRequest {
 		List<UUID> productIds
 	) {
 	}
+
+	public record Activate(
+		@NotNull(message = "상품 ID 목록은 필수 항목입니다.")
+		List<UUID> productIds
+	) {
+	}
+
+	public record InActivate(
+		@NotNull(message = "상품 ID 목록은 필수 항목입니다.")
+		List<UUID> productIds
+	) {
+	}
 }
