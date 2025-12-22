@@ -49,7 +49,7 @@ public class ProductInActivateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		testSeller = SellerEntityCreator.createSeller();
