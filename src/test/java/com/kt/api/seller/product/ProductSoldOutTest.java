@@ -4,7 +4,6 @@ import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.ProductStatus;
 import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -93,7 +92,7 @@ public class ProductSoldOutTest extends MockMvcTest {
 
 		products.forEach(product -> {
 			ProductEntity updatedProduct = productRepository.findById(product.getId()).orElseThrow();
-			Assertions.assertEquals(ProductStatus.IN_ACTIVATED, updatedProduct.getStatus());
+			Assertions.assertEquals(0, updatedProduct.getStock());
 		});
 	}
 }

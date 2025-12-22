@@ -348,11 +348,8 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
-		List<UUID> productIds = productRepository.findAll()
-			.stream()
-			.map(ProductEntity::getId)
-			.toList();
-		
+		List<UUID> productIds = List.of(product.getId());
+
 		sellerProductService.activate(productIds, testSeller.getId());
 
 		// when
@@ -390,7 +387,7 @@ class SellerProductServiceTest {
 		assertThat(
 			productRepository.findAll()
 				.stream()
-				.allMatch(it -> it.getStatus() == ProductStatus.IN_ACTIVATED)
+				.allMatch(it -> it.getStock() == 0)
 		).isTrue();
 	}
 }
