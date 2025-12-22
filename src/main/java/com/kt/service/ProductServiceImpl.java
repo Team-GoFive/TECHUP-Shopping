@@ -30,71 +30,10 @@ import com.kt.repository.seller.SellerRepository;
 public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepository;
-	private final CategoryRepository categoryRepository;
-	private final SellerRepository sellerRepository;
 
 	@Override
-	public void create(
-		String name,
-		Long price,
-		Long stock,
-		UUID categoryId,
-		UUID sellerId
-	) {
-		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
-		);
-		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
-		ProductEntity product = ProductEntity.create(name, price, stock, category, seller);
-		productRepository.save(product);
-	}
-
-	@Override
-	public void update(
-		UUID productId,
-		String name,
-		Long price,
-		Long stock,
-		UUID categoryId
-	) {
-		CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(
-			() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)
-		);
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		product.update(name, price, stock, category);
-	}
-
-	@Override
-	public void delete(UUID productId) {
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		product.delete();
-	}
-
-	@Override
-	public void activate(UUID productId) {
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		product.activate();
-	}
-
-	@Override
-	public void inActivate(UUID productId) {
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		product.inActivate();
-	}
-
-	@Override
-	public void soldOutProducts(List<UUID> productIds) {
-		productRepository.findAllById(productIds).forEach(ProductEntity::inActivate);
-	}
-
-	@Override
-	public void toggleActive(UUID productId) {
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		product.toggleActive();
-	}
-
-	@Override
-	public Page<ProductResponse.Search> search(AccountRole role, String keyword, ProductSearchType type, Pageable pageable) {
+	public Page<ProductResponse.Search> search(AccountRole role, String keyword, ProductSearchType type,
+		Pageable pageable) {
 		return productRepository.search(role, pageable, keyword, type);
 	}
 
