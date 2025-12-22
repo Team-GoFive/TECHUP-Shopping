@@ -45,4 +45,38 @@ public class BankAccountTransactionEntity extends BaseEntity {
 
 	@Column(nullable = false)
 	private UUID targetId;
+
+	private BankAccountTransactionEntity(
+		BankAccountEntity bankAccount,
+		BankAccountTransactionType transactionType,
+		BankAccountTransactionPurpose transactionPurpose,
+		BigDecimal amount,
+		BigDecimal balanceSnapshot,
+		UUID targetId
+	) {
+		this.bankAccount = bankAccount;
+		this.transactionType = transactionType;
+		this.transactionPurpose = transactionPurpose;
+		this.amount = amount;
+		this.balanceSnapshot = balanceSnapshot;
+		this.targetId = targetId;
+	}
+
+	public static BankAccountTransactionEntity create(
+		final BankAccountEntity bankAccount,
+		final BankAccountTransactionType transactionType,
+		final BankAccountTransactionPurpose transactionPurpose,
+		final BigDecimal amount,
+		final BigDecimal balanceSnapshot,
+		final UUID targetId
+	) {
+		return new BankAccountTransactionEntity(
+			bankAccount,
+			transactionType,
+			transactionPurpose,
+			amount,
+			balanceSnapshot,
+			targetId
+		);
+	}
 }
