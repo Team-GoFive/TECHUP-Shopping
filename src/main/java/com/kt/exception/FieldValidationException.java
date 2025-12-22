@@ -15,7 +15,7 @@ public class FieldValidationException extends BaseException {
 
 	public FieldValidationException(ErrorCode error, String errorMessage) {
 		super(error);
-		this.errorMessage = errorMessage;
+		this.errorMessage = error.format(errorMessage);
 	}
 
 }

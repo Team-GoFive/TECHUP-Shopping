@@ -35,7 +35,7 @@ public class ValidationUtil {
 
 	public static <E extends Enum<E>> void validateRequiredEnum(E value, String fieldName) {
 		if (value == null) {
-			String errorMessage = getFormatterMessage(fieldName, REQUIRED_FIELD_MESSAGE);
+			String errorMessage = getFormatterMessage(REQUIRED_FIELD_MESSAGE, fieldName);
 			rejectInvalidField(errorMessage);
 		}
 	}
