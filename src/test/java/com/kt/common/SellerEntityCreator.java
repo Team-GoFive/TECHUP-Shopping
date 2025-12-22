@@ -5,17 +5,16 @@ import com.kt.domain.entity.SellerEntity;
 
 public class SellerEntityCreator {
 
-	public static SellerEntity createSeller(String email, String password) {
-		return SellerEntity.create(
-			"판매자1",
-			email,
-			password,
-			"상점1",
-			"010-1234-5678",
-			"seller@test.com",
-			Gender.MALE
-		);
-	}
+    public static SellerEntity createSeller(String email, String password) {
+        return SellerEntity.create(
+                "판매자1",
+                email,
+                password,
+                "상점1",
+                "010-1234-5678",
+                Gender.MALE
+        );
+    }
 
 	public static SellerEntity createSeller(String email) {
 		return SellerEntity.create(
@@ -24,7 +23,6 @@ public class SellerEntityCreator {
 			"passowrd",
 			"상점1",
 			"010-1234-5678",
-			"seller@test.com",
 			Gender.MALE
 		);
 	}
@@ -36,7 +34,6 @@ public class SellerEntityCreator {
 			"1234",
 			"상점1",
 			"010-1234-5678",
-			"seller@test.com",
 			Gender.MALE
 		);
 	}

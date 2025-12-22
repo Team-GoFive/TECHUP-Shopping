@@ -28,19 +28,19 @@ public class BankAccountEntity extends BaseEntity {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
-		name = "user_id",
+		name = "holder_id",
 		nullable = false,
 		unique = true
 	)
-	private UserEntity user;
+	private BankAccountHolderEntity holder;
 
-	private BankAccountEntity(UserEntity user) {
+	private BankAccountEntity(BankAccountHolderEntity holder) {
 		this.balance = BigDecimal.ZERO;
-		this.user = user;
+		this.holder = holder;
 	}
 
-	public static BankAccountEntity create(final UserEntity user) {
-		return new BankAccountEntity(user);
+	public static BankAccountEntity create(final BankAccountHolderEntity holder) {
+		return new BankAccountEntity(holder);
 	}
 
 }

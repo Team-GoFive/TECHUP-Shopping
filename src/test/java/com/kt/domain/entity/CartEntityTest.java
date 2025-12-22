@@ -38,7 +38,6 @@ class CartEntityTest {
 			"1234",
 			"상점1",
 			"010-1234-5678",
-			"seller@test.com",
 			Gender.MALE
 		);
 		testProduct = ProductEntity.create(

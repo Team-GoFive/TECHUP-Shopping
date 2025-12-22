@@ -5,6 +5,8 @@ import com.kt.common.UserEntityCreator;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,7 +19,7 @@ public class BankAccountEntityTest {
 		BankAccountEntity bankAccount = testUser.getBankAccount();
 
 		assertNotNull(bankAccount);
-		assertEquals(0L, bankAccount.getBalance());
-		assertEquals(bankAccount.getAccount(), testUser);
+		assertEquals(BigDecimal.ZERO, bankAccount.getBalance());
+		assertEquals(bankAccount.getHolder(), testUser);
 	}
 }
