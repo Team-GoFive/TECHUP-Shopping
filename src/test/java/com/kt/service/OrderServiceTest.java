@@ -7,14 +7,11 @@ import java.util.UUID;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +22,8 @@ import com.kt.common.ProductEntityCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ShippingType;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -183,7 +178,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		OrderResponse.OrderProducts foundOrderProduct = orderService.getOrderProducts(order.getId());
@@ -206,8 +201,8 @@ class OrderServiceTest {
 		OrderProductEntity orderProduct1 = createOrderWithProducts(order, 3L);
 		OrderProductEntity orderProduct2 = createOrderWithProducts(order, 2L);
 
-		orderProduct1.updateStatus(OrderProductStatus.SHIPPING_READY);
-		orderProduct2.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct1.updateStatus(OrderProductStatus.PENDING_APPROVE);
+		orderProduct2.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		long beforeStock1 = orderProduct1.getProduct().getStock();
 		long beforeStock2 = orderProduct2.getProduct().getStock();

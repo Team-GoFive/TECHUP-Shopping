@@ -7,6 +7,7 @@ public enum OrderProductStatus {
 	CREATED("주문생성"),
 	PURCHASE_CONFIRMED("구매확정"),
 	CANCELED("주문취소"),
+	PENDING_APPROVE("승인대기"),
 	SHIPPING_READY("배송대기"),
 	SHIPPING("배송중"),
 	SHIPPING_COMPLETED("배송완료"),
