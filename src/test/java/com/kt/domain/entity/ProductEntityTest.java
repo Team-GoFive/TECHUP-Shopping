@@ -2,6 +2,7 @@ package com.kt.domain.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.kt.common.SellerEntityCreator;
 import com.kt.constant.Gender;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,14 +19,7 @@ class ProductEntityTest {
 			null
 		);
 
-		SellerEntity testSeller = SellerEntity.create(
-			"판매자1",
-			"seller@test.com",
-			"1234",
-			"상점1",
-			"010-1234-5678",
-			Gender.MALE
-		);
+		SellerEntity testSeller = SellerEntityCreator.createSeller();
 
 		ProductEntity comparisonProduct = ProductEntity.create(
 			"테스트상품명",
