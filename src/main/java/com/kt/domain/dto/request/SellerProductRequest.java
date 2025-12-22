@@ -6,7 +6,7 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class AdminProductRequest {
+public class SellerProductRequest {
 	public record Update(
 		@NotBlank(message = "상품 이름은 필수 항목입니다.")
 		String name,
@@ -27,9 +27,7 @@ public class AdminProductRequest {
 		@NotNull(message = "상품 재고는 필수 항목입니다.")
 		Long stock,
 		@NotNull(message = "카테고리 ID는 필수 항목입니다.")
-		UUID categoryId,
-		@NotNull(message = "판매자 ID는 필수 항목입니다.")
-		UUID sellerId
+		UUID categoryId
 	) {
 	}
 

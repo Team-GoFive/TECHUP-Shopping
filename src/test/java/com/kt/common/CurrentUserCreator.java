@@ -55,6 +55,30 @@ public class CurrentUserCreator {
 		);
 	}
 
+	public static DefaultCurrentUser getSellerUserDetails() {
+		return new DefaultCurrentUser(
+			UUID.randomUUID(),
+			"seller@naver.com",
+			AccountRole.SELLER
+		);
+	}
+
+	public static DefaultCurrentUser getSellerUserDetails(UUID sellerId) {
+		return new DefaultCurrentUser(
+			sellerId,
+			"seller@naver.com",
+			AccountRole.SELLER
+		);
+	}
+
+	public static DefaultCurrentUser getSellerUserDetails(String email) {
+		return new DefaultCurrentUser(
+			UUID.randomUUID(),
+			email,
+			AccountRole.SELLER
+		);
+	}
+
 	public static DefaultCurrentUser getCourierUserDetails(UUID courierId) {
 		return new DefaultCurrentUser(
 			courierId,
@@ -62,4 +86,5 @@ public class CurrentUserCreator {
 			AccountRole.COURIER
 		);
 	}
+
 }
