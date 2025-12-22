@@ -3,7 +3,6 @@ package com.kt.api.order;
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.CurrentUserCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -12,22 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import com.kt.common.UserEntityCreator;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.seller.SellerRepository;
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -74,7 +66,7 @@ public class OrderUpdateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		CategoryEntity category = createCategory();

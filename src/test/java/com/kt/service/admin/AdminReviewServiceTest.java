@@ -63,7 +63,7 @@ class AdminReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = createMember();
+		testUser = create();
 		userRepository.save(testUser);
 
 		CategoryEntity category = createCategory();
@@ -92,7 +92,7 @@ class AdminReviewServiceTest {
 		reviewRepository.save(review);
 
 		// when
-		adminReviewService.delete(testUser.getEmail(), review.getId());
+		adminReviewService.delete(review.getId());
 
 		// then
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());

@@ -2,6 +2,7 @@ package com.kt.service.admin;
 
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.admin.AdminRepository;
 import com.kt.repository.seller.SellerRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,15 +55,22 @@ class AdminOrderServiceTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	SellerRepository sellerRepository;
+	@Autowired
+	AdminRepository adminRepository;
 
 	CategoryEntity category;
 	SellerEntity testSeller;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setup() {
-		category = categoryRepository.save(CategoryEntityCreator.createCategory());
+		category = CategoryEntityCreator.createCategory();
 		testSeller = SellerEntityCreator.createSeller();
+		testUser = UserEntityCreator.create();
+
+		category = categoryRepository.save(category);
 		sellerRepository.save(testSeller);
+		userRepository.save(testUser);
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -76,7 +84,10 @@ class AdminOrderServiceTest {
 
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 
-		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
+		ProductEntity product = ProductEntityCreator.createProduct(category, testSeller);
+
+		productRepository.save(product);
+
 		product.decreaseStock(quantity);
 		productRepository.save(product);
 
@@ -94,7 +105,7 @@ class AdminOrderServiceTest {
 	@Test
 	void 주문_리스트_조회_성공() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order1 = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
@@ -122,7 +133,7 @@ class AdminOrderServiceTest {
 	@Test
 	void 주문_상세_조회_성공() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
@@ -144,11 +155,8 @@ class AdminOrderServiceTest {
 
 	@Test
 	void 주문상품_상태_강제변경_성공() {
-		// given
-		UserEntity adminEntity = UserEntityCreator.createAdmin();
-		userRepository.save(adminEntity);
 
-		OrderEntity order = createOrder(adminEntity);
+		OrderEntity order = createOrder(testUser);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
 		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
@@ -168,11 +176,7 @@ class AdminOrderServiceTest {
 
 	@Test
 	void 주문상품_상태_강제변경_실패__잘못된_상태_전이() {
-		// given
-		UserEntity adminEntity = UserEntityCreator.createAdmin();
-		userRepository.save(adminEntity);
-
-		OrderEntity order = createOrder(adminEntity);
+		OrderEntity order = createOrder(testUser);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 1L);
 		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);

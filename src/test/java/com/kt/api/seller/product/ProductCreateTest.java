@@ -53,7 +53,7 @@ public class ProductCreateTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		testSeller = createSeller();

@@ -8,6 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,16 +36,17 @@ public class UserDetailTest extends MockMvcTest {
 	DefaultCurrentUser adminDetails;
 	@Autowired
 	UserRepository userRepository;
-
-	UserEntity testAdmin;
+	@Autowired
+	AdminRepository adminRepository;
+	AdminEntity testAdmin;
 	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
+		testAdmin = AdminCreator.create();
 		userRepository.save(testUser);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		adminRepository.save(testAdmin);
 		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 

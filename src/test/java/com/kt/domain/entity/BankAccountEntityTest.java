@@ -13,7 +13,7 @@ public class BankAccountEntityTest {
 
 	@Test
 	void 계좌_객체생성_성공() {
-		UserEntity testUser = UserEntityCreator.createMember();
+		UserEntity testUser = UserEntityCreator.create();
 		BankAccountEntity bankAccount = testUser.getBankAccount();
 
 		assertNotNull(bankAccount);

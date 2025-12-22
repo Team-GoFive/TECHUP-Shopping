@@ -1,10 +1,11 @@
 package com.kt.api.addresses;
 
 import static com.kt.common.CurrentUserCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.kt.common.UserEntityCreator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,18 +33,18 @@ class AddressUpdateTest extends MockMvcTest {
 	@Autowired
 	AddressRepository addressRepository;
 
-	UserEntity testMember;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
-		userRepository.save(testMember);
+		testUser = UserEntityCreator.create();
+		userRepository.save(testUser);
 	}
 
 	@Test
 	void 주소_수정_성공__정상입력() throws Exception {
 		// given
-		AddressEntity address = AddressCreator.createAddress(testMember);
+		AddressEntity address = AddressCreator.createAddress(testUser);
 		addressRepository.save(address);
 
 		//when
@@ -58,7 +59,7 @@ class AddressUpdateTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			put("/api/addresses/{addressId}", address.getId())
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testUser.getEmail())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		);
@@ -99,8 +100,8 @@ class AddressUpdateTest extends MockMvcTest {
 		}
 
 		private void runInvalidTest(String field, String invalid) throws Exception {
-
-			UserEntity user = userRepository.save(createMember());
+			UserEntity testUser = UserEntityCreator.create();
+			userRepository.save(testUser);
 
 			AddressEntity address = addressRepository.save(
 				AddressEntity.create(
@@ -110,11 +111,11 @@ class AddressUpdateTest extends MockMvcTest {
 					"강남구",
 					"테헤란로",
 					"101호",
-					user
+					testUser
 				)
 			);
 
-			var currentUser = getMemberUserDetails(user.getId());
+			var currentUser = getMemberUserDetails(testUser.getId());
 
 			AddressRequest addressRequest = new AddressRequest(
 				field.equals("receiverName") ? invalid : "받는사람",

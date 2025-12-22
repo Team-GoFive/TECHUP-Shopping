@@ -100,15 +100,15 @@ public class UserEntity extends AbstractAccountEntity {
 		this.status = UserStatus.DELETED;
 	}
 
-	public void updateDetails(
+	public void update(
 		String name,
+		String email,
 		String mobile,
-		LocalDate birth,
-		Gender gender
+		LocalDate birth
 	) {
 		this.name = name;
+		this.email = email;
 		this.mobile = mobile;
 		this.birth = birth;
-		this.gender = gender;
 	}
 }

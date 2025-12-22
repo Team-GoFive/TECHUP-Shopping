@@ -64,7 +64,7 @@ public class ReviewCreateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testMember = UserEntityCreator.createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();

@@ -67,7 +67,7 @@ public class OrderCreateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = create();
 		userRepository.save(testMember);
 
 		CategoryEntity category = createCategory();
@@ -84,8 +84,8 @@ public class OrderCreateTest extends MockMvcTest {
 
 		products.add(testProduct1);
 		products.add(testProduct2);
-
-		address = addressRepository.save(AddressCreator.createAddress(testMember));
+		address = AddressCreator.createAddress(testMember);
+		addressRepository.save(address);
 	}
 
 	@Test

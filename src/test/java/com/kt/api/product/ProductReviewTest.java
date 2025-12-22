@@ -2,9 +2,10 @@ package com.kt.api.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 
 import java.util.List;
+
+import com.kt.common.UserEntityCreator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +69,7 @@ public class ProductReviewTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		testCategory = createCategory();

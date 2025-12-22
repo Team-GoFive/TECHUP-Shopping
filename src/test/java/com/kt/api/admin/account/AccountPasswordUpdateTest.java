@@ -44,7 +44,7 @@ public class AccountPasswordUpdateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember(
+		testUser = UserEntityCreator.create(
 			"bjwnstkdbj@naver.com",
 			passwordEncoder.encode(ORIGIN_PASSWORD)
 		);

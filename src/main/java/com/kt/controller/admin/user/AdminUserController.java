@@ -29,11 +29,11 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 	private final AdminUserService adminUserService;
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserDetail(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		return wrap(adminUserService.getUserDetail(defaultCurrentUser.getId(), userId));
+		return wrap(adminUserService.getUserDetail(userId));
 	}
 
 	@PatchMapping("/{userId}/enabled")
@@ -41,7 +41,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		adminUserService.enableUser(defaultCurrentUser.getId(), userId);
+		adminUserService.enableUser(userId);
 		return empty();
 	}
 
@@ -50,7 +50,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		adminUserService.disableUser(defaultCurrentUser.getId(), userId);
+		adminUserService.disableUser(userId);
 		return empty();
 	}
 
@@ -59,7 +59,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		adminUserService.deleteUser(defaultCurrentUser.getId(), userId);
+		adminUserService.deleteUser(userId);
 		return empty();
 	}
 

@@ -5,6 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.CourierEntityCreator;
-import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -30,20 +33,22 @@ class AdminCourierServiceTest {
 
 	@Autowired
 	AdminCourierService adminCourierService;
+
 	@Autowired
 	CourierRepository courierRepository;
+
 	@Autowired
-	UserRepository userRepository;
+	AdminRepository adminRepository;
 
 	CourierEntity testCourier;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 	}
 
 	@Test

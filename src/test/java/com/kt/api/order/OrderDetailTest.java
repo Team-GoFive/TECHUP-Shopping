@@ -61,7 +61,7 @@ public class OrderDetailTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = create();
 		userRepository.save(testMember);
 
 		CategoryEntity category = createCategory();

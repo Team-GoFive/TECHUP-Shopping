@@ -2,6 +2,10 @@ package com.kt.controller.admin.management;
 
 import java.util.UUID;
 
+import com.kt.domain.dto.request.AdminRequest;
+
+import com.kt.domain.dto.response.AdminResponse;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,47 +29,16 @@ import jakarta.validation.Valid;
 
 @Tag(name = "Admin", description = "관리자 관리 관련 API")
 public interface AdminManagementSwaggerSupporter {
-	@Operation(
-		summary = "관리자 검색", description = "관리자를 검색"
-	)
-	ResponseEntity<ApiResult<PageResponse<AccountResponse.Search>>> searchAdmins(
-		@ParameterObject AccountRequest.Search request,
-		@ModelAttribute Paging paging
-	);
 
 	@Operation(
-		summary = "관리자 상세 조회", description = "관리자 상세 조회",
-		parameters = {
-			@Parameter(name = "adminId", description = "관리자 Id")
-		}
+		summary = "관리자 상세 조회", description = "관리자 상세 조회"
 	)
-	ResponseEntity<ApiResult<UserResponse.UserDetail>> getAdminDetail(
-		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@PathVariable UUID adminId
-	);
-
-	@Operation(
-		summary = "관리자 생성", description = "관리자를 생성합니다."
-	)
-	ResponseEntity<ApiResult<Void>> createAdmin(
-		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@RequestBody @Valid SignupRequest.SignupUser request
-	);
+	ResponseEntity<ApiResult<AdminResponse.Detail>> me();
 
 	@Operation(
 		summary = "관리자 정보 수정", description = "관리자 정보를 수정합니다."
 	)
-	ResponseEntity<ApiResult<Void>> updateAdmin(
-		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@RequestBody @Valid UserRequest.UpdateDetails request,
-		@PathVariable UUID adminId
-	);
-
-	@Operation(
-		summary = "관리자 hard delete", description = "관리자를 삭제합니다."
-	)
-	ResponseEntity<ApiResult<Void>> deleteAdmin(
-		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		@PathVariable UUID adminId
+	ResponseEntity<ApiResult<Void>> update(
+		@RequestBody @Valid AdminRequest.Update request
 	);
 }

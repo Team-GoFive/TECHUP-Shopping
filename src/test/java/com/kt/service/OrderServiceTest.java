@@ -75,11 +75,17 @@ class OrderServiceTest {
 
 	CategoryEntity category;
 	SellerEntity testSeller;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setup() {
-		category = categoryRepository.save(CategoryEntityCreator.createCategory());
-		testSeller = sellerRepository.save(SellerEntityCreator.createSeller());
+		category = CategoryEntityCreator.createCategory();
+		testSeller = SellerEntityCreator.createSeller();
+		testUser = UserEntityCreator.create();
+
+		userRepository.save(testUser);
+		sellerRepository.save(testSeller);
+		categoryRepository.save(category);
 	}
 
 	OrderEntity createOrder(UserEntity user) {
@@ -92,10 +98,8 @@ class OrderServiceTest {
 	}
 
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
-
-		ProductEntity product = productRepository.save(
-			ProductEntityCreator.createProduct(category, testSeller)
-		);
+		ProductEntity product = ProductEntityCreator.createProduct(category, testSeller);
+		productRepository.save(product);
 
 		OrderProductEntity orderProduct = OrderProductEntity.create(
 			quantity,
@@ -113,8 +117,8 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_성공() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
+		AddressEntity address = AddressCreator.createAddress(testUser);
+		addressRepository.save(address);
 
 		ProductEntity product1 = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 		ProductEntity product2 = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
@@ -125,7 +129,7 @@ class OrderServiceTest {
 		);
 
 		// when
-		orderService.createOrder(user.getEmail(), items, address.getId());
+		orderService.createOrder(testUser.getEmail(), items, address.getId());
 
 		// then
 		OrderEntity savedOrder = orderRepository.findAll().get(0);
@@ -137,16 +141,15 @@ class OrderServiceTest {
 
 	@Test
 	void 주문_생성_실패__상품없음() {
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
+		AddressEntity address = AddressCreator.createAddress(testUser);
+		addressRepository.save(address);
 
 		UUID invalidId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(invalidId, 1L, testSeller.getId()));
 
 		// when, then
-		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items, address.getId()))
+		assertThatThrownBy(() -> orderService.createOrder(testUser.getEmail(), items, address.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PRODUCT_NOT_FOUND");
 	}
@@ -154,9 +157,8 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_실패__재고부족() {
 
-		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
-		AddressEntity address = addressRepository.save(AddressCreator.createAddress(user));
+		AddressEntity address = AddressCreator.createAddress(testUser);
+		addressRepository.save(address);
 		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 
 		List<OrderRequest.Item> items = List.of(
@@ -164,7 +166,7 @@ class OrderServiceTest {
 		);
 
 		// then
-		assertThatThrownBy(() -> orderService.createOrder(user.getEmail(), items, address.getId()))
+		assertThatThrownBy(() -> orderService.createOrder(testUser.getEmail(), items, address.getId()))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}
@@ -172,7 +174,7 @@ class OrderServiceTest {
 	@Test
 	void 주문상품_조회() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
@@ -193,7 +195,7 @@ class OrderServiceTest {
 	@Test
 	void 주문상품_취소_성공__PAID_상태() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
@@ -236,7 +238,7 @@ class OrderServiceTest {
 	@Test
 	void 주문_취소_실패__주문상품_배송중_상태() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
@@ -253,7 +255,7 @@ class OrderServiceTest {
 	@Test
 	void 주문_수정_성공__배송정보_변경() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);
@@ -281,7 +283,7 @@ class OrderServiceTest {
 	@Test
 	void 주문_수정_실패__배송중() {
 		// given
-		UserEntity user = userRepository.save(UserEntityCreator.createMember());
+		UserEntity user = userRepository.save(UserEntityCreator.create());
 		OrderEntity order = orderRepository.save(
 			OrderEntity.create(ReceiverCreator.createReceiver(), user)
 		);

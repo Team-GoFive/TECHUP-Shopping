@@ -8,9 +8,9 @@ import com.kt.domain.entity.UserEntity;
 
 public class UserEntityCreator {
 
-	public static UserEntity createMember(String email, String encodedPassword) {
+	public static UserEntity create(String email, String encodedPassword) {
 		return UserEntity.create(
-			"회원1",
+			"테스트유저",
 			email,
 			encodedPassword,
 			AccountRole.MEMBER,
@@ -20,24 +20,12 @@ public class UserEntityCreator {
 		);
 	}
 
-	public static UserEntity createMember() {
+	public static UserEntity create() {
 		return UserEntity.create(
-			"회원1",
+			"테스트유저",
 			"member@test.com",
 			"1234",
 			AccountRole.MEMBER,
-			Gender.MALE,
-			LocalDate.now(),
-			"010-1234-5678"
-		);
-	}
-
-	public static UserEntity createAdmin() {
-		return UserEntity.create(
-			"관리자1",
-			"admin@test.com",
-			"1234",
-			AccountRole.ADMIN,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"

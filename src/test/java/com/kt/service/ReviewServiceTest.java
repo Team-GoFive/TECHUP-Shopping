@@ -71,7 +71,7 @@ class ReviewServiceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = createMember();
+		testUser = create();
 		userRepository.save(testUser);
 
 		testSeller = createSeller();

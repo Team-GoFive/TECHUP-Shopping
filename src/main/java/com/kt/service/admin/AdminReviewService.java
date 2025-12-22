@@ -9,7 +9,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 
 public interface AdminReviewService {
-	void delete(String email, UUID reviewId);
+	void delete(UUID reviewId);
 
 	ReviewResponse.Search getReview(UUID orderProductId);
 

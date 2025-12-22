@@ -65,7 +65,7 @@ public class ReviewSearchByProductTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		testSeller = createSeller();

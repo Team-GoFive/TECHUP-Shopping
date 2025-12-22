@@ -2,7 +2,6 @@ package com.kt.api.seller.review;
 
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.CategoryEntity;
@@ -65,7 +64,7 @@ public class ReviewSearchAllTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		testSeller = createSeller();

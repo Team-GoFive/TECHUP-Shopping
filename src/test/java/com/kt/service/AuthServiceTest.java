@@ -2,13 +2,14 @@ package com.kt.service;
 
 import static com.kt.common.SignupCourierRequestCreator.*;
 import static com.kt.common.SignupUserRequestCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.kt.common.UserEntityCreator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +71,7 @@ public class AuthServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember(testEmail, passwordEncoder.encode(rawPassword));
+		testMember = UserEntityCreator.create(testEmail, passwordEncoder.encode(rawPassword));
 		userRepository.save(testMember);
 		String testKey = "techup-shopping-encrypt-test-key";
 		EncryptUtil.loadKey(testKey);

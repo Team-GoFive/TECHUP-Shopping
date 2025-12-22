@@ -1,22 +1,12 @@
 package com.kt.service.admin;
 
-import java.util.UUID;
-
-import com.kt.domain.dto.request.SignupRequest;
-import com.kt.domain.dto.request.UserRequest;
-import com.kt.domain.dto.response.UserResponse;
+import com.kt.domain.dto.request.AdminRequest;
+import com.kt.domain.dto.response.AdminResponse;
 
 public interface AdminManagementService {
-	void createAdmin(UUID userId, SignupRequest.SignupUser request);
 
-	void deleteAdmin(UUID currentId, UUID adminId);
+	AdminResponse.Detail detail();
 
-	UserResponse.UserDetail getAdminDetail(UUID currentId, UUID subjectId);
-
-	void updateDetail(
-		UUID currentId,
-		UUID subjectId,
-		UserRequest.UpdateDetails details
-	);
+	void update(AdminRequest.Update request);
 
 }

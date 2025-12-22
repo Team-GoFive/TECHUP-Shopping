@@ -1,8 +1,10 @@
 package com.kt.repository.account;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.AbstractAccountEntity;
 
+import com.kt.domain.entity.AdminEntity;
 import com.kt.exception.CustomException;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +30,5 @@ public interface AccountRepository extends JpaRepository<AbstractAccountEntity, 
 	}
 
 	Optional<AbstractAccountEntity> findByEmail(String email);
+
 }

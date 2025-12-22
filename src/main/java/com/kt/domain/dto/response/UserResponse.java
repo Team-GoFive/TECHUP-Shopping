@@ -11,10 +11,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.querydsl.core.annotations.QueryProjection;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserResponse {
 	@Schema(name = "UserSearchResponse")
 	public record Search(

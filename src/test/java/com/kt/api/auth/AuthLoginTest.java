@@ -42,7 +42,7 @@ public class AuthLoginTest extends MockMvcTest {
 	}
 
 	void saveUser() {
-		UserEntity user = UserEntityCreator.createMember(
+		UserEntity user = UserEntityCreator.create(
 			EMAIL, passwordEncoder.encode(PASSWORD)
 		);
 		userRepository.save(user);
