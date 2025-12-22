@@ -129,7 +129,7 @@ class AdminOrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 3L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		AdminOrderResponse.Detail detail = adminOrderService.getOrderDetail(order.getId());
@@ -151,7 +151,7 @@ class AdminOrderServiceTest {
 		OrderEntity order = createOrder(adminEntity);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		adminOrderService.forceChangeStatus(
@@ -175,7 +175,7 @@ class AdminOrderServiceTest {
 		OrderEntity order = createOrder(adminEntity);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 1L);
-		orderProduct.updateStatus(OrderProductStatus.PAID);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		// when & then
 		assertThatThrownBy(() ->
