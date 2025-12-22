@@ -17,14 +17,14 @@ public class OrderResponse {
 		UUID orderId,
 		List<OrderProductItem> orderProducts
 	) {
-		public static OrderProducts of(
+		public static OrderProducts from(
 			UUID orderId,
 			List<OrderProductEntity> orderProductEntities
 		) {
 			return new OrderProducts(
 				orderId,
 				orderProductEntities.stream()
-					.map(OrderProductItem::of)
+					.map(OrderProductItem::from)
 					.toList()
 			);
 		}
@@ -37,7 +37,7 @@ public class OrderResponse {
 		Long quantity,
 		Long unitPrice
 	) {
-		public static OrderProductItem of(OrderProductEntity orderProductEntity) {
+		public static OrderProductItem from(OrderProductEntity orderProductEntity) {
 			return new OrderProductItem(
 				orderProductEntity.getId(),
 				orderProductEntity.getProduct().getId(),
@@ -81,7 +81,7 @@ public class OrderResponse {
 				order.getCreatedAt(),
 				order.getReceiverVO(),
 				orderProducts.stream()
-					.map(OrderProductItem::of)
+					.map(OrderProductItem::from)
 					.toList()
 			);
 		}

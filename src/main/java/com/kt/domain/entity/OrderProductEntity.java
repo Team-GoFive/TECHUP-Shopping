@@ -60,4 +60,8 @@ public class OrderProductEntity extends BaseEntity {
 		this.status = status;
 	}
 
+	public void confirmPaidOrderProduct() {
+		this.status = SHIPPING_READY;
+	}
+
 }
