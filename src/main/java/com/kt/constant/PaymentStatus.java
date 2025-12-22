@@ -8,8 +8,9 @@ public enum PaymentStatus {
 	PENDING("결제대기중"),
 	PAID("결제완료"),
 	FAILED("결제실패"),
+	CANCELED("배송전취소"),          // 배송 전 취소
 	APPLY_REFUND("환불신청"),
-	COMPLETE_REFUND("환불완료");
+	COMPLETE_REFUND("환불완료");    // 배송 후 환불
 
 	private final String description;
 }
