@@ -34,7 +34,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
 		OrderProductStatus status = orderProduct.getStatus();
 
-		if (status != OrderProductStatus.SHIPPING_READY && status != OrderProductStatus.PAID) {
+		if (status != OrderProductStatus.PENDING_APPROVE) {
 			throw new CustomException(ErrorCode.ORDER_ALREADY_SHIPPED);
 		}
 
@@ -54,7 +54,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 		OrderProductEntity orderProduct = getOrderProductWithOwnerCheck(orderProductId, sellerId);
 		OrderProductStatus status = orderProduct.getStatus();
 
-		if (status != OrderProductStatus.PAID) {
+		if (status != OrderProductStatus.PENDING_APPROVE) {
 			throw new CustomException(ErrorCode.INVALID_ORDER_PRODUCT_STATUS);
 		}
 		orderProduct.confirmPaidOrderProduct();

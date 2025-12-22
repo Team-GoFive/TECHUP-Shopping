@@ -145,7 +145,7 @@ class SellerOrderServiceTest {
 	void 판매자_결제_상품_컨펌_성공() {
 		// given
 		OrderEntity order = createOrder();
-		OrderProductEntity op1 = createOrderProduct(order, OrderProductStatus.PAID);
+		OrderProductEntity op1 = createOrderProduct(order, OrderProductStatus.PENDING_APPROVE);
 
 		// when
 		sellerOrderService.confirmPaidOrderProduct(op1.getId(), testSeller.getId());

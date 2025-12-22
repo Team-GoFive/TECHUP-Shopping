@@ -76,7 +76,7 @@ public class OrderConfirmTest extends MockMvcTest {
 		ProductEntity product = createProduct(testCategory, testSeller);
 		productRepository.save(product);
 		testOrderProduct = orderProductRepository.save(
-			OrderProductEntity.create(1L, product.getPrice(), OrderProductStatus.PAID, testOrder, product));
+			OrderProductEntity.create(1L, product.getPrice(), OrderProductStatus.PENDING_APPROVE, testOrder, product));
 	}
 
 	@Test
