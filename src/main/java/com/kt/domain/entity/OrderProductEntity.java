@@ -63,7 +63,7 @@ public class OrderProductEntity extends BaseEntity {
 	}
 
 	public void confirmPaidOrderProduct() {
-		this.status = PENDING_APPROVE;
+		this.status = SHIPPING_READY;
 	}
 
 	public void completeRefund() {

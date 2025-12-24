@@ -17,7 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.PaymentRepository;
 import com.kt.repository.seller.SellerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,13 +62,14 @@ public class OrderCancelTest extends MockMvcTest {
 	AddressRepository addressRepository;
 	@Autowired
 	SellerRepository sellerRepository;
+	@Autowired
+	PaymentRepository paymentRepository;
 
 	UserEntity testMember;
-
 	ProductEntity testProduct;
-
 	AddressEntity testAddress;
 	SellerEntity testSeller;
+	OrderProductEntity testOrderProduct;
 
 	@BeforeEach
 	void setUp() {
@@ -85,9 +88,30 @@ public class OrderCancelTest extends MockMvcTest {
 		testAddress = addressRepository.save(AddressCreator.createAddress(testMember));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
+			new OrderRequest.Item(
+				testProduct.getId(),
+				1L,
+				testSeller.getId()
+			)
 		);
-		orderService.createOrder(testMember.getEmail(), items, testAddress.getId());
+		orderService.createOrder(
+			testMember.getEmail(),
+			items,
+			testAddress.getId()
+		);
+
+		OrderEntity order = orderRepository.findAll().stream()
+			.findFirst()
+			.orElseThrow();
+
+		testOrderProduct = order.getOrderProducts().get(0);
+
+		PaymentEntity payment = PaymentEntity.create(
+			testProduct.getPrice(),
+			3_000L,
+			testOrderProduct
+		);
+		paymentRepository.save(payment);
 	}
 
 	@Test
