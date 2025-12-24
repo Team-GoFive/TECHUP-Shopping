@@ -41,7 +41,13 @@ spring:
       cluster:
         nodes: ${REDIS_HOST}
         max-redirects: 3
-
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-5-nano
+          temperature: 0.2
 jwt:
   secret: ${JWT_SECRET_KEY}
   access-valid-time: ${JWT_ACCESS_TIME}

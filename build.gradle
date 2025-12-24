@@ -35,6 +35,8 @@ dependencies {
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
     implementation 'org.redisson:redisson-spring-boot-starter:3.32.0'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    implementation platform("org.springframework.ai:spring-ai-bom:1.1.2")
 
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
