@@ -47,7 +47,7 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
 						RefundQueryResponse.class,
 						refundHistory.id,
 						orderProduct.id,
-						payment.id,
+						refundHistory.payment.id,
 						refundHistory.refundAmount,
 						refundHistory.status,
 						refundHistory.requestReason,
