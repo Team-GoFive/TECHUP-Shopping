@@ -7,7 +7,10 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.common.BaseEntity;
 import com.kt.exception.CustomException;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -21,6 +24,9 @@ import lombok.NoArgsConstructor;
 public class OrderProductEntity extends BaseEntity {
 	private Long quantity;
 	private Long unitPrice;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private OrderProductStatus status;
 
 	@ManyToOne
