@@ -56,8 +56,11 @@ public class RefundServiceImpl implements RefundService {
 			paymentRepository.findByOrderProduct(orderProduct)
 				.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-		if (payment.getPaymentStatus() == PaymentStatus.COMPLETE_REFUND) {
-			throw new CustomException(ErrorCode.ALREADY_REFUNDED);
+		if (payment.getPaymentStatus() != PaymentStatus.PAID) {
+			if (payment.getPaymentStatus() == PaymentStatus.COMPLETE_REFUND) {
+				throw new CustomException(ErrorCode.ALREADY_REFUNDED);
+			}
+			throw new CustomException(ErrorCode.REFUND_NOT_ALLOWED);
 		}
 
 		boolean alreadyRequested =
