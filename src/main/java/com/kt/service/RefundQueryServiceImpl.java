@@ -28,7 +28,7 @@ public class RefundQueryServiceImpl implements RefundQueryService {
 
 	@Override
 	public Page<RefundQueryResponse> getRequestedRefunds(UUID sellerId, Paging paging) {
-		return refundQueryRepository.findRequestedRefundsBySeller(
+		return refundQueryRepository.findRefundsBySeller(
 			sellerId,
 			paging.toPageable()
 		);

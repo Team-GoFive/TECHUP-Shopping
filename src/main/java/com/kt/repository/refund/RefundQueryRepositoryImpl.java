@@ -80,7 +80,7 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
 	}
 
 	@Override
-	public Page<RefundQueryResponse> findRequestedRefundsBySeller(
+	public Page<RefundQueryResponse> findRefundsBySeller(
 		UUID sellerId,
 		Pageable pageable
 	) {
@@ -106,10 +106,14 @@ public class RefundQueryRepositoryImpl implements RefundQueryRepository {
 				.join(product.seller, seller)
 				.join(refundHistory.payment, payment)
 				.where(
-					refundHistory.status.eq(RefundStatus.REQUESTED),
+					refundHistory.status.in(
+						RefundStatus.REQUESTED,
+						RefundStatus.REJECTED,
+						RefundStatus.COMPLETED
+					),
 					seller.id.eq(sellerId)
 				)
-				.orderBy(refundHistory.createdAt.asc())
+				.orderBy(refundHistory.createdAt.desc())
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
 				.fetch();
