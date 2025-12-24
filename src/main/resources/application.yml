@@ -47,7 +47,7 @@ spring:
       chat:
         options:
           model: gpt-5-nano
-          temperature: 0.2
+          temperature: 1
 jwt:
   secret: ${JWT_SECRET_KEY}
   access-valid-time: ${JWT_ACCESS_TIME}
