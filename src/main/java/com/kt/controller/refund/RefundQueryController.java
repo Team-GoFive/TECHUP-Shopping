@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class RefundQueryController {
+public class RefundQueryController implements RefundQuerySwaggerSupporter {
 
 	private final RefundQueryService refundQueryService;
 
