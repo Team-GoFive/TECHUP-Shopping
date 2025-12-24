@@ -461,11 +461,37 @@ class RefundServiceTest {
 			.isEqualTo(beforeBalance + 13_000L);
 	}
 
-	// TODO: 구현
 	@Test
-	void 유저_환불_내역_조회__전체상태_조회() {}
+	void 환불_승인_성공__재고_복구_성공() {
+		// given
+		long quantity = testOrderProduct.getQuantity();
+		ProductEntity product = testOrderProduct.getProduct();
 
-	@Test
-	void 셀러_환불_요청_목록_조회__요청상태만_조회() {}
+		long beforeStock = product.getStock();
+
+		refundService.requestRefund(
+			testUser.getId(),
+			testOrderProduct.getId(),
+			"단순변심"
+		);
+
+		RefundHistoryEntity history =
+			refundHistoryRepository.findAll().get(0);
+
+		// when
+		refundService.approveRefund(
+			testSeller.getId(),
+			history.getId()
+		);
+
+		// then
+		ProductEntity afterProduct =
+			productRepository.findById(product.getId())
+				.orElseThrow();
+
+		assertThat(afterProduct.getStock())
+			.isEqualTo(beforeStock + quantity);
+	}
+
 
 }

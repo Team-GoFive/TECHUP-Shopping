@@ -71,6 +71,7 @@ public class OrderProductEntity extends BaseEntity {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
 		}
 		this.status = OrderProductStatus.REFUND_COMPLETED; // TODO: 현재는 환불 승인 순간 환불 즉시 처리되고 바로 환불완료 상태가 된다. (승인==실행) 추후 배송기사 도입시 재설계 필요.
+		this.product.addStock(this.quantity);
 	}
 
 }
