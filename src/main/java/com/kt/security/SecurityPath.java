@@ -11,6 +11,7 @@ public final class SecurityPath {
 		"/v3/api-docs/**"
 	};
 	public static final String[] AUTHENTICATED = {
+		"/api/ai/**",
 		"/api/matches/**"
 	};
 	public static final String[] MEMBER = {
