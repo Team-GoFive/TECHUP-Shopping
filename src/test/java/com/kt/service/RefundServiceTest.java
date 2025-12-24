@@ -99,7 +99,7 @@ class RefundServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		testSeller = SellerEntityCreator.createSeller();
@@ -180,7 +180,7 @@ class RefundServiceTest {
 	@Test
 	void 환불_요청__실패__타인의_주문() {
 		// given
-		UserEntity otherUser = UserEntityCreator.createMember();
+		UserEntity otherUser = UserEntityCreator.create();
 		userRepository.save(otherUser);
 
 		// when & then
@@ -428,7 +428,7 @@ class RefundServiceTest {
 			OrderProductEntity.create(
 				1L,
 				10_000L,
-				OrderProductStatus.SHIPPING_READY, // 중요
+				OrderProductStatus.PENDING_APPROVE,
 				testOrderProduct.getOrder(),
 				testOrderProduct.getProduct()
 			);

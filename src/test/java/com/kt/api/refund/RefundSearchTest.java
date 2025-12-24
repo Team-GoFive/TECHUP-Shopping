@@ -26,6 +26,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.AccountRole;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.RefundStatus;
@@ -77,7 +78,7 @@ public class RefundSearchTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		testSeller = SellerEntityCreator.createSeller();
