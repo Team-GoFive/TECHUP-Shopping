@@ -14,7 +14,7 @@ public interface RefundQueryRepository {
 		Pageable pageable
 	);
 
-	Page<RefundQueryResponse> findRequestedRefundsBySeller(
+	Page<RefundQueryResponse> findRefundsBySeller(
 		UUID sellerId,
 		Pageable pageable
 	);
