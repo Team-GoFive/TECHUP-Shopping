@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class VectorStoreEntity extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
-	private VectorType vectorType;
+	private VectorType type;
 
 	@Column(nullable = false)
 	private String storeId;
@@ -26,16 +26,16 @@ public class VectorStoreEntity extends BaseEntity {
 	@Column(nullable = false)
 	private String name;
 
-	private VectorStoreEntity(VectorType vectorType, String storeId, String name, String description) {
-		this.vectorType = vectorType;
+	private VectorStoreEntity(VectorType type, String storeId, String name, String description) {
+		this.type = type;
 		this.storeId = storeId;
 		this.name = name;
 		this.description = description;
 	}
 
-	public static VectorStoreEntity create(VectorType vectorType, String storeId, String name, String description) {
+	public static VectorStoreEntity create(VectorType type, String storeId, String name, String description) {
 		return new VectorStoreEntity(
-			vectorType, storeId, name, description
+			type, storeId, name, description
 		);
 	}
 }
