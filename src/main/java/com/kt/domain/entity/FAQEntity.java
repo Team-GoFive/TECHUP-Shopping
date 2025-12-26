@@ -24,17 +24,18 @@ public class FAQEntity extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	private FAQCategory category;
+
+	@Column
 	private String fileId;
 
-	private FAQEntity(String title, String content, FAQCategory category, String fileId) {
+	private FAQEntity(String title, String content, FAQCategory category) {
 		this.title = title;
 		this.content = content;
 		this.category = category;
-		this.fileId = fileId;
 	}
 
-	public static FAQEntity create(String title, String content, FAQCategory category, String fileId) {
-		return new FAQEntity(title, content, category, null);
+	public static FAQEntity create(String title, String content, FAQCategory category) {
+		return new FAQEntity(title, content, category);
 	}
 
 	public void updateFileId(String fileId) {
