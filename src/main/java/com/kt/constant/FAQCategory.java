@@ -1,6 +1,5 @@
 package com.kt.constant;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
