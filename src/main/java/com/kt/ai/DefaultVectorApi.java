@@ -6,7 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 
-import com.kt.ai.dto.OpenAIRequest;
+import com.kt.ai.dto.request.OpenAIRequest;
 
 import lombok.RequiredArgsConstructor;
 
