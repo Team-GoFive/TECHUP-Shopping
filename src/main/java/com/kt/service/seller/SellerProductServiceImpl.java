@@ -52,15 +52,19 @@ public class SellerProductServiceImpl implements SellerProductService {
 	}
 
 	@Override
-	public void activate(UUID productId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-		product.activate();
+	public void activate(List<UUID> productIds, UUID sellerId) {
+		productIds.forEach(productId -> {
+			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+			product.activate();
+		});
 	}
 
 	@Override
-	public void inActivate(UUID productId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-		product.inActivate();
+	public void inActivate(List<UUID> productIds, UUID sellerId) {
+		productIds.forEach(productId -> {
+			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+			product.inActivate();
+		});
 	}
 
 	@Override
@@ -73,7 +77,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public void soldOutProducts(List<UUID> productIds, UUID sellerId) {
 		for (UUID productId : productIds) {
 			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-			product.inActivate();
+			product.decreaseStock(product.getStock());
 		}
 	}
 
