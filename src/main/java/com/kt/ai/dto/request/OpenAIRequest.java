@@ -1,4 +1,4 @@
-package com.kt.ai.dto;
+package com.kt.ai.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
