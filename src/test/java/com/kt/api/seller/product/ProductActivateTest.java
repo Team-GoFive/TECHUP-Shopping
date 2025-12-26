@@ -21,11 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.UUID;
-
 import static com.kt.common.CategoryEntityCreator.createCategory;
 import static com.kt.common.ProductEntityCreator.createProduct;
-import static com.kt.common.SellerEntityCreator.createSeller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

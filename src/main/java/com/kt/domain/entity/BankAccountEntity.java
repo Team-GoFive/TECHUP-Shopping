@@ -11,6 +11,8 @@ import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -18,27 +20,27 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class BankAccountEntity extends BaseEntity {
 
-	@Column(nullable = false)
-	private Long balance;
+	@Column(precision = 19, scale = 0, nullable = false)
+	private BigDecimal balance;
 
 	@Version
 	private Long version;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
-		name = "account_id",
+		name = "holder_id",
 		nullable = false,
 		unique = true
 	)
-	private AbstractAccountEntity account;
+	private BankAccountHolderEntity holder;
 
-	protected BankAccountEntity(AbstractAccountEntity account) {
-		this.balance = 0L;
-		this.account = account;
+	private BankAccountEntity(BankAccountHolderEntity holder) {
+		this.balance = BigDecimal.ZERO;
+		this.holder = holder;
 	}
 
-	public static BankAccountEntity create(final AbstractAccountEntity account) {
-		return new BankAccountEntity(account);
+	public static BankAccountEntity create(final BankAccountHolderEntity holder) {
+		return new BankAccountEntity(holder);
 	}
 
 }

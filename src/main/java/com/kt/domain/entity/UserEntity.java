@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("USER")
-public class UserEntity extends AbstractAccountEntity {
+public class UserEntity extends BankAccountHolderEntity {
 
 	@OneToMany(
 		mappedBy = "createdBy",
@@ -44,17 +44,6 @@ public class UserEntity extends AbstractAccountEntity {
 		fetch = FetchType.LAZY
 	)
 	private PayEntity pay;
-
-	@OneToOne(
-		mappedBy = "account",
-		cascade = {
-			CascadeType.PERSIST,
-			CascadeType.REMOVE
-		},
-		orphanRemoval = true,
-		fetch = FetchType.LAZY
-	)
-	private BankAccountEntity bankAccount;
 
 	@Column(nullable = false)
 	private LocalDate birth;

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
+import com.kt.common.SellerEntityCreator;
 import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,15 +49,7 @@ class PaymentEntityTest {
 			user
 		);
 
-		SellerEntity testSeller = SellerEntity.create(
-			"판매자1",
-			"seller@test.com",
-			"1234",
-			"상점1",
-			"010-1234-5678",
-			"seller@test.com",
-			Gender.MALE
-		);
+		SellerEntity testSeller = SellerEntityCreator.createSeller();
 
 		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
