@@ -1,0 +1,45 @@
+package com.kt.domain.entity;
+
+import com.kt.constant.FAQCategory;
+import com.kt.domain.entity.common.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity(name = "faq")
+public class FAQEntity extends BaseEntity {
+
+	@Column(nullable = false)
+	private String title;
+
+	@Column(nullable = false)
+	private String content;
+
+	@Enumerated(EnumType.STRING)
+	private FAQCategory category;
+
+	@Column
+	private String fileId;
+
+	private FAQEntity(String title, String content, FAQCategory category) {
+		this.title = title;
+		this.content = content;
+		this.category = category;
+	}
+
+	public static FAQEntity create(String title, String content, FAQCategory category) {
+		return new FAQEntity(title, content, category);
+	}
+
+	public void updateFileId(String fileId) {
+		this.fileId = fileId;
+	}
+
+}
