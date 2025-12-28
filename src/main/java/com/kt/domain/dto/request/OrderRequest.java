@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.constant.OrderProductStatus;
+import com.kt.domain.entity.CartItemEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -58,4 +59,30 @@ public record OrderRequest(
 		OrderProductStatus status
 	) {
 	}
+
+	@Schema(name = "CartOrderRequest")
+	public record CartOrderRequest(
+		@NotNull
+		List<UUID> cartItemIds,
+
+		@NotNull
+		UUID addressId
+	) {
+	}
+
+	public static OrderRequest fromCart(
+		List<CartItemEntity> cartItems,
+		UUID addressId
+	) {
+		List<Item> items = cartItems.stream()
+			.map(ci -> new Item(
+				ci.getProduct().getId(),
+				Long.valueOf(ci.getQuantity()),
+				ci.getProduct().getSeller().getId()
+			))
+			.toList();
+
+		return new OrderRequest(items, addressId);
+	}
+
 }
