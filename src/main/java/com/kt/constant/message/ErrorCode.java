@@ -65,7 +65,9 @@ public enum ErrorCode {
 	REFUND_NOT_ALLOWED(HttpStatus.FORBIDDEN, "환불이 불가능합니다."),
 	REFUND_ALREADY_REQUESTED(HttpStatus.BAD_REQUEST, "환불 진행 중입니다."),
 	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Payment가 존재하지 않습니다."),
-	PAY_NOT_FOUND(HttpStatus.NOT_FOUND, "Pay가 존재하지 않습니다.")
+	PAY_NOT_FOUND(HttpStatus.NOT_FOUND, "Pay가 존재하지 않습니다."),
+	INVALID_REFUND_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 환불 금액입니다."),
+	INVALID_REFUND_REASON(HttpStatus.BAD_REQUEST, "이유는 반드시 작성해야 합니다.")
 
 ;
 	private final HttpStatus status;

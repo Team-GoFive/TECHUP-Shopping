@@ -42,19 +42,37 @@ public class RefundHistoryEntity extends BaseEntity {
 
 	private UUID sellerId;
 
+	private RefundHistoryEntity(
+		PaymentEntity payment,
+		OrderProductEntity orderProduct,
+		long refundAmount,
+		String requestReason
+	) {
+		if (refundAmount <= 0) {
+			throw new CustomException(ErrorCode.INVALID_REFUND_AMOUNT);
+		}
+		if (requestReason == null || requestReason.isBlank()) {
+			throw new CustomException(ErrorCode.INVALID_REFUND_REASON);
+		}
+		this.payment = payment;
+		this.orderProduct = orderProduct;
+		this.refundAmount = refundAmount;
+		this.requestReason = requestReason;
+		this.status = RefundStatus.REQUESTED;
+	}
+
 	public static RefundHistoryEntity request(
 		PaymentEntity payment,
 		OrderProductEntity orderProduct,
 		long refundAmount,
 		String requestReason
 	) {
-		RefundHistoryEntity history = new RefundHistoryEntity();
-		history.payment = payment;
-		history.orderProduct = orderProduct;
-		history.refundAmount = refundAmount;
-		history.requestReason = requestReason;
-		history.status = RefundStatus.REQUESTED;
-		return history;
+		return new RefundHistoryEntity(
+			payment,
+			orderProduct,
+			refundAmount,
+			requestReason
+		);
 	}
 
 	public void complete(UUID sellerId) {
