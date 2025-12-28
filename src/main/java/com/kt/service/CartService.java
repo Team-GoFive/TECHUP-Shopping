@@ -1,8 +1,10 @@
 package com.kt.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.kt.domain.entity.CartEntity;
+import com.kt.domain.entity.CartItemEntity;
 
 public interface CartService {
 	CartEntity getCart(UUID userId);
@@ -14,4 +16,12 @@ public interface CartService {
 	void removeItem(UUID userId, UUID cartItemId);
 
 	void clear(UUID userId);
+
+	List<CartItemEntity> getCartItemsForOrder(
+		UUID userId,
+		List<UUID> cartItemIds
+	);
+
+	void removeOrderedItems(List<CartItemEntity> orderedItems);
+
 }
