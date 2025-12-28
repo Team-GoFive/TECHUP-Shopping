@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.OrderSourceType;
 import com.kt.constant.PaymentStatus;
 import com.kt.constant.ShippingType;
 import com.kt.constant.AccountRole;
@@ -65,17 +66,21 @@ public class OrderServiceImpl implements OrderService {
 			if (product.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
-
-			// TODO: 재고 부족시 현재 상품, 상품 수량을 그대로 장바구니에 저장
 		}
 	}
 
 	@Override
-	public OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId) {
+	public OrderEntity createOrder(
+		UUID userId,
+		OrderRequest request,
+		OrderSourceType sourceType)
+	{
+		List<OrderRequest.Item> items = request.items();
+		UUID addressId = request.addressId();
 
 		checkStock(items);
 
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
 
@@ -92,14 +97,11 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.save(order);
 
 		for (OrderRequest.Item item : items) {
-
-			UUID productId = item.productId();
-			Long quantity = item.quantity();
-
-			ProductEntity product = productRepository.findByIdOrThrow(productId);
+			ProductEntity product =
+				productRepository.findByIdOrThrow(item.productId());
 
 			OrderProductEntity orderProduct = new OrderProductEntity(
-				quantity,
+				item.quantity(),
 				product.getPrice(),
 				OrderProductStatus.CREATED,
 				order,
