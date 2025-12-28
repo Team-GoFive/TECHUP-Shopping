@@ -53,8 +53,7 @@ public class RefundServiceImpl implements RefundService {
 		}
 
 		PaymentEntity payment =
-			paymentRepository.findByOrderProduct(orderProduct)
-				.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+			paymentRepository.findByOrderProductOrThrow(orderProduct);
 
 		if (payment.getPaymentStatus() != PaymentStatus.PAID) {
 			if (payment.getPaymentStatus() == PaymentStatus.REFUND_COMPLETED) {
@@ -73,8 +72,7 @@ public class RefundServiceImpl implements RefundService {
 			throw new CustomException(ErrorCode.REFUND_ALREADY_REQUESTED);
 		}
 
-		long refundAmount =
-			payment.getTotalProductPrice() + payment.getDeliveryPrice();
+		long refundAmount = payment.getRefundAmount();
 
 		RefundHistoryEntity refundHistory =
 			RefundHistoryEntity.request(payment, orderProduct, refundAmount, reason);
@@ -87,8 +85,7 @@ public class RefundServiceImpl implements RefundService {
 	@Transactional
 	public void approveRefund(UUID sellerId, UUID refundId) {
 		RefundHistoryEntity refundHistory =
-			refundHistoryRepository.findById(refundId)
-				.orElseThrow(() -> new CustomException(ErrorCode.REFUND_NOT_ALLOWED));
+			refundHistoryRepository.findByIdOrThrow(refundId);
 
 		if (refundHistory.getStatus() != RefundStatus.REQUESTED) {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
@@ -110,8 +107,8 @@ public class RefundServiceImpl implements RefundService {
 		}
 
 		UserEntity user = orderProduct.getOrder().getOrderBy();
-		PayEntity pay = payRepository.findByUser(user)
-			.orElseThrow(() -> new CustomException(ErrorCode.PAY_NOT_FOUND));
+		PayEntity pay =
+			payRepository.findByUserOrThrow(user);
 
 		long amount = payment.getRefundAmount();
 
@@ -126,8 +123,7 @@ public class RefundServiceImpl implements RefundService {
 	public void rejectRefund(UUID sellerId, UUID refundId, String reason) {
 
 		RefundHistoryEntity refundHistory =
-			refundHistoryRepository.findById(refundId)
-				.orElseThrow(() -> new CustomException(ErrorCode.REFUND_NOT_ALLOWED));
+			refundHistoryRepository.findByIdOrThrow(refundId);
 
 		if (refundHistory.getStatus() != RefundStatus.REQUESTED) {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
