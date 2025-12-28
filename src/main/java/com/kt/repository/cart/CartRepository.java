@@ -9,7 +9,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.CartEntity;
 import com.kt.exception.CustomException;
 
-public interface CartRepository extends JpaRepository<CartEntity, UUID> {
+public interface CartRepository extends JpaRepository<CartEntity, UUID>, CartRepositoryCustom {
 	Optional<CartEntity> findByUserId(UUID userId);
 
 	default CartEntity findByUserIdOrThrow(UUID userId) {
