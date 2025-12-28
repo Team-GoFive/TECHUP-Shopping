@@ -59,6 +59,12 @@ public class CartEntity extends BaseEntity {
 		items.removeIf(item -> item.getId().equals(cartItemId));
 	}
 
+	public void removeUnavailableItems() {
+		items.removeIf(item ->
+			!item.getProduct().isSellable()
+		);
+	}
+
 	private CartItemEntity findItem(ProductEntity product) {
 		return items.stream()
 			.filter(i -> i.getProduct().equals(product))

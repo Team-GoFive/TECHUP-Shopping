@@ -16,4 +16,9 @@ public interface CartRepository extends JpaRepository<CartEntity, UUID>, CartRep
 		return findByUserId(userId)
 			.orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 	}
+
+	default CartEntity findCartWithItemsOrThrow(UUID userId) {
+		return findCartWithItems(userId)
+			.orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
+	}
 }

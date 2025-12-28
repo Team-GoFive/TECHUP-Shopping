@@ -29,7 +29,11 @@ public class CartServiceImpl implements CartService {
 	@Override
 	@Transactional(readOnly = true)
 	public CartEntity getCart(UUID userId) {
-		return cartRepository.findByUserIdOrThrow(userId);
+		CartEntity cart = cartRepository.findCartWithItemsOrThrow(userId);
+
+		cart.removeUnavailableItems();
+
+		return cart;
 	}
 
 	@Override
