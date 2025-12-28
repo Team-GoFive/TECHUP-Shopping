@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.PaymentStatus;
 import com.kt.constant.ShippingType;
-import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -57,14 +57,16 @@ public class OrderServiceImpl implements OrderService {
 		return OrderResponse.OrderProducts.from(orderId, orderProducts);
 	}
 
-	// TODO: @Lock 붙이기
+	// 비관적 락을 사용하여 재고 확인
 	public void checkStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
-			ProductEntity product = productRepository.findByIdOrThrow(item.productId());
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
 
 			if (product.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
+
+			// TODO: 재고 부족시 현재 상품, 상품 수량을 그대로 장바구니에 저장
 		}
 	}
 
@@ -109,6 +111,7 @@ public class OrderServiceImpl implements OrderService {
 
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
+			reduceStock(order.getId());
 		}
 		return order;
 	}
@@ -119,7 +122,8 @@ public class OrderServiceImpl implements OrderService {
 			orderProductRepository.findAllByOrderId(orderId);
 
 		for (OrderProductEntity orderProduct : orderProducts) {
-			ProductEntity product = orderProduct.getProduct();
+			// 비관적 락을 사용하여 상품을 다시 조회
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(orderProduct.getProduct().getId());
 			Long quantity = orderProduct.getQuantity();
 
 			product.decreaseStock(quantity);
