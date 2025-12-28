@@ -67,7 +67,10 @@ public enum ErrorCode {
 	PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Payment가 존재하지 않습니다."),
 	PAY_NOT_FOUND(HttpStatus.NOT_FOUND, "Pay가 존재하지 않습니다."),
 	INVALID_REFUND_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 환불 금액입니다."),
-	INVALID_REFUND_REASON(HttpStatus.BAD_REQUEST, "이유는 반드시 작성해야 합니다.")
+	INVALID_REFUND_REASON(HttpStatus.BAD_REQUEST, "이유는 반드시 작성해야 합니다."),
+	CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니가 존재하지 않습니다."),
+	CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니 상품을 찾을 수 없습니다."),
+	INVALID_CART_ITEM_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 상품 수량은 1 이상이어야 합니다."),
 
 ;
 	private final HttpStatus status;
