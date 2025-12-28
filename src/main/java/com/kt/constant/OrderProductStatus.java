@@ -15,7 +15,8 @@ public enum OrderProductStatus {
 	RETURN_WAITING("반품대기"),
 	RETURN_SHIPPING("반품배송중"),
 	RETURN_ARRIVAL("반품도착"),
-	RETURN_CONFIRMED("반품확정");
+	RETURN_CONFIRMED("반품확정"),
+	;
 
 	private final String description;
 }

@@ -276,7 +276,7 @@ class RefundServiceTest {
 				.orElseThrow();
 
 		assertThat(payment.getPaymentStatus())
-			.isEqualTo(PaymentStatus.COMPLETE_REFUND);
+			.isEqualTo(PaymentStatus.REFUND_COMPLETED);
 	}
 
 

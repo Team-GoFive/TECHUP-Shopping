@@ -150,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
 		PaymentEntity payment = paymentRepository.findByOrderProduct(orderProduct)
 			.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-		if (payment.getPaymentStatus() == PaymentStatus.COMPLETE_REFUND) {
+		if (payment.getPaymentStatus() == PaymentStatus.REFUND_COMPLETED) {
 			throw new CustomException(ErrorCode.ALREADY_REFUNDED);
 		}
 

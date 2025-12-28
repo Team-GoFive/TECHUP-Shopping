@@ -57,7 +57,7 @@ public class RefundServiceImpl implements RefundService {
 				.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
 		if (payment.getPaymentStatus() != PaymentStatus.PAID) {
-			if (payment.getPaymentStatus() == PaymentStatus.COMPLETE_REFUND) {
+			if (payment.getPaymentStatus() == PaymentStatus.REFUND_COMPLETED) {
 				throw new CustomException(ErrorCode.ALREADY_REFUNDED);
 			}
 			throw new CustomException(ErrorCode.REFUND_NOT_ALLOWED);
@@ -105,7 +105,7 @@ public class RefundServiceImpl implements RefundService {
 
 		PaymentEntity payment = refundHistory.getPayment();
 
-		if (payment.getPaymentStatus() == PaymentStatus.COMPLETE_REFUND) {
+		if (payment.getPaymentStatus() == PaymentStatus.REFUND_COMPLETED) {
 			throw new CustomException(ErrorCode.ALREADY_REFUNDED);
 		}
 

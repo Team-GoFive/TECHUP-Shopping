@@ -61,7 +61,7 @@ public class PaymentEntity extends BaseEntity {
 		if (paymentStatus != PaymentStatus.PAID) {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
 		}
-		this.paymentStatus = PaymentStatus.COMPLETE_REFUND;
+		this.paymentStatus = PaymentStatus.REFUND_COMPLETED;
 	}
 
 	public void cancel() {
