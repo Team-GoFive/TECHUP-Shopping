@@ -1,30 +1,41 @@
 package com.kt.controller.refund;
 
-
-import java.util.UUID;
-
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
+import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.RefundHistoryRequest;
-import com.kt.domain.dto.request.RefundRejectRequest;
+import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
+import com.kt.service.RefundQueryService;
 import com.kt.service.RefundService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/refunds")
 public class RefundController implements RefundSwaggerSupporter {
 
 	private final RefundService refundService;
+	private final RefundQueryService refundQueryService;
 
-	@PostMapping("/refunds")
+	@GetMapping
+	public ResponseEntity<ApiResult<PageResponse<RefundQueryResponse>>> getMyRefunds(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		Paging paging
+	) {
+		return ApiResult.page(
+			refundQueryService.getMyRefunds(currentUser.getId(), paging)
+		);
+	}
+
+	@PostMapping
 	public ResponseEntity<ApiResult<Void>> requestRefund(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid RefundHistoryRequest request
@@ -32,34 +43,6 @@ public class RefundController implements RefundSwaggerSupporter {
 		refundService.requestRefund(
 			currentUser.getId(),
 			request.orderProductId(),
-			request.reason()
-		);
-
-		return ApiResult.empty();
-	}
-
-	@PatchMapping("/seller/refunds/{refundId}/approve")
-	public ResponseEntity<ApiResult<Void>> approveRefund(
-		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
-		@PathVariable UUID refundId
-	) {
-		refundService.approveRefund(
-			currentSeller.getId(),
-			refundId
-		);
-
-		return ApiResult.empty();
-	}
-
-	@PatchMapping("/seller/refunds/{refundId}/reject")
-	public ResponseEntity<ApiResult<Void>> rejectRefund(
-		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
-		@PathVariable UUID refundId,
-		@RequestBody @Valid RefundRejectRequest request
-	) {
-		refundService.rejectRefund(
-			currentSeller.getId(),
-			refundId,
 			request.reason()
 		);
 
