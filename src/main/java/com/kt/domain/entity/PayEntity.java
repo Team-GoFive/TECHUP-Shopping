@@ -49,7 +49,7 @@ public class PayEntity extends BaseEntity {
 		if (amount <= 0) {
 			throw new CustomException(ErrorCode.INVALID_DOMAIN_FIELD);
 		}
-		this.balance += amount;
+		this.balance = this.balance.add(BigDecimal.valueOf(amount));
 	}
 
 
