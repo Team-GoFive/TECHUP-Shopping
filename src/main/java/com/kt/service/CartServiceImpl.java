@@ -99,9 +99,12 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public void removeOrderedItems(List<CartItemEntity> orderedItems) {
-		for (CartItemEntity item : orderedItems) {
-			item.getCart().removeItem(item.getId());
-		}
+		CartEntity cart = orderedItems.get(0).getCart();
+
+		cart.getItems().removeIf(item ->
+			orderedItems.stream()
+				.anyMatch(ordered -> ordered.getId().equals(item.getId()))
+		);
 	}
 
 }

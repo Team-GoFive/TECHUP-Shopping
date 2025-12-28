@@ -13,4 +13,6 @@ public interface CartItemRepository extends JpaRepository<CartItemEntity, UUID> 
 		return findById(cartItemId)
 			.orElseThrow(() -> new CustomException(ErrorCode.CART_ITEM_NOT_FOUND));
 	}
+
+	void deleteAllByIdInBatch(Iterable<UUID> ids);
 }
