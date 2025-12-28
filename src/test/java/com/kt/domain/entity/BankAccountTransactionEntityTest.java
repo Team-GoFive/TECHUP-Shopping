@@ -27,7 +27,7 @@ public class BankAccountTransactionEntityTest {
 
 	@BeforeEach
 	void init() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 	}
 
 	@Test

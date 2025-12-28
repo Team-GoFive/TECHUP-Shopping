@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.SellerEntityCreator;
 import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
@@ -47,15 +48,7 @@ class RefundHistoryEntityTest {
 			null
 		);
 
-		SellerEntity seller = SellerEntity.create(
-			"판매자1",
-			"seller@test.com",
-			"1234",
-			"상점1",
-			"010-1234-5678",
-			"seller@test.com",
-			Gender.MALE
-		);
+		SellerEntity seller = SellerEntityCreator.createSeller();
 
 		ProductEntity product = ProductEntity.create(
 			"테스트상품",

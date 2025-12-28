@@ -2,6 +2,7 @@ package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -236,7 +237,7 @@ class RefundServiceTest {
 		PayEntity payBefore =
 			payRepository.findByUser(testUser).orElseThrow();
 
-		long beforeBalance = payBefore.getBalance();
+		BigDecimal beforeBalance = payBefore.getBalance();
 
 		// when
 		refundService.approveRefund(
@@ -248,8 +249,11 @@ class RefundServiceTest {
 		PayEntity payAfter =
 			payRepository.findByUser(testUser).orElseThrow();
 
+		BigDecimal refundAmount =
+			BigDecimal.valueOf(history.getPayment().getRefundAmount());
+
 		assertThat(payAfter.getBalance())
-			.isEqualTo(beforeBalance + 13_000L);
+			.isEqualByComparingTo(beforeBalance.add(refundAmount));
 	}
 
 	@Test
@@ -403,7 +407,7 @@ class RefundServiceTest {
 		PayEntity payBefore =
 			payRepository.findByUser(testUser).orElseThrow();
 
-		long beforeBalance = payBefore.getBalance();
+		BigDecimal beforeBalance = payBefore.getBalance();
 
 		// when
 		refundService.rejectRefund(
@@ -417,7 +421,7 @@ class RefundServiceTest {
 			payRepository.findByUser(testUser).orElseThrow();
 
 		assertThat(payAfter.getBalance())
-			.isEqualTo(beforeBalance);
+			.isEqualByComparingTo(beforeBalance);
 	}
 
 
@@ -445,7 +449,7 @@ class RefundServiceTest {
 		PayEntity payBefore =
 			payRepository.findByUser(testUser).orElseThrow();
 
-		long beforeBalance = payBefore.getBalance();
+		BigDecimal beforeBalance = payBefore.getBalance();
 
 		// when
 		orderService.cancelOrderProduct(
@@ -457,8 +461,11 @@ class RefundServiceTest {
 		PayEntity payAfter =
 			payRepository.findByUser(testUser).orElseThrow();
 
+		BigDecimal refundAmount =
+			BigDecimal.valueOf(payment.getRefundAmount());
+
 		assertThat(payAfter.getBalance())
-			.isEqualTo(beforeBalance + 13_000L);
+			.isEqualByComparingTo(beforeBalance.add(refundAmount));
 	}
 
 	@Test
