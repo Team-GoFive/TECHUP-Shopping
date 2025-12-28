@@ -9,10 +9,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.kt.domain.dto.request.CartRequest;
+import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
 import com.kt.domain.entity.CartEntity;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.CartService;
+import com.kt.service.OrderApplicationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class CartController implements CartSwaggerSupporter {
 
 	private final CartService cartService;
+	private final OrderApplicationService orderApplicationService;
 
 	@Override
 	@GetMapping
@@ -83,6 +86,19 @@ public class CartController implements CartSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
 		cartService.clear(currentUser.getId());
+		return ResponseEntity.ok().build();
+	}
+
+	@Override
+	@PostMapping("/orders")
+	public ResponseEntity<Void> createOrderFromCart(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@RequestBody @Valid OrderRequest.CartOrderRequest request
+	) {
+		orderApplicationService.createOrderFromCart(
+			currentUser.getId(),
+			request
+		);
 		return ResponseEntity.ok().build();
 	}
 

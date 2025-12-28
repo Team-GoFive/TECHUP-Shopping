@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.CartRequest;
+import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
 import com.kt.security.DefaultCurrentUser;
 
@@ -43,5 +44,11 @@ public interface CartSwaggerSupporter extends SwaggerSupporter {
 	@Operation(summary = "장바구니 전체 비우기 API")
 	ResponseEntity<Void> clear(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser
+	);
+
+	@Operation(summary = "장바구니 선택 상품 주문 생성 API")
+	ResponseEntity<Void> createOrderFromCart(
+		@Parameter(hidden = true) DefaultCurrentUser currentUser,
+		OrderRequest.CartOrderRequest request
 	);
 }

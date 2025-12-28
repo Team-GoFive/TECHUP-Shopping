@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
+import com.kt.constant.OrderSourceType;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
@@ -61,9 +62,9 @@ public class OrderController implements OrderSwaggerSupporter {
 		@Valid @RequestBody OrderRequest request
 	) {
 		orderService.createOrder(
-			currentUser.getUsername(),
-			request.items(),
-			request.addressId()
+			currentUser.getId(),
+			request,
+			OrderSourceType.DIRECT
 		);
 		return empty();
 	}
