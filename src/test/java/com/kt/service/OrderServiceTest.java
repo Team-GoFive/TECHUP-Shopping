@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.common.SellerEntityCreator;
+import com.kt.constant.OrderSourceType;
 import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.SellerEntity;
 
@@ -93,15 +94,6 @@ class OrderServiceTest {
 		categoryRepository.save(category);
 	}
 
-	OrderEntity createOrder(UserEntity user) {
-		return orderRepository.save(
-			OrderEntity.create(
-				ReceiverCreator.createReceiver(),
-				user
-			)
-		);
-	}
-
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 		ProductEntity product = ProductEntityCreator.createProduct(category, testSeller);
 		productRepository.save(product);
@@ -133,8 +125,17 @@ class OrderServiceTest {
 			new OrderRequest.Item(product2.getId(), 3L, testSeller.getId())
 		);
 
+		OrderRequest orderRequest = new OrderRequest(
+			items,
+			address.getId()
+		);
+
 		// when
-		orderService.createOrder(testUser.getEmail(), items, address.getId());
+		orderService.createOrder(
+			testUser.getId(),
+			orderRequest,
+			OrderSourceType.DIRECT
+		);
 
 		// then
 		OrderEntity savedOrder = orderRepository.findAll().get(0);
@@ -153,8 +154,16 @@ class OrderServiceTest {
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(invalidId, 1L, testSeller.getId()));
 
+		OrderRequest orderRequest = new OrderRequest(items, address.getId());
+
 		// when, then
-		assertThatThrownBy(() -> orderService.createOrder(testUser.getEmail(), items, address.getId()))
+		assertThatThrownBy(() ->
+			orderService.createOrder(
+				testUser.getId(),
+				orderRequest,
+				OrderSourceType.DIRECT
+			)
+		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PRODUCT_NOT_FOUND");
 	}
@@ -170,8 +179,16 @@ class OrderServiceTest {
 			new OrderRequest.Item(product.getId(), 99999999L, testSeller.getId())
 		);
 
-		// then
-		assertThatThrownBy(() -> orderService.createOrder(testUser.getEmail(), items, address.getId()))
+		OrderRequest orderRequest = new OrderRequest(items, address.getId());
+
+		// when, then
+		assertThatThrownBy(() ->
+			orderService.createOrder(
+					testUser.getId(),
+					orderRequest,
+					OrderSourceType.DIRECT
+				)
+		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");
 	}

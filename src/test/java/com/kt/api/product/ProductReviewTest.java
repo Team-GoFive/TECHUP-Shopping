@@ -15,6 +15,7 @@ import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.OrderProductStatus;
 import com.kt.common.SellerEntityCreator;
+import com.kt.constant.OrderSourceType;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -24,7 +25,6 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.order.OrderRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -64,9 +64,6 @@ public class ProductReviewTest extends MockMvcTest {
 	@Autowired
 	OrderProductRepository orderProductRepository;
 
-	@Autowired
-	OrderRepository orderRepository;
-
 	@BeforeEach
 	void setUp() {
 		testMember = UserEntityCreator.create();
@@ -87,7 +84,11 @@ public class ProductReviewTest extends MockMvcTest {
 			List<OrderRequest.Item> items = List.of(
 				new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
 			);
-			orderService.createOrder(testMember.getEmail(), items, address.getId());
+			orderService.createOrder(
+				testMember.getId(),
+				new OrderRequest(items, address.getId()),
+				OrderSourceType.DIRECT
+			);
 		}
 
 		orderProductRepository.findAll()

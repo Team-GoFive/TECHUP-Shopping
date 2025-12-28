@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
+import com.kt.constant.OrderSourceType;
 import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.PaymentRepository;
@@ -94,10 +95,15 @@ public class OrderCancelTest extends MockMvcTest {
 				testSeller.getId()
 			)
 		);
-		orderService.createOrder(
-			testMember.getEmail(),
+		OrderRequest orderRequest = new OrderRequest(
 			items,
 			testAddress.getId()
+		);
+
+		orderService.createOrder(
+			testMember.getId(),
+			orderRequest,
+			OrderSourceType.DIRECT
 		);
 
 		OrderEntity order = orderRepository.findAll().stream()

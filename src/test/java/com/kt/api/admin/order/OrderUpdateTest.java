@@ -16,6 +16,7 @@ import com.kt.common.OrderEntityCreator;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderProductRequest;
 import com.kt.domain.entity.CategoryEntity;
@@ -23,11 +24,13 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.SellerEntity;
+import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
+import com.kt.repository.user.UserRepository;
 
 @DisplayName("주문상품 상태 강제 변경(어드민) - PATCH /api/admin/orders/order-products/{orderProductId}/force-change-status")
 public class OrderUpdateTest extends MockMvcTest {
@@ -42,6 +45,8 @@ public class OrderUpdateTest extends MockMvcTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	SellerRepository sellerRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	private OrderProductEntity givenShippingReadyOrderProduct() {
 		CategoryEntity category = categoryRepository.save(
@@ -52,10 +57,13 @@ public class OrderUpdateTest extends MockMvcTest {
 			SellerEntityCreator.createSeller()
 		);
 
+		UserEntity user = UserEntityCreator.create();
+		userRepository.save(user);
+
 		ProductEntity product = ProductEntityCreator.createProduct(category, seller);
 		productRepository.save(product);
 
-		OrderEntity order = OrderEntityCreator.createOrderEntity();
+		OrderEntity order = OrderEntityCreator.createOrderEntity(user);
 		orderRepository.save(order);
 
 		OrderProductEntity orderProduct =
