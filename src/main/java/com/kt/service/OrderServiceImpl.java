@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
+import com.kt.constant.PaymentStatus;
 import com.kt.constant.ShippingType;
 import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
@@ -17,12 +18,16 @@ import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.PayEntity;
+import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
+import com.kt.repository.PayRepository;
+import com.kt.repository.PaymentRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -42,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
 	private final AddressRepository addressRepository;
+	private final PaymentRepository paymentRepository;
+	private final PayRepository payRepository;
+
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -119,6 +127,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public void cancelOrderProduct(UUID userId, UUID orderProductId) {
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
@@ -137,6 +146,21 @@ public class OrderServiceImpl implements OrderService {
 
 		ProductEntity product = orderProduct.getProduct();
 		product.addStock(orderProduct.getQuantity());
+
+		PaymentEntity payment = paymentRepository.findByOrderProduct(orderProduct)
+			.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+		if (payment.getPaymentStatus() == PaymentStatus.REFUND_COMPLETED) {
+			throw new CustomException(ErrorCode.ALREADY_REFUNDED);
+		}
+
+		PayEntity pay = payRepository.findByUser(user)
+			.orElseThrow(() -> new CustomException(ErrorCode.PAY_NOT_FOUND));
+
+		long amount = payment.getRefundAmount();
+
+		pay.refund(amount);
+		payment.cancel();
 		orderProduct.cancel();
 	}
 

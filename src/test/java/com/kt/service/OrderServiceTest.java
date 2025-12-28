@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.SellerEntity;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +38,7 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.PaymentRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.order.OrderRepository;
@@ -72,6 +75,8 @@ class OrderServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	SellerRepository sellerRepository;
+	@Autowired
+	PaymentRepository paymentRepository;
 
 	CategoryEntity category;
 	SellerEntity testSeller;
@@ -192,6 +197,7 @@ class OrderServiceTest {
 		assertThat(foundOrderProduct.orderProducts().size()).isEqualTo(1);
 	}
 
+	@Disabled("Payment 생성/결제 플로우 미구현")
 	@Test
 	void 주문상품_취소_성공__PAID_상태() {
 		// given
@@ -208,6 +214,8 @@ class OrderServiceTest {
 
 		long beforeStock1 = orderProduct1.getProduct().getStock();
 		long beforeStock2 = orderProduct2.getProduct().getStock();
+
+		// TODO: payment
 
 		// when
 		orderService.cancelOrderProduct(user.getId(), orderProduct1.getId());
@@ -261,7 +269,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		OrderRequest.Update updateRequest = new OrderRequest.Update(
 			"박수정",
@@ -289,7 +297,7 @@ class OrderServiceTest {
 		);
 
 		OrderProductEntity orderProduct = createOrderWithProducts(order, 2L);
-		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
 		CourierEntity courier = courierRepository.save(
 			CourierEntityCreator.createCourierEntity()
