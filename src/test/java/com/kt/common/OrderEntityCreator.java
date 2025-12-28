@@ -6,35 +6,21 @@ import com.kt.domain.entity.UserEntity;
 
 public class OrderEntityCreator {
 
-	public static OrderEntity createOrderEntity() {
+	public static OrderEntity createOrderEntity(UserEntity user) {
 		ReceiverVO receiverVO = ReceiverVO.create(
-			"test",
+			"test-receiver",
 			"010-1213-1232",
-			"테스트",
-			"테스트",
-			"길",
-			"상세"
+			"서울",
+			"강남구",
+			"테스트로",
+			"101동 1001호"
 		);
-		UserEntity testUser = UserEntityCreator.create();
-		return OrderEntity.create(
-			receiverVO,
-			testUser
-		);
+
+		return OrderEntity.create(receiverVO, user);
 	}
 
-	public static OrderEntity createOrderEntity(UserEntity userEntity) {
-		ReceiverVO receiverVO = ReceiverVO.create(
-			"test",
-			"010-1213-1232",
-			"테스트",
-			"테스트",
-			"길",
-			"상세"
-		);
-		return OrderEntity.create(
-			receiverVO,
-			userEntity
-		);
+	public static OrderEntity createOrderEntity(UserEntity user, ReceiverVO receiverVO) {
+		return OrderEntity.create(receiverVO, user);
 	}
 
 }
