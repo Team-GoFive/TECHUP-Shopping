@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.common.SellerEntityCreator;
-import com.kt.constant.OrderSourceType;
 import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.SellerEntity;
 
@@ -133,8 +132,7 @@ class OrderServiceTest {
 		// when
 		orderService.createOrder(
 			testUser.getId(),
-			orderRequest,
-			OrderSourceType.DIRECT
+			orderRequest
 		);
 
 		// then
@@ -160,8 +158,7 @@ class OrderServiceTest {
 		assertThatThrownBy(() ->
 			orderService.createOrder(
 				testUser.getId(),
-				orderRequest,
-				OrderSourceType.DIRECT
+				orderRequest
 			)
 		)
 			.isInstanceOf(CustomException.class)
@@ -185,8 +182,7 @@ class OrderServiceTest {
 		assertThatThrownBy(() ->
 			orderService.createOrder(
 					testUser.getId(),
-					orderRequest,
-					OrderSourceType.DIRECT
+					orderRequest
 				)
 		)
 			.isInstanceOf(CustomException.class)

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.kt.common.SellerEntityCreator;
-import com.kt.constant.OrderSourceType;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.seller.SellerRepository;
 
@@ -92,8 +91,7 @@ public class OrderUpdateTest extends MockMvcTest {
 
 		orderService.createOrder(
 			testMember.getId(),
-			orderRequest,
-			OrderSourceType.DIRECT
+			orderRequest
 		);
 	}
 

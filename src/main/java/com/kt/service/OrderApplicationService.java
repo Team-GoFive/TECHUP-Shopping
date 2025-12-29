@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderSourceType;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.CartItemEntity;
 
@@ -31,8 +30,7 @@ public class OrderApplicationService {
 
 		orderService.createOrder(
 			userId,
-			orderRequest,
-			OrderSourceType.CART
+			orderRequest
 		);
 
 		cartService.removeOrderedItems(cartItems);

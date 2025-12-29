@@ -15,7 +15,6 @@ import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.constant.OrderProductStatus;
 import com.kt.common.SellerEntityCreator;
-import com.kt.constant.OrderSourceType;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -86,8 +85,7 @@ public class ProductReviewTest extends MockMvcTest {
 			);
 			orderService.createOrder(
 				testMember.getId(),
-				new OrderRequest(items, address.getId()),
-				OrderSourceType.DIRECT
+				new OrderRequest(items, address.getId())
 			);
 		}
 
