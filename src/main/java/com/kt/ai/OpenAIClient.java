@@ -9,8 +9,8 @@ import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 
-import com.kt.ai.dto.OpenAIRequest;
-import com.kt.ai.dto.OpenAIResponse;
+import com.kt.ai.dto.request.OpenAIRequest;
+import com.kt.ai.dto.response.OpenAIResponse;
 
 @HttpExchange(url = "https://api.openai.com/v1", contentType = MediaType.APPLICATION_JSON_VALUE)
 public interface OpenAIClient {
