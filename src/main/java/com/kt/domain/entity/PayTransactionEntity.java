@@ -74,6 +74,7 @@ public class PayTransactionEntity extends BaseEntity {
 		ValidationUtil.validateRequiredEnum(transactionType, "페이 거래타입");
 		ValidationUtil.validateRequiredEnum(transactionPurpose, "페이 거래목적");
 		ValidationUtil.validatePositive(amount, "페이 거래금액");
+		ValidationUtil.validateNonNegative(balanceSnapshot.intValue(), "거래 후 잔액");
 		BigDecimal transactionAmount = BigDecimal.valueOf(amount);
 		return new PayTransactionEntity(
 			pay,
