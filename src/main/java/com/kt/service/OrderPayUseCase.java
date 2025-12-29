@@ -1,12 +1,10 @@
 package com.kt.service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.entity.OrderEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,13 +13,11 @@ import lombok.RequiredArgsConstructor;
 public class OrderPayUseCase {
 
 	private final OrderService orderService;
-	private final PayService payService;
+	// TODO: PayService 주입
 
-	public void orderPay(String email, List<OrderRequest.Item> items, UUID addressId) {
-		orderService.checkStock(items);
-		OrderEntity order = orderService.createOrder(email, items, addressId);
-		orderService.reduceStock(order.getId());
-
-		payService.processPayment(orderId, amount);
+	public void orderPay(UUID userId, OrderRequest request) {
+		orderService.reduceStock(request.items()); // 1. 재고 차감
+		orderService.createOrder(userId, request); // 2. 주문 생성
+		// TODO: PayService 결제 메서드 호출 // 3. 결제
 	}
 }

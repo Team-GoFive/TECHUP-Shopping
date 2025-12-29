@@ -34,6 +34,7 @@ import com.kt.repository.account.AccountRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.service.OrderPayUseCase;
 import com.kt.service.OrderService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class LockTest {
 
 	private final long productStock1 = 10L;
 	private final long productStock2 = 10L;
+	@Autowired
+	private OrderPayUseCase orderPayUseCase;
 	@Autowired
 	private OrderService orderService;
 	@Autowired
@@ -145,7 +148,7 @@ public class LockTest {
 						List.of(item),
 						addresses.get(finalI).getId()
 					);
-					orderService.createOrder(users.get(finalI).getId(), request);
+					orderPayUseCase.orderPay(users.get(finalI).getId(), request);
 					successCount.incrementAndGet();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
