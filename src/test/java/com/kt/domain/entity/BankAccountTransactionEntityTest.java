@@ -45,7 +45,7 @@ public class BankAccountTransactionEntityTest {
 	}
 
 	@Test
-	void 객체생성_실패_거래타입_null() {
+	void 객체생성_실패_계좌_거래타입_null() {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
@@ -64,7 +64,7 @@ public class BankAccountTransactionEntityTest {
 	}
 
 	@Test
-	void 객체생성_실패_거래목적_null() {
+	void 객체생성_실패_계좌_거래목적_null() {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
@@ -75,15 +75,14 @@ public class BankAccountTransactionEntityTest {
 				BigDecimal.valueOf(10_000),
 				testUser.getBankAccount().getId()
 			)
-		)
-			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
+		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 				log.info("getErrorMessage : {}", ex.getErrorMessage());
 				assertEquals("도메인 필드 오류 : 거래 목적은(는) 필수 항목입니다.", ex.getErrorMessage());
 			});
 	}
 
 	@Test
-	void 객체생성_실패_거래금액_0_이하() {
+	void 객체생성_실패_계좌_거래금액_0_이하() {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
@@ -102,7 +101,7 @@ public class BankAccountTransactionEntityTest {
 	}
 
 	@Test
-	void 객체생성_실패_거래잔액_0_미만() {
+	void 객체생성_실패_계좌_거래후_잔액_0_미만() {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
@@ -113,11 +112,12 @@ public class BankAccountTransactionEntityTest {
 				BigDecimal.valueOf(-1),
 				testUser.getBankAccount().getId()
 			)
-		)
-			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
+		).isInstanceOfSatisfying(
+			FieldValidationException.class, ex -> {
 				log.info("getErrorMessage : {}", ex.getErrorMessage());
-				assertEquals("도메인 필드 오류 : 거래 잔액은(는) 0보다 작을 수 없습니다.", ex.getErrorMessage());
-			});
+				assertEquals("도메인 필드 오류 : 거래 후 잔액은(는) 0보다 작을 수 없습니다.", ex.getErrorMessage());
+			}
+		);
 	}
 
 }
