@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.OrderSourceType;
 import com.kt.constant.PaymentStatus;
 import com.kt.constant.ShippingType;
 import com.kt.constant.AccountRole;
@@ -72,8 +71,8 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderEntity createOrder(
 		UUID userId,
-		OrderRequest request,
-		OrderSourceType sourceType)
+		OrderRequest request
+	)
 	{
 		List<OrderRequest.Item> items = request.items();
 		UUID addressId = request.addressId();

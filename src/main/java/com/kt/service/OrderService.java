@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.kt.constant.OrderSourceType;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.OrderEntity;
@@ -16,9 +15,9 @@ public interface OrderService {
 
 	void checkStock(List<OrderRequest.Item> items);
 
-	OrderEntity createOrder(UUID userId,
-		OrderRequest request,
-		OrderSourceType sourceType
+	OrderEntity createOrder(
+		UUID userId,
+		OrderRequest request
 	);
 
 	void reduceStock(UUID orderId);
