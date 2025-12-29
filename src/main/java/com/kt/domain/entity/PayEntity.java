@@ -61,4 +61,12 @@ public class PayEntity extends BaseEntity {
 		this.balance = this.balance.add(chargeAmount);
 	}
 
+	public void withdraw(long amount) {
+		ValidationUtil.validatePositive(amount, "인출금액");
+		BigDecimal withdrawAmount = BigDecimal.valueOf(amount);
+		if (this.balance.compareTo(withdrawAmount) < 0)
+			throw new CustomException(ErrorCode.PAY_BALANCE_NOT_ENOUGH);
+		this.balance = this.balance.subtract(withdrawAmount);
+	}
+
 }

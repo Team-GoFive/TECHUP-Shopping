@@ -50,11 +50,12 @@ public class BankAccountEntity extends BaseEntity {
 
 	public void deposit(long amount) {
 		ValidationUtil.validatePositive(amount, "입금금액");
-		BigDecimal salaryAmount = BigDecimal.valueOf(amount);
-		this.balance.add(salaryAmount);
+		BigDecimal depositAmount = BigDecimal.valueOf(amount);
+		this.balance = this.balance.add(depositAmount);
 	}
 
-	public void withdraw(Long amount) {
+	public void withdraw(long amount) {
+
 		BigDecimal withdrawAmount = BigDecimal.valueOf(amount);
 		if (this.balance.compareTo(withdrawAmount) < 0)
 			throw new CustomException(ErrorCode.BANK_ACCOUNT_BALANCE_NOT_ENOUGH);
