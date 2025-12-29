@@ -46,13 +46,18 @@ public class CartItemEntity extends BaseEntity {
 		return new CartItemEntity(cart, product, quantity);
 	}
 
-	public void increase(int amount) {
+	public void addQuantity(int amount) {
 		changeQuantity(this.quantity + amount);
 	}
+
+	private static final int MAX_CART_QUANTITY = 100;
 
 	public void changeQuantity(int quantity) {
 		if (quantity <= 0) {
 			throw new CustomException(ErrorCode.INVALID_CART_ITEM_QUANTITY);
+		}
+		if (quantity > MAX_CART_QUANTITY) {
+			throw new CustomException(ErrorCode.MAX_CART_ITEM_QUANTITY);
 		}
 		this.quantity = quantity;
 	}
