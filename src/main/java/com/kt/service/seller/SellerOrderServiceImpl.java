@@ -30,7 +30,9 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
 	@Override
 	public void cancelOrderProduct(UUID orderProductId, UUID sellerId) {
-		OrderProductEntity orderProduct = getOrderProductWithOwnerCheck(orderProductId, sellerId);
+		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
+		Preconditions.validate(orderProduct.getProduct().getSeller().getId() == sellerId,
+			ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 
 		OrderProductStatus status = orderProduct.getStatus();
 
@@ -51,21 +53,15 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
 	@Override
 	public void confirmPaidOrderProduct(UUID orderProductId, UUID sellerId) {
-		OrderProductEntity orderProduct = getOrderProductWithOwnerCheck(orderProductId, sellerId);
+		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
+		Preconditions.validate(orderProduct.getProduct().getSeller().getId() == sellerId,
+			ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		OrderProductStatus status = orderProduct.getStatus();
 
 		if (status != OrderProductStatus.PENDING_APPROVE) {
 			throw new CustomException(ErrorCode.INVALID_ORDER_PRODUCT_STATUS);
 		}
 		orderProduct.confirmPaidOrderProduct();
-	}
-
-	private OrderProductEntity getOrderProductWithOwnerCheck(UUID orderProductId, UUID sellerId) {
-		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
-		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
-		Preconditions.validate(orderProduct.getProduct().getSeller().getId().equals(seller.getId()),
-			ErrorCode.ORDER_PRODUCT_NOT_OWNER);
-		return orderProduct;
 	}
 
 }

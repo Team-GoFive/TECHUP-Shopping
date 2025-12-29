@@ -40,43 +40,48 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 	@Override
 	public void update(UUID productId, String name, Long price, Long stock, UUID categoryId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		CategoryEntity category = categoryRepository.findByIdOrThrow(categoryId);
 		product.update(name, price, stock, category);
 	}
 
 	@Override
 	public void delete(UUID productId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		product.delete();
 	}
 
 	@Override
 	public void activate(List<UUID> productIds, UUID sellerId) {
 		productIds.forEach(productId -> {
-			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-			product.activate();
-		});
+				ProductEntity product = productRepository.findByIdOrThrow(productId);
+				Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
+				product.activate();
+			});
 	}
 
-	@Override
+
 	public void inActivate(List<UUID> productIds, UUID sellerId) {
 		productIds.forEach(productId -> {
-			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
-			product.inActivate();
+			ProductEntity product = productRepository.findByIdOrThrow(productId);
+			Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		});
 	}
 
 	@Override
 	public void toggleActive(UUID productId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		product.toggleActive();
 	}
 
 	@Override
 	public void soldOutProducts(List<UUID> productIds, UUID sellerId) {
 		for (UUID productId : productIds) {
-			ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+			ProductEntity product = productRepository.findByIdOrThrow(productId);
+			Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 			product.decreaseStock(product.getStock());
 		}
 	}
@@ -92,14 +97,9 @@ public class SellerProductServiceImpl implements SellerProductService {
 
 	@Override
 	public ProductResponse.Detail detail(UUID productId, UUID sellerId) {
-		ProductEntity product = getProductWithOwnerCheck(productId, sellerId);
+		ProductEntity product = productRepository.findByIdOrThrow(productId);
+		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		return ProductResponse.Detail.from(product);
 	}
 
-	private ProductEntity getProductWithOwnerCheck(UUID productId, UUID sellerId) {
-		ProductEntity product = productRepository.findByIdOrThrow(productId);
-		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
-		Preconditions.validate(product.getSeller().getId().equals(seller.getId()), ErrorCode.PRODUCT_NOT_OWNER);
-		return product;
-	}
 }
