@@ -48,7 +48,7 @@ public class CartEntity extends BaseEntity {
 		CartItemEntity item = findItem(product);
 
 		if (item != null) {
-			item.increase(quantity);
+			item.addQuantity(quantity);
 			return;
 		}
 
