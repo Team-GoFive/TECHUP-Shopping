@@ -12,10 +12,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.constant.AccountRole;
@@ -29,6 +31,8 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.service.OrderService;
 
@@ -44,6 +48,8 @@ public class LockTest {
 	@Autowired
 	private OrderService orderService;
 	@Autowired
+	private OrderRepository orderRepository;
+	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
@@ -51,6 +57,10 @@ public class LockTest {
 	private AccountRepository accountRepository;
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private OrderProductRepository orderProductRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	private ProductEntity product1;
 	private ProductEntity product2;
 
@@ -66,6 +76,17 @@ public class LockTest {
 		);
 	}
 
+	@AfterEach
+	void cleanUp() {
+		// 외래키 제약조건을 고려하여 역순으로 삭제
+		orderProductRepository.deleteAll();
+		productRepository.deleteAll(); // 상품 삭제
+		orderRepository.deleteAll();  // 주문 먼저 삭제
+		addressRepository.deleteAll(); // 주소 삭제
+		categoryRepository.deleteAll(); // 카테고리 삭제
+		accountRepository.deleteAll();  // 계정 삭제
+	}
+
 	@BeforeEach
 	void setup() {
 		CategoryEntity category = CategoryEntity.create("카테고리", null);
@@ -73,10 +94,9 @@ public class LockTest {
 		SellerEntity seller = SellerEntity.create(
 			"판매자",
 			"seller@email.com",
-			"password",
+			passwordEncoder.encode("password"),
 			"가게명",
 			"010-1234-1234",
-			"seller@email.com",
 			Gender.MALE
 		);
 		accountRepository.save(seller);
@@ -87,6 +107,7 @@ public class LockTest {
 			"상품2", 100_000L, productStock2, category, seller
 		);
 		productRepository.saveAll(List.of(product1, product2));
+		productRepository.flush();
 	}
 
 	@Test
