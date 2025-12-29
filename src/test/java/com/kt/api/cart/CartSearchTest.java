@@ -98,9 +98,9 @@ public class CartSearchTest extends MockMvcTest {
 					))
 			)
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.items.length()").value(1))
-			.andExpect(jsonPath("$.items[0].quantity").value(2))
-			.andExpect(jsonPath("$.totalAmount").value(2000));
+			.andExpect(jsonPath("$.data.items.length()").value(1))
+			.andExpect(jsonPath("$.data.items[0].quantity").value(2))
+			.andExpect(jsonPath("$.data.totalAmount").value(2000));
 	}
 
 	@Test
