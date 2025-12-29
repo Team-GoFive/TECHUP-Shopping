@@ -29,6 +29,7 @@ import com.kt.repository.AddressRepository;
 import com.kt.repository.PayRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -72,8 +73,7 @@ public class OrderServiceImpl implements OrderService {
 	public OrderEntity createOrder(
 		UUID userId,
 		OrderRequest request
-	)
-	{
+	) {
 		List<OrderRequest.Item> items = request.items();
 		UUID addressId = request.addressId();
 

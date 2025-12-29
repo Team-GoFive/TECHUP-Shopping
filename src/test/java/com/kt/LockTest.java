@@ -141,7 +141,11 @@ public class LockTest {
 			executorService.submit(() -> {
 				try {
 					System.out.println(String.format("===== 사용자 %d 주문 시도 =====", finalI));
-					orderService.createOrder(users.get(finalI).getEmail(), List.of(item), addresses.get(finalI).getId());
+					OrderRequest request = new OrderRequest(
+						List.of(item),
+						addresses.get(finalI).getId()
+					);
+					orderService.createOrder(users.get(finalI).getId(), request);
 					successCount.incrementAndGet();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
