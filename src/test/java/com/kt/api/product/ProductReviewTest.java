@@ -23,9 +23,9 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 import com.kt.service.ReviewService;
@@ -94,7 +94,7 @@ public class ProductReviewTest extends MockMvcTest {
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {
 			OrderProductEntity orderProduct = list.get(i);
-			reviewService.create(testMember.getMobile(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
+			reviewService.create(testMember.getId(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
 	}
 }
