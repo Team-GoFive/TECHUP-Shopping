@@ -37,7 +37,7 @@ public class BankAccountTransactionEntityTest {
 				testUser.getBankAccount(),
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
-				BigDecimal.valueOf(10_000),
+				10_000,
 				BigDecimal.valueOf(10_000),
 				testUser.getBankAccount().getId()
 			);
@@ -52,7 +52,7 @@ public class BankAccountTransactionEntityTest {
 				testUser.getBankAccount(),
 				null,
 				BankAccountTransactionPurpose.SALARY,
-				BigDecimal.valueOf(10_000),
+				10_000,
 				BigDecimal.valueOf(10_000),
 				testUser.getBankAccount().getId()
 			)
@@ -71,7 +71,7 @@ public class BankAccountTransactionEntityTest {
 				testUser.getBankAccount(),
 				BankAccountTransactionType.DEPOSIT,
 				null,
-				BigDecimal.valueOf(10_000),
+				10_000,
 				BigDecimal.valueOf(10_000),
 				testUser.getBankAccount().getId()
 			)
@@ -90,7 +90,7 @@ public class BankAccountTransactionEntityTest {
 				testUser.getBankAccount(),
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
-				BigDecimal.valueOf(0),
+				0,
 				BigDecimal.valueOf(10_000),
 				testUser.getBankAccount().getId()
 			)
@@ -109,7 +109,7 @@ public class BankAccountTransactionEntityTest {
 				testUser.getBankAccount(),
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
-				BigDecimal.valueOf(10_000),
+				10_000,
 				BigDecimal.valueOf(-1),
 				testUser.getBankAccount().getId()
 			)
