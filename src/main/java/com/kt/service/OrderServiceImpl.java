@@ -28,7 +28,6 @@ import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.PayRepository;
 import com.kt.repository.PaymentRepository;
-import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -49,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
 	private final AddressRepository addressRepository;
 	private final PaymentRepository paymentRepository;
 	private final PayRepository payRepository;
-
 
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
@@ -122,9 +120,12 @@ public class OrderServiceImpl implements OrderService {
 			orderProductRepository.findAllByOrderId(orderId);
 
 		for (OrderProductEntity orderProduct : orderProducts) {
-			// 비관적 락을 사용하여 상품을 다시 조회
 			ProductEntity product = productRepository.findByIdWithLockOrThrow(orderProduct.getProduct().getId());
 			Long quantity = orderProduct.getQuantity();
+
+			if (product.getStock() < quantity) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
 
 			product.decreaseStock(quantity);
 			orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
