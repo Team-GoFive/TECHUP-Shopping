@@ -41,7 +41,7 @@ public class ReviewController implements ReviewSwaggerSupporter {
 		@RequestBody ReviewRequest.Create request
 	) {
 		reviewService.create(
-			currentUser.getEmail(),
+			currentUser.getId(),
 			request.orderProductId(),
 			request.content()
 		);
@@ -83,7 +83,7 @@ public class ReviewController implements ReviewSwaggerSupporter {
 		@RequestBody ReviewRequest.Update request
 	) {
 		reviewService.update(
-			currentUser.getEmail(),
+			currentUser.getId(),
 			reviewId,
 			request.content()
 		);
@@ -95,7 +95,7 @@ public class ReviewController implements ReviewSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	) {
-		reviewService.delete(currentUser.getEmail(), reviewId);
+		reviewService.delete(currentUser.getId(), reviewId);
 		return empty();
 	}
 }

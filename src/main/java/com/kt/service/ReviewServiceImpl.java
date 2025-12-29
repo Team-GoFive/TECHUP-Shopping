@@ -18,8 +18,8 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.order.OrderRepository;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.review.ReviewRepository;
 
@@ -39,11 +39,11 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void create(
-		String email,
+		UUID userId,
 		UUID orderProductId,
 		String content
 	) {
-		if (!isOrderProductOwnedByUser(email, orderProductId))
+		if (!isOrderProductOwnedByUser(userId, orderProductId))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 
 		if (reviewRepository.findByOrderProductId(orderProductId).isPresent())
@@ -60,12 +60,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public void update(
-		String email,
+		UUID userId,
 		UUID reviewId,
 		String content
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (!hasReviewAccessPermission(email, review))
+		if (!hasReviewAccessPermission(userId, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.update(content);
 	}
@@ -73,11 +73,11 @@ public class ReviewServiceImpl implements ReviewService {
 	// TODO: 현재 본인만 리뷰 삭제 가능, 어드민 리뷰 삭제 검토
 	@Override
 	public void delete(
-		String email,
+		UUID userId,
 		UUID reviewId
 	) {
 		ReviewEntity review = reviewRepository.findByIdOrThrow(reviewId);
-		if (!hasReviewAccessPermission(email, review))
+		if (!hasReviewAccessPermission(userId, review))
 			throw new CustomException(ErrorCode.REVIEW_ACCESS_NOT_ALLOWED);
 		review.delete();
 	}
@@ -114,8 +114,8 @@ public class ReviewServiceImpl implements ReviewService {
 		return reviewRepository.searchReviewsByUserId(pageable, userId);
 	}
 
-	private boolean isOrderProductOwnedByUser(String email, UUID orderProductId) {
-		AbstractAccountEntity user = accountRepository.findByEmailOrThrow(email);
+	private boolean isOrderProductOwnedByUser(UUID userId, UUID orderProductId) {
+		AbstractAccountEntity user = accountRepository.findByIdOrThrow(userId);
 		List<OrderEntity> orders = orderRepository.findAllByOrderBy_Id(user.getId());
 
 		return orders
@@ -124,8 +124,8 @@ public class ReviewServiceImpl implements ReviewService {
 			.anyMatch(orderProduct -> orderProduct.getId().equals(orderProductId));
 	}
 
-	private boolean hasReviewAccessPermission(String email, ReviewEntity review) {
-		AbstractAccountEntity reviewEditor = accountRepository.findByEmailOrThrow(email);
+	private boolean hasReviewAccessPermission(UUID userId, ReviewEntity review) {
+		AbstractAccountEntity reviewEditor = accountRepository.findByIdOrThrow(userId);
 
 		UserEntity reviewOwner = review
 			.getOrderProduct()

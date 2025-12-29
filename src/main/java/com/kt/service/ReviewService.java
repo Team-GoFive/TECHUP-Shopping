@@ -9,11 +9,11 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
 
 public interface ReviewService {
-	void create(String email, UUID orderProductId, String content);
+	void create(UUID userId, UUID orderProductId, String content);
 
-	void update(String email, UUID reviewId, String content);
+	void update(UUID userId, UUID reviewId, String content);
 
-	void delete(String email, UUID reviewId);
+	void delete(UUID userId, UUID reviewId);
 
 	ReviewResponse.Search getReview(UUID orderProductId);
 
