@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 
+import com.kt.common.api.ApiResult;
 import com.kt.common.support.SwaggerSupporter;
 import com.kt.domain.dto.request.CartRequest;
 import com.kt.domain.dto.request.OrderRequest;
@@ -17,37 +18,55 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Cart", description = "장바구니 관련 API")
 public interface CartSwaggerSupporter extends SwaggerSupporter {
 
-	@Operation(summary = "장바구니 조회 API")
-	ResponseEntity<CartResponse.Cart> getCart(
+	@Operation(
+		summary = "장바구니 조회",
+		description = "사용자가 본인의 장바구니를 조회하는 API"
+	)
+	ResponseEntity<ApiResult<CartResponse.Cart>> getCart(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser
 	);
 
-	@Operation(summary = "장바구니 상품 추가 API")
-	ResponseEntity<Void> addItem(
+	@Operation(
+		summary = "장바구니 상품 추가",
+		description = "사용자가 장바구니에 상품을 담는 API"
+	)
+	ResponseEntity<ApiResult<Void>> addItem(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
 		CartRequest.AddItem request
 	);
 
-	@Operation(summary = "장바구니 상품 수량 변경 API")
-	ResponseEntity<Void> changeQuantity(
+	@Operation(
+		summary = "장바구니 상품 수량 변경",
+		description = "사용자가 장바구니에 담긴 상품 수량을 변경하는 API"
+	)
+	ResponseEntity<ApiResult<Void>> changeQuantity(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
 		UUID cartItemId,
 		CartRequest.UpdateQuantity request
 	);
 
-	@Operation(summary = "장바구니 상품 삭제 API")
-	ResponseEntity<Void> removeItem(
+	@Operation(
+		summary = "장바구니 상품 삭제",
+		description = "사용자가 장바구니에 담긴 상품을 삭제하는 API"
+	)
+	ResponseEntity<ApiResult<Void>> removeItem(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
 		UUID cartItemId
 	);
 
-	@Operation(summary = "장바구니 전체 비우기 API")
-	ResponseEntity<Void> clear(
+	@Operation(
+		summary = "장바구니 전체 비우기",
+		description = "사용자가 장바구니 상품을 전체 삭제하는 API"
+	)
+	ResponseEntity<ApiResult<Void>> clear(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser
 	);
 
-	@Operation(summary = "장바구니 선택 상품 주문 생성 API")
-	ResponseEntity<Void> createOrderFromCart(
+	@Operation(
+		summary = "장바구니 선택 상품 주문 생성 API",
+		description = "사용자가 장바구니에서 상품을 선택하여 주문하는 API"
+	)
+	ResponseEntity<ApiResult<Void>> createOrderFromCart(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
 		OrderRequest.CartOrderRequest request
 	);

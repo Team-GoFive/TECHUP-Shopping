@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.CartRequest;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/cart")
+@RequestMapping("/api/carts")
 public class CartController implements CartSwaggerSupporter {
 
 	private final CartService cartService;
@@ -28,16 +29,16 @@ public class CartController implements CartSwaggerSupporter {
 
 	@Override
 	@GetMapping
-	public ResponseEntity<CartResponse.Cart> getCart(
+	public ResponseEntity<ApiResult<CartResponse.Cart>> getCart(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
 		CartEntity cart = cartService.getCart(currentUser.getId());
-		return ResponseEntity.ok(CartResponse.toResponse(cart));
+		return ApiResult.wrap(CartResponse.toResponse(cart));
 	}
 
 	@Override
 	@PostMapping("/items")
-	public ResponseEntity<Void> addItem(
+	public ResponseEntity<ApiResult<Void>> addItem(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid CartRequest.AddItem request
 	) {
@@ -47,12 +48,12 @@ public class CartController implements CartSwaggerSupporter {
 			request.quantity()
 		);
 
-		return ResponseEntity.ok().build();
+		return ApiResult.empty();
 	}
 
 	@Override
 	@PatchMapping("/items/{cartItemId}")
-	public ResponseEntity<Void> changeQuantity(
+	public ResponseEntity<ApiResult<Void>> changeQuantity(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID cartItemId,
 		@RequestBody @Valid CartRequest.UpdateQuantity request
@@ -63,12 +64,12 @@ public class CartController implements CartSwaggerSupporter {
 			request.quantity()
 		);
 
-		return ResponseEntity.ok().build();
+		return ApiResult.empty();
 	}
 
 	@Override
 	@DeleteMapping("/items/{cartItemId}")
-	public ResponseEntity<Void> removeItem(
+	public ResponseEntity<ApiResult<Void>> removeItem(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID cartItemId
 	) {
@@ -77,21 +78,22 @@ public class CartController implements CartSwaggerSupporter {
 			cartItemId
 		);
 
-		return ResponseEntity.ok().build();
+		return ApiResult.empty();
 	}
 
 	@Override
 	@DeleteMapping
-	public ResponseEntity<Void> clear(
+	public ResponseEntity<ApiResult<Void>> clear(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
 		cartService.clear(currentUser.getId());
-		return ResponseEntity.ok().build();
+
+		return ApiResult.empty();
 	}
 
 	@Override
 	@PostMapping("/orders")
-	public ResponseEntity<Void> createOrderFromCart(
+	public ResponseEntity<ApiResult<Void>> createOrderFromCart(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid OrderRequest.CartOrderRequest request
 	) {
@@ -99,7 +101,7 @@ public class CartController implements CartSwaggerSupporter {
 			currentUser.getId(),
 			request
 		);
-		return ResponseEntity.ok().build();
-	}
 
+		return ApiResult.empty();
+	}
 }
