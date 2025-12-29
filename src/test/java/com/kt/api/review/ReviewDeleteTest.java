@@ -1,13 +1,10 @@
 package com.kt.api.review;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.SellerEntity;
-
+import static com.kt.common.CurrentUserCreator.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.kt.common.CurrentUserCreator.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +17,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.ReviewStatus;
 import com.kt.domain.entity.CategoryEntity;
@@ -28,6 +26,7 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
@@ -94,7 +93,7 @@ public class ReviewDeleteTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			delete("/api/reviews/{reviewId}", review.getId())
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testMember.getId())))
 		);
 
 		// then

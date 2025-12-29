@@ -5,16 +5,15 @@ import static com.kt.common.ProductEntityCreator.*;
 
 import java.util.List;
 
-import com.kt.common.UserEntityCreator;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderProductStatus;
 import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
