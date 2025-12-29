@@ -7,14 +7,16 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.dto.response.CartItemViewResponse;
+import com.kt.domain.dto.response.CartResponse;
 import com.kt.domain.entity.CartEntity;
 import com.kt.domain.entity.CartItemEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.cart.CartItemRepository;
+import com.kt.repository.cart.CartQueryRepository;
 import com.kt.repository.cart.CartRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +27,17 @@ public class CartServiceImpl implements CartService {
 	private final CartRepository cartRepository;
 	private final CartItemRepository cartItemRepository;
 	private final ProductRepository productRepository;
-	private final UserRepository userRepository;
+	private final CartQueryRepository cartQueryRepository;
+
+	@Override
+	@Transactional(readOnly = true)
+	public CartResponse.Cart getCartView(UUID userId) {
+
+		List<CartItemViewResponse> items =
+			cartQueryRepository.findCartItems(userId);
+
+		return CartResponse.Cart.from(items);
+	}
 
 	@Override
 	@Transactional(readOnly = true)

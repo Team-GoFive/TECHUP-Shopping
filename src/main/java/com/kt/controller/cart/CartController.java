@@ -12,7 +12,6 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.CartRequest;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
-import com.kt.domain.entity.CartEntity;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.CartService;
 import com.kt.service.OrderApplicationService;
@@ -32,8 +31,9 @@ public class CartController implements CartSwaggerSupporter {
 	public ResponseEntity<ApiResult<CartResponse.Cart>> getCart(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		CartEntity cart = cartService.getCart(currentUser.getId());
-		return ApiResult.wrap(CartResponse.toResponse(cart));
+		return ApiResult.wrap(
+			cartService.getCartView(currentUser.getId())
+		);
 	}
 
 	@Override
