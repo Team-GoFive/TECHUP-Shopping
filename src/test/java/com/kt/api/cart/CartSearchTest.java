@@ -39,7 +39,7 @@ import com.kt.service.CartService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("장바구니 조회 - GET /api/cart")
+@DisplayName("장바구니 조회 - GET /api/carts")
 public class CartSearchTest extends MockMvcTest {
 
 	@Autowired
@@ -88,7 +88,7 @@ public class CartSearchTest extends MockMvcTest {
 			);
 
 		mockMvc.perform(
-				get("/api/cart")
+				get("/api/carts")
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,
@@ -105,7 +105,7 @@ public class CartSearchTest extends MockMvcTest {
 
 	@Test
 	void 장바구니_조회_실패__인증_안됨() throws Exception {
-		mockMvc.perform(get("/api/cart"))
+		mockMvc.perform(get("/api/carts"))
 			.andExpect(status().isUnauthorized());
 	}
 

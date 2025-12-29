@@ -37,7 +37,7 @@ import com.kt.service.CartService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("장바구니 상품 선택 주문 생성 - POST /api/cart/orders")
+@DisplayName("장바구니 상품 선택 주문 생성 - POST /api/carts/orders")
 class CartOrderCreateTest extends MockMvcTest {
 
 	@Autowired
@@ -111,7 +111,7 @@ class CartOrderCreateTest extends MockMvcTest {
 
 		// when
 		mockMvc.perform(
-				post("/api/cart/orders")
+				post("/api/carts/orders")
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,

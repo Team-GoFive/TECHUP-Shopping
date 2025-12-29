@@ -33,7 +33,7 @@ import com.kt.service.CartService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("장바구니 상품 삭제 - DELETE /api/cart/items/{cartItemId}")
+@DisplayName("장바구니 상품 삭제 - DELETE /api/carts/items/{cartItemId}")
 public class CartDeleteTest extends MockMvcTest {
 
 	@Autowired
@@ -85,7 +85,7 @@ public class CartDeleteTest extends MockMvcTest {
 
 		ResultActions actions =
 			mockMvc.perform(
-				delete("/api/cart/items/{cartItemId}", item.getId())
+				delete("/api/carts/items/{cartItemId}", item.getId())
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,

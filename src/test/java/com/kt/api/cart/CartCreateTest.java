@@ -34,7 +34,7 @@ import com.kt.security.DefaultCurrentUser;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("장바구니 상품 추가 - POST /api/cart/items")
+@DisplayName("장바구니 상품 추가 - POST /api/carts/items")
 public class CartCreateTest extends MockMvcTest {
 
 	@Autowired
@@ -82,7 +82,7 @@ public class CartCreateTest extends MockMvcTest {
 			new CartRequest.AddItem(product.getId(), 3);
 
 		mockMvc.perform(
-				post("/api/cart/items")
+				post("/api/carts/items")
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,
@@ -109,7 +109,7 @@ public class CartCreateTest extends MockMvcTest {
 			new CartRequest.AddItem(UUID.randomUUID(), 1);
 
 		mockMvc.perform(
-				post("/api/cart/items")
+				post("/api/carts/items")
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,
@@ -136,7 +136,7 @@ public class CartCreateTest extends MockMvcTest {
 			new CartRequest.AddItem(product.getId(), 0);
 
 		mockMvc.perform(
-				post("/api/cart/items")
+				post("/api/carts/items")
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,

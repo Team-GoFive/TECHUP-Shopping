@@ -34,7 +34,7 @@ import com.kt.service.CartService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@DisplayName("장바구니 수량 변경 - PATCH /api/cart/items/{cartItemId}")
+@DisplayName("장바구니 수량 변경 - PATCH /api/carts/items/{cartItemId}")
 public class CartUpdateTest extends MockMvcTest {
 
 	@Autowired
@@ -92,7 +92,7 @@ public class CartUpdateTest extends MockMvcTest {
 			new CartRequest.UpdateQuantity(5);
 
 		mockMvc.perform(
-				patch("/api/cart/items/{cartItemId}", item.getId())
+				patch("/api/carts/items/{cartItemId}", item.getId())
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,
@@ -127,7 +127,7 @@ public class CartUpdateTest extends MockMvcTest {
 			new CartRequest.UpdateQuantity(3);
 
 		mockMvc.perform(
-				patch("/api/cart/items/{cartItemId}", otherItem.getId())
+				patch("/api/carts/items/{cartItemId}", otherItem.getId())
 					.with(authentication(
 						new UsernamePasswordAuthenticationToken(
 							principal,
