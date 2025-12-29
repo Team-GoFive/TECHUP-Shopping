@@ -76,6 +76,7 @@ public enum ErrorCode {
 	MAX_CART_ITEM_QUANTITY(HttpStatus.FORBIDDEN, "장바구니에 담을 수 있는 최대 수량은 100개입니다."),
 
 	;
+
 	private final HttpStatus status;
 	private final String message;
 
