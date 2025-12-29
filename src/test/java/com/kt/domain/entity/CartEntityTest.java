@@ -44,16 +44,13 @@ class CartEntityTest {
 	}
 
 	@Test
-	void 객체생성_성공(){
-		CartEntity cart = CartEntity.create(
-			5L,
-			testUser,
-			testProduct
-		);
+	void 객체_생성_성공() {
+		// when
+		CartEntity cart = CartEntity.create(testUser);
 
+		// then
 		Assertions.assertNotNull(cart);
-
 		Assertions.assertEquals(testUser, cart.getUser());
-		Assertions.assertEquals(testProduct, cart.getProduct());
+		Assertions.assertTrue(cart.getItems().isEmpty());
 	}
 }

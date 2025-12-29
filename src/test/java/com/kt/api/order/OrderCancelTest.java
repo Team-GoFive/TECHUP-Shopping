@@ -94,10 +94,14 @@ public class OrderCancelTest extends MockMvcTest {
 				testSeller.getId()
 			)
 		);
-		orderService.createOrder(
-			testMember.getEmail(),
+		OrderRequest orderRequest = new OrderRequest(
 			items,
 			testAddress.getId()
+		);
+
+		orderService.createOrder(
+			testMember.getId(),
+			orderRequest
 		);
 
 		OrderEntity order = orderRepository.findAll().stream()

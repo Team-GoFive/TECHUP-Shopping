@@ -15,7 +15,10 @@ public interface OrderService {
 
 	void checkStock(List<OrderRequest.Item> items);
 
-	OrderEntity createOrder(String email, List<OrderRequest.Item> items, UUID addressId);
+	OrderEntity createOrder(
+		UUID userId,
+		OrderRequest request
+	);
 
 	void reduceStock(UUID orderId);
 

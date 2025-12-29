@@ -83,7 +83,16 @@ public class OrderUpdateTest extends MockMvcTest {
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
 		);
-		orderService.createOrder(testMember.getEmail(), items, testAddress.getId());
+
+		OrderRequest orderRequest = new OrderRequest(
+			items,
+			testAddress.getId()
+		);
+
+		orderService.createOrder(
+			testMember.getId(),
+			orderRequest
+		);
 	}
 
 	@Test

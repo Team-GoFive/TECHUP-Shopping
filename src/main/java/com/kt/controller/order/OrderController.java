@@ -61,9 +61,8 @@ public class OrderController implements OrderSwaggerSupporter {
 		@Valid @RequestBody OrderRequest request
 	) {
 		orderService.createOrder(
-			currentUser.getUsername(),
-			request.items(),
-			request.addressId()
+			currentUser.getId(),
+			request
 		);
 		return empty();
 	}

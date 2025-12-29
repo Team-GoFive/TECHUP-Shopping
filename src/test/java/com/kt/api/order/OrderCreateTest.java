@@ -97,7 +97,7 @@ public class OrderCreateTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/orders")
-				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getEmail())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		);
@@ -120,7 +120,7 @@ public class OrderCreateTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/orders")
-				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getEmail())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		);

@@ -131,4 +131,8 @@ public class ProductEntity extends BaseEntity {
 	public void decreaseStock(Long quantity) {
 		this.stock -= quantity;
 	}
+
+	public boolean isSellable() {
+		return status == ProductStatus.ACTIVATED;
+	}
 }
