@@ -56,17 +56,17 @@ public class SellerProductServiceImpl implements SellerProductService {
 	@Override
 	public void activate(List<UUID> productIds, UUID sellerId) {
 		productIds.forEach(productId -> {
-				ProductEntity product = productRepository.findByIdOrThrow(productId);
-				Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
-				product.activate();
-			});
+			ProductEntity product = productRepository.findByIdOrThrow(productId);
+			Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
+			product.activate();
+		});
 	}
-
 
 	public void inActivate(List<UUID> productIds, UUID sellerId) {
 		productIds.forEach(productId -> {
 			ProductEntity product = productRepository.findByIdOrThrow(productId);
 			Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
+			product.inActivate();
 		});
 	}
 
