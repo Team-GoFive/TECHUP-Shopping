@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.kt.common.api.ApiResult.*;
+
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.CartRequest;
 import com.kt.domain.dto.request.OrderRequest;
@@ -31,7 +33,7 @@ public class CartController implements CartSwaggerSupporter {
 	public ResponseEntity<ApiResult<CartResponse.Cart>> getCart(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		return ApiResult.wrap(
+		return wrap(
 			cartService.getCartView(currentUser.getId())
 		);
 	}
@@ -48,7 +50,7 @@ public class CartController implements CartSwaggerSupporter {
 			request.quantity()
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class CartController implements CartSwaggerSupporter {
 			request.quantity()
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@Override
@@ -78,7 +80,7 @@ public class CartController implements CartSwaggerSupporter {
 			cartItemId
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@Override
@@ -88,7 +90,7 @@ public class CartController implements CartSwaggerSupporter {
 	) {
 		cartService.clear(currentUser.getId());
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@Override
@@ -102,6 +104,6 @@ public class CartController implements CartSwaggerSupporter {
 			request
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 }
