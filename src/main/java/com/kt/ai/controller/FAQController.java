@@ -1,11 +1,14 @@
 package com.kt.ai.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.ai.client.FAQChatClient;
+import com.kt.ai.service.RAGService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,16 +17,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FAQController {
 
-	private final FAQChatClient faqChatClient;
+	private final RAGService ragService;
 
-	@GetMapping("/faq")
-	public String ask(
+	@PostMapping("/faq")
+	public String askFAQ(
 		@RequestParam String userId,
-		@RequestParam String message
+		@RequestBody String question
 	) {
+
 		// TODO: 실제 채팅방 ID로 변경 필요
 		String conversationId = "faq:" + userId;
 
-		return faqChatClient.ask(message, conversationId);
+		return ragService.askFAQ(question, conversationId);
 	}
+
 }
