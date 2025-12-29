@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.entity.SellerEntity;
@@ -284,8 +285,13 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
+		List<UUID> productIds = productRepository.findAll()
+			.stream()
+			.map(ProductEntity::getId)
+			.toList();
+
 		// when
-		sellerProductService.activate(product.getId(), testSeller.getId());
+		sellerProductService.activate(productIds, testSeller.getId());
 
 		// then
 		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
@@ -300,8 +306,13 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
 
+		List<UUID> productIds = productRepository.findAll()
+			.stream()
+			.map(ProductEntity::getId)
+			.toList();
+
 		// when
-		sellerProductService.inActivate(product.getId(), testSeller.getId());
+		sellerProductService.inActivate(productIds, testSeller.getId());
 
 		// then
 		ProductEntity savedProduct = productRepository.findByIdOrThrow(product.getId());
@@ -315,7 +326,11 @@ class SellerProductServiceTest {
 		categoryRepository.save(categorySports);
 		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
-		sellerProductService.inActivate(product.getId(), testSeller.getId());
+		List<UUID> productIds = productRepository.findAll()
+			.stream()
+			.map(ProductEntity::getId)
+			.toList();
+		sellerProductService.inActivate(productIds, testSeller.getId());
 
 		// when
 		sellerProductService.toggleActive(product.getId(), testSeller.getId());
@@ -332,7 +347,10 @@ class SellerProductServiceTest {
 		categoryRepository.save(categorySports);
 		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
 		productRepository.save(product);
-		sellerProductService.activate(product.getId(), testSeller.getId());
+
+		List<UUID> productIds = List.of(product.getId());
+
+		sellerProductService.activate(productIds, testSeller.getId());
 
 		// when
 		sellerProductService.toggleActive(product.getId(), testSeller.getId());
@@ -369,7 +387,7 @@ class SellerProductServiceTest {
 		assertThat(
 			productRepository.findAll()
 				.stream()
-				.allMatch(it -> it.getStatus() == ProductStatus.IN_ACTIVATED)
+				.allMatch(it -> it.getStock() == 0)
 		).isTrue();
 	}
 }

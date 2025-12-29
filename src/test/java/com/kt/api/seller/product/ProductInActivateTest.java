@@ -5,6 +5,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.ProductStatus;
+import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.SellerEntity;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static com.kt.common.CategoryEntityCreator.createCategory;
@@ -30,7 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-@DisplayName("판매자 상품 비활성화 - PATCH /api/seller/products/{productId}/in-activate")
+import java.util.List;
+import java.util.UUID;
+
+@DisplayName("판매자 상품 비활성화 - PATCH /api/seller/products/in-activate")
 public class ProductInActivateTest extends MockMvcTest {
 
 	@Autowired
@@ -67,8 +72,14 @@ public class ProductInActivateTest extends MockMvcTest {
 		ProductEntity product = createProduct(testCategory, testSeller);
 		productRepository.save(product);
 
+		List<UUID> productIds = List.of(product.getId());
+
+		SellerProductRequest.InActivate request = new SellerProductRequest.InActivate(productIds);
+
 		// when
-		ResultActions actions = mockMvc.perform(patch("/api/seller/products/{productId}/in-activate", product.getId())
+		ResultActions actions = mockMvc.perform(patch("/api/seller/products/in-activate")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
 				.with(user(sellerDetails)))
 			.andDo(print());
 

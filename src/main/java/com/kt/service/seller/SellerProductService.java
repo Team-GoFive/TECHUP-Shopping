@@ -17,9 +17,9 @@ public interface SellerProductService {
 
 	void delete(UUID productId, UUID sellerId);
 
-	void activate(UUID productId, UUID sellerId);
+	void activate(List<UUID> productIds, UUID sellerId);
 
-	void inActivate(UUID productId, UUID sellerId);
+	void inActivate(List<UUID> productIds, UUID sellerId);
 
 	void toggleActive(UUID productId, UUID sellerId);
 
