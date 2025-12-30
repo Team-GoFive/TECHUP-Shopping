@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RAGRetriever {
 
-	private final DefaultVectorApi vectorApi;
+	private final VectorApi vectorApi;
 	private final VectorStoreRepository vectorStoreRepository;
 
 	public AIChatMapper.VectorSearchResult retrieve(String question) {
