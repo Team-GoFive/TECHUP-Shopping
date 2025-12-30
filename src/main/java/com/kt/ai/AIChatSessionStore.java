@@ -25,6 +25,19 @@ public class AIChatSessionStore {
 		return conversationId;
 	}
 
+	public int increaseFail(UUID userId) {
+		String key = RedisKey.AI_CHAT_FAIL.key(userId);
+		Integer count = redisCache.get(key, Integer.class);
+
+		if (count == null)
+			count = 0;
+
+		count++;
+
+		redisCache.set(RedisKey.AI_CHAT_FAIL, userId, count);
+		return count;
+	}
+
 	public void clear(UUID userId) {
 		redisCache.delete(RedisKey.AI_CHAT_SESSION.key(userId));
 	}
