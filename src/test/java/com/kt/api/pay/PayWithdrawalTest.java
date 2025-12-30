@@ -9,7 +9,6 @@ import com.kt.repository.user.UserRepository;
 
 import com.kt.security.DefaultCurrentUser;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,33 +16,38 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.math.BigDecimal;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @ActiveProfiles("test")
-@DisplayName("주문 생성 - POST /api/pay/charges")
-public class PayChargeTest extends MockMvcTest {
-
+@DisplayName("주문 생성 - POST /api/pay/withdrawals")
+public class PayWithdrawalTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 
 	UserEntity testUser;
 	DefaultCurrentUser authenticator;
+
 	static final long DEPOSIT_AMOUNT = 1_000_000;
 	static final long CHARGE_AMOUNT = 10_000;
+	static final long WITHDRAWAL_AMOUNT = 5_000;
 
 	@BeforeEach
 	void setup() {
 		testUser = UserEntityCreator.create();
 		testUser.getBankAccount().deposit(DEPOSIT_AMOUNT);
+		testUser.getPay().charge(CHARGE_AMOUNT);
+		testUser.getBankAccount().withdraw(CHARGE_AMOUNT);
 		userRepository.save(testUser);
-
 		authenticator = new DefaultCurrentUser(
 			testUser.getId(),
 			testUser.getEmail(),
@@ -53,22 +57,26 @@ public class PayChargeTest extends MockMvcTest {
 
 	@Test
 	@Transactional
-	void 페이_충전_성공() throws Exception {
-		PayRequest.Charge request = new PayRequest.Charge(
-			CHARGE_AMOUNT
+	void 페이_인출_성공() throws Exception {
+		PayRequest.Withdrawal request = new PayRequest.Withdrawal(
+			WITHDRAWAL_AMOUNT
 		);
 
 		mockMvc.perform(
-			post("/api/pay/charges")
-				.with(user(authenticator))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request))
-		).andDo(print())
+				post("/api/pay/withdrawals")
+					.with(user(authenticator))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(request))
+			).andDo(print())
 			.andExpect(status().isOk())
 			.andReturn();
 
+		BigDecimal payBalance = BigDecimal.valueOf(CHARGE_AMOUNT - WITHDRAWAL_AMOUNT);
+		BigDecimal bankAccountBalance = BigDecimal.valueOf((DEPOSIT_AMOUNT - CHARGE_AMOUNT) + WITHDRAWAL_AMOUNT);
+		assertEquals(payBalance, testUser.getPay().getBalance());
+		assertEquals(bankAccountBalance, testUser.getBankAccount().getBalance());
 		log.info("pay balance : {}", testUser.getPay().getBalance());
-
+		log.info("bankAccount balance : {}", testUser.getBankAccount().getBalance());
 
 	}
 }

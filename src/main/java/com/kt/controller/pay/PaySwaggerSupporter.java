@@ -16,10 +16,20 @@ public interface PaySwaggerSupporter {
 
 	@Operation(
 		summary = "페이 충전",
-		description = "페이 잔액 충전API"
+		description = "페이 잔액 충전 API"
 	)
 	ResponseEntity<ApiResult<Void>> charge(
 		DefaultCurrentUser currentUser,
 		PayRequest.Charge request
 	);
+
+	@Operation(
+		summary = "페이 인출",
+		description = "페이 잔액 인출 API"
+	)
+	ResponseEntity<ApiResult<Void>> withdraw(
+		DefaultCurrentUser currentUser,
+		PayRequest.Withdrawal request
+	);
+
 }

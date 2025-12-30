@@ -5,6 +5,8 @@ import com.kt.domain.dto.request.PayRequest;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.pay.PayChargeService;
 
+import com.kt.service.pay.PayWithdrawalService;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import static com.kt.common.api.ApiResult.empty;
 public class PayController implements PaySwaggerSupporter {
 
 	private final PayChargeService payChargeService;
+	private final PayWithdrawalService payWithdrawalService;
 
 	@PostMapping("/charges")
 	public ResponseEntity<ApiResult<Void>> charge(
@@ -34,4 +37,17 @@ public class PayController implements PaySwaggerSupporter {
 		payChargeService.charge(request.amount(), userId);
 		return empty();
 	}
+
+
+	@PostMapping("/withdrawals")
+	public ResponseEntity<ApiResult<Void>> withdraw(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@RequestBody PayRequest.Withdrawal request
+	) {
+		UUID userId = currentUser.getId();
+		payWithdrawalService.withdraw(request.amount(), userId);
+		return empty();
+	}
+
+
 }

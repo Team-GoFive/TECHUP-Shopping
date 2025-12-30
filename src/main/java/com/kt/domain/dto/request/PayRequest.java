@@ -9,4 +9,10 @@ public class PayRequest {
 		long amount
 	) {
 	}
+
+	@Schema(name = "PayWithdrawalRequest")
+	public record Withdrawal(
+		long amount
+	) {
+	}
 }
