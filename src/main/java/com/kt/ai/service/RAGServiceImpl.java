@@ -30,7 +30,6 @@ public class RAGServiceImpl implements RAGService {
 	private final BaseChatClient chatClient;
 
 	public String askFAQ(String question, String conversationId) {
-		VectorStoreEntity vectorStore = vectorStoreRepository.findByTypeOrThrow(VectorType.FAQ);
 
 		var store = vectorStoreRepository.findByType(VectorType.FAQ)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_VECTOR_STORE));
