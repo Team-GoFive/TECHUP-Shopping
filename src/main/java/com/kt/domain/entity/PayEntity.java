@@ -4,6 +4,8 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.common.BaseEntity;
 import com.kt.exception.CustomException;
 
+import com.kt.util.ValidationUtil;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,5 +54,19 @@ public class PayEntity extends BaseEntity {
 		this.balance = this.balance.add(BigDecimal.valueOf(amount));
 	}
 
+
+	public void charge(long amount) {
+		ValidationUtil.validatePositive(amount, "충전금액");
+		BigDecimal chargeAmount = BigDecimal.valueOf(amount);
+		this.balance = this.balance.add(chargeAmount);
+	}
+
+	public void withdraw(long amount) {
+		ValidationUtil.validatePositive(amount, "인출금액");
+		BigDecimal withdrawAmount = BigDecimal.valueOf(amount);
+		if (this.balance.compareTo(withdrawAmount) < 0)
+			throw new CustomException(ErrorCode.PAY_BALANCE_NOT_ENOUGH);
+		this.balance = this.balance.subtract(withdrawAmount);
+	}
 
 }

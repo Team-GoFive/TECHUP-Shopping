@@ -1,6 +1,11 @@
 package com.kt.domain.entity;
 
+import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.common.BaseEntity;
+
+import com.kt.exception.CustomException;
+
+import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,4 +48,17 @@ public class BankAccountEntity extends BaseEntity {
 		return new BankAccountEntity(holder);
 	}
 
+	public void deposit(long amount) {
+		ValidationUtil.validatePositive(amount, "입금금액");
+		BigDecimal depositAmount = BigDecimal.valueOf(amount);
+		this.balance = this.balance.add(depositAmount);
+	}
+
+	public void withdraw(long amount) {
+
+		BigDecimal withdrawAmount = BigDecimal.valueOf(amount);
+		if (this.balance.compareTo(withdrawAmount) < 0)
+			throw new CustomException(ErrorCode.BANK_ACCOUNT_BALANCE_NOT_ENOUGH);
+		this.balance = this.balance.subtract(withdrawAmount);
+	}
 }

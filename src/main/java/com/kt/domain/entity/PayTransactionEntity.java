@@ -1,7 +1,7 @@
 package com.kt.domain.entity;
 
-import com.kt.constant.bankaccount.BankAccountTransactionPurpose;
-import com.kt.constant.bankaccount.BankAccountTransactionType;
+import com.kt.constant.pay.PayTransactionPurpose;
+import com.kt.constant.pay.PayTransactionType;
 import com.kt.domain.entity.common.BaseEntity;
 
 import com.kt.util.ValidationUtil;
@@ -10,7 +10,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,21 +22,21 @@ import java.util.UUID;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Entity(name = "bank_account_transactions")
+@Entity(name = "pay_transaction")
 @NoArgsConstructor(access = PROTECTED)
-public class BankAccountTransactionEntity extends BaseEntity {
+public class PayTransactionEntity extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "bank_account_id", nullable = false)
-	private BankAccountEntity bankAccount;
+	@JoinColumn(name = "pay_id", nullable = false)
+	private PayEntity pay;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private BankAccountTransactionType transactionType;
+	private PayTransactionType transactionType;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private BankAccountTransactionPurpose transactionPurpose;
+	private PayTransactionPurpose transactionPurpose;
 
 	@Column(precision = 19, scale = 0, nullable = false)
 	private BigDecimal amount;
@@ -48,15 +47,15 @@ public class BankAccountTransactionEntity extends BaseEntity {
 	@Column(nullable = false)
 	private UUID targetId;
 
-	private BankAccountTransactionEntity(
-		BankAccountEntity bankAccount,
-		BankAccountTransactionType transactionType,
-		BankAccountTransactionPurpose transactionPurpose,
+	private PayTransactionEntity(
+		PayEntity pay,
+		PayTransactionType transactionType,
+		PayTransactionPurpose transactionPurpose,
 		BigDecimal amount,
 		BigDecimal balanceSnapshot,
 		UUID targetId
 	) {
-		this.bankAccount = bankAccount;
+		this.pay = pay;
 		this.transactionType = transactionType;
 		this.transactionPurpose = transactionPurpose;
 		this.amount = amount;
@@ -64,21 +63,21 @@ public class BankAccountTransactionEntity extends BaseEntity {
 		this.targetId = targetId;
 	}
 
-	public static BankAccountTransactionEntity create(
-		final BankAccountEntity bankAccount,
-		final BankAccountTransactionType transactionType,
-		final BankAccountTransactionPurpose transactionPurpose,
+	public static PayTransactionEntity create(
+		final PayEntity pay,
+		final PayTransactionType transactionType,
+		final PayTransactionPurpose transactionPurpose,
 		final long amount,
 		final BigDecimal balanceSnapshot,
 		final UUID targetId
 	) {
-		ValidationUtil.validateRequiredEnum(transactionType, "거래 타입");
-		ValidationUtil.validateRequiredEnum(transactionPurpose, "거래 목적");
-		ValidationUtil.validatePositive(amount, "거래 금액");
+		ValidationUtil.validateRequiredEnum(transactionType, "페이 거래타입");
+		ValidationUtil.validateRequiredEnum(transactionPurpose, "페이 거래목적");
+		ValidationUtil.validatePositive(amount, "페이 거래금액");
 		ValidationUtil.validateNonNegative(balanceSnapshot.intValue(), "거래 후 잔액");
 		BigDecimal transactionAmount = BigDecimal.valueOf(amount);
-		return new BankAccountTransactionEntity(
-			bankAccount,
+		return new PayTransactionEntity(
+			pay,
 			transactionType,
 			transactionPurpose,
 			transactionAmount,
@@ -86,4 +85,5 @@ public class BankAccountTransactionEntity extends BaseEntity {
 			targetId
 		);
 	}
+
 }

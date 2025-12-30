@@ -48,6 +48,13 @@ public class ValidationUtil {
 		}
 	}
 
+	public static void validatePositive(long value, String fieldName) {
+		if (value <= 0) {
+			String errorMessage = getFormatterMessage(POSITIVE_MESSAGE, fieldName);
+			rejectInvalidField(errorMessage);
+		}
+	}
+
 	public static void validateNonNegative(int value, String fieldName) {
 		if (value < 0) {
 			String errorMessage = getFormatterMessage(NOT_NEGATIVE_MESSAGE, fieldName);
