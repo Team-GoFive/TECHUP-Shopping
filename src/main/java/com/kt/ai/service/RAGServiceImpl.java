@@ -28,12 +28,9 @@ public class RAGServiceImpl implements RAGService {
 
 		String conversationId = chatSessionStore.getOrCreate(userId);
 		AIChatMapper.VectorSearchResult rag = ragRetriever.retrieve(question);
-		System.out.println("Conversation Id: " + conversationId);
-		System.out.println("rag.score() = " + rag.score());
 
 		if (rag.score() < THRESHOLD) {
 			int failCnt = chatSessionStore.increaseFail(userId);
-			System.out.println("failCnt = " + failCnt);
 			if (failCnt >= MAX_FAIL_COUNT) {
 				chatSessionStore.clear(userId);
 				return "정확한 답변이 어려워 상담사에게 연결해드릴게요.";

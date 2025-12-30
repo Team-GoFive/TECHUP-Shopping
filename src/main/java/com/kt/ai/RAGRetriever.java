@@ -37,7 +37,6 @@ public class RAGRetriever {
 			.filter(t -> t != null && !t.isBlank())
 			.collect(Collectors.joining("\n"));
 
-		System.out.println("joinedContent: " + joinedContent);
 		return new AIChatMapper.VectorSearchResult(top.score(), joinedContent, top.fileId());
 	}
 }
