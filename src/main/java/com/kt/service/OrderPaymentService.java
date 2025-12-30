@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class OrderPayUseCase {
+public class OrderPaymentService {
 
 	private final OrderService orderService;
 	// TODO: PayService 주입
 
 	public void orderPay(UUID userId, OrderRequest request) {
-		orderService.reduceStock(request.items()); // 1. 재고 차감
-		orderService.createOrder(userId, request); // 2. 주문 생성
-		// TODO: PayService 결제 메서드 호출 // 3. 결제
+		orderService.reduceStock(request.items());
+		orderService.createOrder(userId, request);
+		// TODO: PayService 결제 메서드 호출
 	}
 }
