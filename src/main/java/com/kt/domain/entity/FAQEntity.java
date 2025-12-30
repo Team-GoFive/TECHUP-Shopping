@@ -34,7 +34,7 @@ public class FAQEntity extends BaseEntity {
 		this.category = category;
 	}
 
-	public static FAQEntity create(String title, String content, FAQCategory category, String fileId) {
+	public static FAQEntity create(String title, String content, FAQCategory category) {
 		return new FAQEntity(title, content, category);
 	}
 
