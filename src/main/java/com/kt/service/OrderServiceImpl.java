@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
 	public void reduceStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
-			InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(item.productId());
+			InventoryEntity inventory = inventoryRepository.findByProductIdWithLockOrThrow(item.productId());
 
 			if (inventory.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
