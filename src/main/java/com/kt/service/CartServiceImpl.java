@@ -17,6 +17,7 @@ import com.kt.repository.cart.CartItemRepository;
 import com.kt.repository.cart.CartQueryRepository;
 import com.kt.repository.cart.CartRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ public class CartServiceImpl implements CartService {
 	private final CartItemRepository cartItemRepository;
 	private final ProductRepository productRepository;
 	private final CartQueryRepository cartQueryRepository;
+	private final UserRepository userRepository;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -51,7 +53,12 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public void addItem(UUID userId, UUID productId, int quantity) {
-		CartEntity cart = cartRepository.findByUserIdOrThrow(userId);
+		CartEntity cart = cartRepository.findByUserId(userId)
+				.orElseGet(() -> cartRepository.save(
+					CartEntity.create(
+						userRepository.getReferenceById(userId)
+					)
+				));
 
 		ProductEntity product = productRepository.findById(productId)
 			.orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
