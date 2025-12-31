@@ -1,4 +1,4 @@
-package com.kt.domain.entity;
+package com.kt.chat.domain.entity;
 
 import java.util.UUID;
 
