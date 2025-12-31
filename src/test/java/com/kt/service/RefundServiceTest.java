@@ -40,6 +40,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.refund.RefundHistoryRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.seller.SellerRefundService;
 
 @Transactional
 @ActiveProfiles("test")
@@ -48,6 +49,8 @@ class RefundServiceTest {
 
 	@Autowired
 	RefundService refundService;
+	@Autowired
+	SellerRefundService sellerRefundService;
 	@Autowired
 	OrderService orderService;
 	@Autowired
@@ -209,7 +212,7 @@ class RefundServiceTest {
 			refundHistoryRepository.findAll().get(0);
 
 		// when
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			testSeller.getId(),
 			history.getId()
 		);
@@ -240,7 +243,7 @@ class RefundServiceTest {
 		BigDecimal beforeBalance = payBefore.getBalance();
 
 		// when
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			testSeller.getId(),
 			history.getId()
 		);
@@ -269,7 +272,7 @@ class RefundServiceTest {
 			refundHistoryRepository.findAll().get(0);
 
 		// when
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			testSeller.getId(),
 			history.getId()
 		);
@@ -296,14 +299,14 @@ class RefundServiceTest {
 		RefundHistoryEntity history =
 			refundHistoryRepository.findAll().get(0);
 
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			testSeller.getId(),
 			history.getId()
 		);
 
 		// when & then
 		assertThatThrownBy(() ->
-			refundService.approveRefund(
+			sellerRefundService.approveRefund(
 				testSeller.getId(),
 				history.getId()
 			)
@@ -328,7 +331,7 @@ class RefundServiceTest {
 
 		// when & then
 		assertThatThrownBy(() ->
-			refundService.approveRefund(
+			sellerRefundService.approveRefund(
 				otherSeller.getId(),
 				history.getId()
 			)
@@ -350,7 +353,7 @@ class RefundServiceTest {
 			refundHistoryRepository.findAll().get(0);
 
 		// when
-		refundService.rejectRefund(
+		sellerRefundService.rejectRefund(
 			testSeller.getId(),
 			history.getId(),
 			"거부 사유"
@@ -376,7 +379,7 @@ class RefundServiceTest {
 		RefundHistoryEntity history =
 			refundHistoryRepository.findAll().get(0);
 
-		refundService.rejectRefund(
+		sellerRefundService.rejectRefund(
 			testSeller.getId(),
 			history.getId(),
 			"거부"
@@ -384,7 +387,7 @@ class RefundServiceTest {
 
 		// when & then
 		assertThatThrownBy(() ->
-			refundService.approveRefund(
+			sellerRefundService.approveRefund(
 				testSeller.getId(),
 				history.getId()
 			)
@@ -410,7 +413,7 @@ class RefundServiceTest {
 		BigDecimal beforeBalance = payBefore.getBalance();
 
 		// when
-		refundService.rejectRefund(
+		sellerRefundService.rejectRefund(
 			testSeller.getId(),
 			history.getId(),
 			"거부"
@@ -486,7 +489,7 @@ class RefundServiceTest {
 			refundHistoryRepository.findAll().get(0);
 
 		// when
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			testSeller.getId(),
 			history.getId()
 		);
