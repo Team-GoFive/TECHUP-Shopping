@@ -7,24 +7,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.seller.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 조회 (어드민) - GET /api/admin/products")
@@ -34,6 +37,8 @@ public class ProductSearchTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
 	@Autowired
 	SellerRepository sellerRepository;
 
@@ -68,6 +73,13 @@ public class ProductSearchTest extends MockMvcTest {
 		}
 
 		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 1000L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 	}
 
 	@Test

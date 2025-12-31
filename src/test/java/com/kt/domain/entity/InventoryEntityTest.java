@@ -35,7 +35,7 @@ class InventoryEntityTest {
 	@Test
 	void 객체생성_성공() {
 		InventoryEntity inventory = InventoryEntity.create(
-			testProduct,
+			testProduct.getId(),
 			1L
 		);
 
@@ -47,7 +47,7 @@ class InventoryEntityTest {
 			FieldValidationException.class,
 			() -> {
 				InventoryEntity.create(
-					testProduct,
+					testProduct.getId(),
 					-1L
 				);
 			}

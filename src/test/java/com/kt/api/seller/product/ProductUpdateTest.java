@@ -1,19 +1,14 @@
 package com.kt.api.seller.product;
 
-import com.kt.common.CurrentUserCreator;
-import com.kt.common.MockMvcTest;
-import com.kt.common.SellerEntityCreator;
-import com.kt.common.UserEntityCreator;
-import com.kt.domain.dto.request.SellerProductRequest;
-import com.kt.domain.entity.CategoryEntity;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.repository.CategoryRepository;
-import com.kt.repository.product.ProductRepository;
-import com.kt.repository.seller.SellerRepository;
-import com.kt.repository.user.UserRepository;
-import com.kt.security.DefaultCurrentUser;
+import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.ProductEntityCreator.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,16 +20,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.UUID;
-
-import static com.kt.common.CategoryEntityCreator.createCategory;
-import static com.kt.common.ProductEntityCreator.createProduct;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import com.kt.common.CurrentUserCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.domain.dto.request.SellerProductRequest;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.inventory.InventoryRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
+import com.kt.repository.user.UserRepository;
+import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("판매자 상품 수정 - PUT /api/seller/products/{productId}")
 public class ProductUpdateTest extends MockMvcTest {
@@ -43,6 +44,8 @@ public class ProductUpdateTest extends MockMvcTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
 	@Autowired
 	SellerRepository sellerRepository;
 	@Autowired
@@ -172,6 +175,8 @@ public class ProductUpdateTest extends MockMvcTest {
 		// given
 		ProductEntity product = createProduct(testCategory, testSeller);
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 1000L);
+		inventoryRepository.save(inventory);
 
 		SellerProductRequest.Update request = new SellerProductRequest.Update(
 			"수정된 판매자 상품",
@@ -192,9 +197,10 @@ public class ProductUpdateTest extends MockMvcTest {
 			.andExpect(jsonPath("$.code").value("ok"));
 
 		ProductEntity updatedProduct = productRepository.findById(product.getId()).orElseThrow();
+		InventoryEntity updatedInventory = inventoryRepository.findByProductIdOrThrow(product.getId());
 		assertThat(updatedProduct.getName()).isEqualTo(request.name());
 		assertThat(updatedProduct.getPrice()).isEqualTo(request.price());
-		assertThat(updatedProduct.getStock()).isEqualTo(request.stock());
+		assertThat(updatedInventory.getStock()).isEqualTo(request.stock());
 		assertThat(updatedProduct.getCategory().getId()).isEqualTo(request.categoryId());
 	}
 }

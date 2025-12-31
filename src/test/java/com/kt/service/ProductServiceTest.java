@@ -5,14 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
-
 import org.junit.jupiter.api.BeforeEach;
-
-import com.kt.constant.AccountRole;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,13 +14,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.ProductStatus;
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.searchtype.ProductSearchType;
-import com.kt.domain.dto.request.ProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 
@@ -38,15 +35,18 @@ class ProductServiceTest {
 
 	private final ProductService productService;
 	private final ProductRepository productRepository;
+	private final InventoryRepository inventoryRepository;
 	private final CategoryRepository categoryRepository;
 	private final SellerRepository sellerRepository;
 	private SellerEntity testSeller;
 
 	@Autowired
 	ProductServiceTest(ProductService productService, ProductRepository productRepository,
+		InventoryRepository inventoryRepository,
 		CategoryRepository categoryRepository, AccountRepository accountRepository, SellerRepository sellerRepository) {
 		this.productService = productService;
 		this.productRepository = productRepository;
+		this.inventoryRepository = inventoryRepository;
 		this.categoryRepository = categoryRepository;
 		this.sellerRepository = sellerRepository;
 	}
@@ -75,6 +75,13 @@ class ProductServiceTest {
 			products.add(product);
 		}
 		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
@@ -118,6 +125,13 @@ class ProductServiceTest {
 		}
 		productRepository.saveAll(products);
 
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
+
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
 		Page<ProductResponse.Search> search = productService.search(
@@ -147,8 +161,16 @@ class ProductServiceTest {
 				categorySports,
 				testSeller
 			);
-			productRepository.save(product);
+			products.add(product);
 		}
+		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
