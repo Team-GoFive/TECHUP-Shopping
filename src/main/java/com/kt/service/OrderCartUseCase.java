@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class OrderApplicationService {
+public class OrderCartUseCase {
 	private final CartService cartService;
 	private final OrderService orderService;
 
