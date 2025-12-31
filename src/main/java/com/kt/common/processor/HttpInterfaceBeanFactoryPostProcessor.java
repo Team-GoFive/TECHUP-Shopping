@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
@@ -22,7 +23,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import com.kt.common.interceptor.SimpleApiLoggingInterceptor;
 
-//@Component
+// @Component
 public class HttpInterfaceBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String BASE_PACKAGE = "com.kt";
 	private static final String SUFFIX_CLIENT = "Client";
