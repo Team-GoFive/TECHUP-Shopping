@@ -25,8 +25,8 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	@Transactional
-	public UUID create(String email, AddressRequest request) {
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+	public UUID create(UUID userId, AddressRequest request) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = AddressEntity.create(
 			request.receiverName(),
@@ -42,8 +42,8 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public List<AddressResponse> getMyAddresses(String email) {
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+	public List<AddressResponse> getMyAddresses(UUID userId) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		return addressRepository.findAllByCreatedBy(user)
 			.stream()
@@ -60,8 +60,8 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public AddressResponse getOne(String email, UUID addressId) {
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+	public AddressResponse getOne(UUID userId, UUID addressId) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
 
@@ -78,8 +78,8 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	@Transactional
-	public void update(String email, UUID addressId, AddressRequest request) {
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+	public void update(UUID userId, UUID addressId, AddressRequest request) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
 
@@ -95,8 +95,8 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	@Transactional
-	public void delete(String email, UUID addressId) {
-		UserEntity user = userRepository.findByEmailOrThrow(email);
+	public void delete(UUID userId, UUID addressId) {
+		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
 

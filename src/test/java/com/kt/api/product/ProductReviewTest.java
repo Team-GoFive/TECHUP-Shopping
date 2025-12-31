@@ -5,16 +5,15 @@ import static com.kt.common.ProductEntityCreator.*;
 
 import java.util.List;
 
-import com.kt.common.UserEntityCreator;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderProductStatus;
 import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
@@ -24,9 +23,9 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 import com.kt.service.ReviewService;
@@ -95,7 +94,7 @@ public class ProductReviewTest extends MockMvcTest {
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {
 			OrderProductEntity orderProduct = list.get(i);
-			reviewService.create(testMember.getMobile(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
+			reviewService.create(testMember.getId(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
 	}
 }

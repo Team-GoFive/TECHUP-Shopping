@@ -5,8 +5,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.kt.common.UserEntityCreator;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
@@ -62,7 +61,7 @@ class AddressCreateTest extends MockMvcTest {
 			post("/api/addresses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(validRequest))
-				.with(user(getMemberUserDetails(testUser.getEmail())))
+				.with(user(getMemberUserDetails(testUser.getId())))
 		);
 
 		// then

@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/addresses")
 @RequiredArgsConstructor
-public class AddressController implements AddressSwaggerSupporter{
+public class AddressController implements AddressSwaggerSupporter {
 
 	private final AddressService addressService;
 
@@ -38,7 +38,7 @@ public class AddressController implements AddressSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid AddressRequest request
 	) {
-		return wrap(addressService.create(currentUser.getUsername(), request));
+		return wrap(addressService.create(currentUser.getId(), request));
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class AddressController implements AddressSwaggerSupporter{
 	public ResponseEntity<ApiResult<List<AddressResponse>>> getMyAddresses(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		return wrap(addressService.getMyAddresses(currentUser.getUsername()));
+		return wrap(addressService.getMyAddresses(currentUser.getId()));
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class AddressController implements AddressSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId
 	) {
-		return wrap(addressService.getOne(currentUser.getUsername(), addressId));
+		return wrap(addressService.getOne(currentUser.getId(), addressId));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class AddressController implements AddressSwaggerSupporter{
 		@PathVariable UUID addressId,
 		@RequestBody @Valid AddressRequest request
 	) {
-		addressService.update(currentUser.getUsername(), addressId, request);
+		addressService.update(currentUser.getId(), addressId, request);
 		return empty();
 	}
 
@@ -75,7 +75,7 @@ public class AddressController implements AddressSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId
 	) {
-		addressService.delete(currentUser.getUsername(), addressId);
+		addressService.delete(currentUser.getId(), addressId);
 		return empty();
 	}
 }

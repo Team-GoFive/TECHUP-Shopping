@@ -40,6 +40,15 @@ public class OrderProductEntity extends BaseEntity {
 	public static OrderProductEntity create(
 		Long quantity,
 		Long unitPrice,
+		OrderEntity order,
+		ProductEntity product
+	) {
+		return new OrderProductEntity(quantity, unitPrice, CREATED, order, product);
+	}
+
+	public static OrderProductEntity create(
+		Long quantity,
+		Long unitPrice,
 		OrderProductStatus status,
 		OrderEntity order,
 		ProductEntity product

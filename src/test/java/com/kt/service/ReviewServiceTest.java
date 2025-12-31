@@ -97,7 +97,7 @@ class ReviewServiceTest {
 		// given
 		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		// when
-		reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용");
+		reviewService.create(testUser.getId(), testOrderProduct.getId(), "테스트리뷰내용");
 		// // then
 		Optional<ReviewEntity> saved = reviewRepository
 			.findAll()
@@ -121,7 +121,7 @@ class ReviewServiceTest {
 		// when and then
 		assertThatThrownBy(
 			() -> reviewService.create(
-				testUser.getEmail(),
+				testUser.getId(),
 				testOrderProduct.getId(),
 				"테스트리뷰내용"
 			)
@@ -138,7 +138,7 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 
 		// when
-		reviewService.update(testUser.getEmail(), review.getId(), "변경된테스트리뷰내용");
+		reviewService.update(testUser.getId(), review.getId(), "변경된테스트리뷰내용");
 
 		// then
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
@@ -152,7 +152,7 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 
 		// when
-		reviewService.delete(testUser.getEmail(), review.getId());
+		reviewService.delete(testUser.getId(), review.getId());
 
 		// then
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());

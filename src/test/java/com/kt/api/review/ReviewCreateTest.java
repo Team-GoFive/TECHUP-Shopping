@@ -1,13 +1,9 @@
 package com.kt.api.review;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.seller.SellerRepository;
-
-import static com.kt.common.CurrentUserCreator.getMemberUserDetails;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.kt.common.CurrentUserCreator.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +18,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.ReviewRequest;
@@ -31,12 +28,14 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 작성 - POST /api/orderproducts/{orderProductId}/reviews")
@@ -100,7 +99,7 @@ public class ReviewCreateTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			post("/api/reviews")
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json)
 		);
