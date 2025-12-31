@@ -15,10 +15,7 @@ import com.kt.domain.entity.RefundHistoryEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.PayRepository;
-import com.kt.repository.PaymentRepository;
-import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.refund.RefundHistoryRepository;
-import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,17 +23,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SellerRefundServiceImpl implements SellerRefundService {
 
-	private final UserRepository userRepository;
-	private final OrderProductRepository orderProductRepository;
-	private final PaymentRepository paymentRepository;
 	private final RefundHistoryRepository refundHistoryRepository;
 	private final PayRepository payRepository;
 
 	@Override
 	@Transactional
 	public void approveRefund(UUID sellerId, UUID refundId) {
-		RefundHistoryEntity refundHistory =
-			refundHistoryRepository.findByIdOrThrow(refundId);
+		RefundHistoryEntity refundHistory = refundHistoryRepository.findByIdOrThrow(refundId);
 
 		if (refundHistory.getStatus() != RefundStatus.REQUESTED) {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
@@ -72,9 +65,7 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 	@Override
 	@Transactional
 	public void rejectRefund(UUID sellerId, UUID refundId, String reason) {
-
-		RefundHistoryEntity refundHistory =
-			refundHistoryRepository.findByIdOrThrow(refundId);
+		RefundHistoryEntity refundHistory = refundHistoryRepository.findByIdOrThrow(refundId);
 
 		if (refundHistory.getStatus() != RefundStatus.REQUESTED) {
 			throw new CustomException(ErrorCode.INVALID_FORCE_STATUS_TRANSITION);
