@@ -8,7 +8,7 @@ import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
 import com.kt.repository.user.UserRepository;
 
-import com.kt.service.pay.PayWithdrawService;
+import com.kt.service.pay.PayWithdrawalService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
-public class PayWithdrawServiceTest {
+public class PayWithdrawalServiceTest {
 
 	@Autowired
 	UserRepository userRepository;
 
 	@Autowired
-	PayWithdrawService payWithdrawService;
+	PayWithdrawalService payWithdrawalService;
 
 	@Autowired
 	BankAccountTransactionRepository bankAccountTransactionRepository;
@@ -59,7 +59,7 @@ public class PayWithdrawServiceTest {
 	void 유저_페이인출_성공() {
 		PayEntity pay = testUser.getPay();
 		BankAccountEntity bankAccount = testUser.getBankAccount();
-		payWithdrawService.withdraw(WITHDRAW_PAY_AMOUNT, testUser.getId());
+		payWithdrawalService.withdraw(WITHDRAW_PAY_AMOUNT, testUser.getId());
 		BigDecimal payBalance = BigDecimal.valueOf(CHARGE_PAY_AMOUNT - WITHDRAW_PAY_AMOUNT);
 		BigDecimal bankAccountBalance = BigDecimal.valueOf(
 			DEPOSIT_BANK_ACCOUNT_AMOUNT - CHARGE_PAY_AMOUNT + WITHDRAW_PAY_AMOUNT
