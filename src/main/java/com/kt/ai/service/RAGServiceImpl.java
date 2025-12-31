@@ -9,6 +9,8 @@ import com.kt.ai.AIChatSessionStore;
 import com.kt.ai.RAGRetriever;
 import com.kt.ai.client.FAQChatClient;
 import com.kt.ai.dto.mapper.AIChatMapper;
+import com.kt.chat.event.HandoverEvent;
+import com.kt.chat.event.HandoverPublisher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,7 @@ public class RAGServiceImpl implements RAGService {
 	private final FAQChatClient chatClient;
 	private final AIChatSessionStore chatSessionStore;
 	private final RAGRetriever ragRetriever;
+	private final HandoverPublisher handoverPublisher;
 
 	@Override
 	public String askFAQ(UUID userId, String question) {
@@ -32,6 +35,9 @@ public class RAGServiceImpl implements RAGService {
 		if (rag.score() < THRESHOLD) {
 			int failCnt = chatSessionStore.increaseFail(userId);
 			if (failCnt >= MAX_FAIL_COUNT) {
+				handoverPublisher.publish(
+					new HandoverEvent(userId, question, conversationId)
+				);
 				chatSessionStore.clear(userId);
 				return "정확한 답변이 어려워 상담사에게 연결해드릴게요.";
 			}
