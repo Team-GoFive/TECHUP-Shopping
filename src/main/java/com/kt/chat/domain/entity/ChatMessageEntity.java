@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity(name = "chat_message")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class ChatMessageEntity extends BaseTimeEntity {
 
 	@Id
@@ -33,4 +34,24 @@ public class ChatMessageEntity extends BaseTimeEntity {
 	@Column(columnDefinition = "TEXT")
 	private String message;
 
+	private ChatMessageEntity(
+		String sessionId,
+		UUID senderId,
+		String senderRole,
+		String message
+	) {
+		this.sessionId = sessionId;
+		this.senderId = senderId;
+		this.senderRole = senderRole;
+		this.message = message;
+	}
+
+	public static ChatMessageEntity create(
+		String sessionId,
+		UUID senderId,
+		String senderRole,
+		String message
+	) {
+		return new ChatMessageEntity(sessionId, senderId, senderRole, message);
+	}
 }
