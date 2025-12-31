@@ -18,7 +18,9 @@ import com.kt.domain.dto.request.RefundRejectRequest;
 import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.RefundQueryService;
-import com.kt.service.RefundService;
+import com.kt.service.seller.SellerRefundService;
+
+import static com.kt.common.api.ApiResult.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SellerRefundController implements SellerRefundSwaggerSupporter{
 
-	private final RefundService refundService;
+	private final SellerRefundService sellerRefundService;
 	private final RefundQueryService refundQueryService;
 
 	@GetMapping
@@ -36,7 +38,7 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
 		Paging paging
 	) {
-		return ApiResult.page(
+		return page(
 			refundQueryService.getRequestedRefunds(currentSeller.getId(), paging)
 		);
 	}
@@ -46,12 +48,12 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
 		@PathVariable UUID refundId
 	) {
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			currentSeller.getId(),
 			refundId
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@PatchMapping("/{refundId}/reject")
@@ -60,12 +62,12 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@PathVariable UUID refundId,
 		@RequestBody @Valid RefundRejectRequest request
 	) {
-		refundService.rejectRefund(
+		sellerRefundService.rejectRefund(
 			currentSeller.getId(),
 			refundId,
 			request.reason()
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 }

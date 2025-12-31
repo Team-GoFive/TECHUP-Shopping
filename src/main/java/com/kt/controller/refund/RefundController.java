@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.kt.common.api.ApiResult.*;
+
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
@@ -30,7 +32,7 @@ public class RefundController implements RefundSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		Paging paging
 	) {
-		return ApiResult.page(
+		return page(
 			refundQueryService.getMyRefunds(currentUser.getId(), paging)
 		);
 	}
@@ -46,6 +48,6 @@ public class RefundController implements RefundSwaggerSupporter {
 			request.reason()
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 }
