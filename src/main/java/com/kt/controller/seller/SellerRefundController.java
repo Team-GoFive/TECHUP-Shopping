@@ -18,7 +18,7 @@ import com.kt.domain.dto.request.RefundRejectRequest;
 import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.RefundQueryService;
-import com.kt.service.RefundService;
+import com.kt.service.seller.SellerRefundService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SellerRefundController implements SellerRefundSwaggerSupporter{
 
-	private final RefundService refundService;
+	private final SellerRefundService sellerRefundService;
 	private final RefundQueryService refundQueryService;
 
 	@GetMapping
@@ -46,7 +46,7 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
 		@PathVariable UUID refundId
 	) {
-		refundService.approveRefund(
+		sellerRefundService.approveRefund(
 			currentSeller.getId(),
 			refundId
 		);
@@ -60,7 +60,7 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@PathVariable UUID refundId,
 		@RequestBody @Valid RefundRejectRequest request
 	) {
-		refundService.rejectRefund(
+		sellerRefundService.rejectRefund(
 			currentSeller.getId(),
 			refundId,
 			request.reason()
