@@ -14,12 +14,13 @@ import lombok.RequiredArgsConstructor;
 public class AIChatSessionStore {
 	private final RedisCache redisCache;
 
-	public UUID getOrCreate(UUID userId) {
+	public UUID getOrCreateConversationId(UUID userId) {
 		String key = RedisKey.AI_CHAT_SESSION.key(userId);
 		String conversationId = redisCache.get(key, String.class);
 
 		if (conversationId == null) {
-			redisCache.set(RedisKey.AI_CHAT_SESSION, userId, UUID.randomUUID().toString());
+			conversationId = UUID.randomUUID().toString();
+			redisCache.set(RedisKey.AI_CHAT_SESSION, userId, conversationId);
 		}
 
 		return UUID.fromString(conversationId);
