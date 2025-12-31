@@ -37,7 +37,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 		CategoryEntity category = categoryRepository.findByIdOrThrow(categoryId);
 		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 
-		ProductEntity product = ProductEntity.create(name, price, stock, category, seller);
+		ProductEntity product = ProductEntity.create(name, price, category, seller);
 		InventoryEntity inventory = InventoryEntity.create(product.getId(), stock);
 		productRepository.save(product);
 		inventoryRepository.save(inventory);
@@ -50,7 +50,7 @@ public class SellerProductServiceImpl implements SellerProductService {
 		inventory.updateStock(stock);
 		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		CategoryEntity category = categoryRepository.findByIdOrThrow(categoryId);
-		product.update(name, price, stock, category);
+		product.update(name, price, category);
 	}
 
 	@Override
@@ -108,7 +108,8 @@ public class SellerProductServiceImpl implements SellerProductService {
 	public ProductResponse.Detail detail(UUID productId, UUID sellerId) {
 		ProductEntity product = productRepository.findByIdOrThrow(productId);
 		Preconditions.validate(product.getSeller().getId() == sellerId, ErrorCode.ORDER_PRODUCT_NOT_OWNER);
-		return ProductResponse.Detail.from(product);
+		InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(productId);
+		return ProductResponse.Detail.from(product, inventory);
 	}
 
 }

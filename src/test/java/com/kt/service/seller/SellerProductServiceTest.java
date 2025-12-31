@@ -103,7 +103,6 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create(
 			"상품1",
 			1000L,
-			10L,
 			category,
 			testSeller
 		);
@@ -144,7 +143,6 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create(
 			"상품1",
 			1000L,
-			10L,
 			category,
 			testSeller
 		);
@@ -169,7 +167,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				category,
 				testSeller
 			);
@@ -207,7 +204,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categoryDog,
 				testSeller
 			);
@@ -218,7 +214,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);
@@ -258,7 +253,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);
@@ -293,8 +287,10 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		// when
 		ProductResponse.Detail detail = sellerProductService.detail(product.getId(), testSeller.getId());
@@ -309,7 +305,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = productRepository.findAll()
@@ -330,7 +326,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = productRepository.findAll()
@@ -351,7 +347,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 		List<UUID> productIds = productRepository.findAll()
 			.stream()
@@ -372,7 +368,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = List.of(product.getId());
@@ -398,7 +394,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);

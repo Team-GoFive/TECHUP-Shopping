@@ -1,25 +1,11 @@
 package com.kt.service.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import com.kt.common.AdminCreator;
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.AdminEntity;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
-
-import com.kt.repository.admin.AdminRepository;
-
-import lombok.extern.slf4j.Slf4j;
-
 import org.junit.jupiter.api.AfterEach;
-import com.kt.constant.AccountRole;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +16,31 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.AdminCreator;
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserStatus;
-import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.repository.admin.AdminRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional
@@ -147,7 +140,6 @@ class AdminManagementServiceTest {
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
 			category,
 			testSeller
 		);
@@ -182,7 +174,6 @@ class AdminManagementServiceTest {
 
 		ProductEntity product = ProductEntity.create(
 			"테스트물건",
-			3L,
 			3L,
 			category,
 			testSeller

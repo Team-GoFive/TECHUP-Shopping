@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 
@@ -54,7 +54,6 @@ class PaymentEntityTest {
 		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
 			testCategory,
 			testSeller
 		);

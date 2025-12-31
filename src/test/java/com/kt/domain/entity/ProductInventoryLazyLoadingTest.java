@@ -55,7 +55,6 @@ class ProductInventoryLazyLoadingTest {
 		product = ProductEntity.create(
 			"테스트 상품",
 			10000L,
-			100L,
 			category,
 			seller
 		);

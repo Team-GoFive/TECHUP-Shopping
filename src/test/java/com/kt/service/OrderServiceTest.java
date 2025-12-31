@@ -27,6 +27,7 @@ import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.CourierEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -39,6 +40,7 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.courier.CourierRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -57,6 +59,8 @@ class OrderServiceTest {
 	UserRepository userRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
 	@Autowired
 	OrderRepository orderRepository;
 	@Autowired
@@ -94,6 +98,8 @@ class OrderServiceTest {
 	OrderProductEntity createOrderWithProducts(OrderEntity order, long quantity) {
 		ProductEntity product = ProductEntityCreator.createProduct(category, testSeller);
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 1000L);
+		inventoryRepository.save(inventory);
 
 		OrderProductEntity orderProduct = OrderProductEntity.create(
 			quantity,
@@ -172,6 +178,8 @@ class OrderServiceTest {
 		AddressEntity address = AddressCreator.createAddress(testUser);
 		addressRepository.save(address);
 		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(product.getId(), 99999999L)
@@ -229,8 +237,12 @@ class OrderServiceTest {
 		orderProduct1.updateStatus(OrderProductStatus.PENDING_APPROVE);
 		orderProduct2.updateStatus(OrderProductStatus.PENDING_APPROVE);
 
-		long beforeStock1 = orderProduct1.getProduct().getStock();
-		long beforeStock2 = orderProduct2.getProduct().getStock();
+		long beforeStock1 = inventoryRepository
+			.findByProductIdOrThrow(orderProduct1.getProduct().getId())
+			.getStock();
+		long beforeStock2 = inventoryRepository
+			.findByProductIdOrThrow(orderProduct2.getProduct().getId())
+			.getStock();
 
 		// TODO: payment
 
@@ -247,13 +259,11 @@ class OrderServiceTest {
 		assertThat(canceled1.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
 		assertThat(canceled2.getStatus()).isEqualTo(OrderProductStatus.CANCELED);
 
-		long afterStock1 = productRepository
-			.findById(orderProduct1.getProduct().getId())
-			.orElseThrow()
+		long afterStock1 = inventoryRepository
+			.findByProductIdOrThrow(orderProduct1.getProduct().getId())
 			.getStock();
-		long afterStock2 = productRepository
-			.findById(orderProduct2.getProduct().getId())
-			.orElseThrow()
+		long afterStock2 = inventoryRepository
+			.findByProductIdOrThrow(orderProduct2.getProduct().getId())
 			.getStock();
 
 		assertThat(afterStock1).isEqualTo(beforeStock1 + 3L);

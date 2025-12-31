@@ -22,6 +22,7 @@ import com.kt.constant.PaymentStatus;
 import com.kt.constant.RefundStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.PayEntity;
@@ -34,6 +35,7 @@ import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.PayRepository;
 import com.kt.repository.PaymentRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -62,6 +64,8 @@ class RefundServiceTest {
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
+	InventoryRepository inventoryRepository;
+	@Autowired
 	PaymentRepository paymentRepository;
 	@Autowired
 	UserRepository userRepository;
@@ -76,7 +80,6 @@ class RefundServiceTest {
 	SellerEntity testSeller;
 	OrderProductEntity testOrderProduct;
 
-
 	OrderProductEntity createOrderProduct(
 		OrderEntity order,
 		CategoryEntity category,
@@ -87,6 +90,9 @@ class RefundServiceTest {
 			productRepository.save(
 				ProductEntityCreator.createProduct(category, seller)
 			);
+
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		OrderProductEntity orderProduct =
 			OrderProductEntity.create(
@@ -198,7 +204,6 @@ class RefundServiceTest {
 			.hasMessageContaining(ErrorCode.ORDER_ACCESS_NOT_ALLOWED.name());
 	}
 
-
 	@Test
 	void 환불_승인__성공() {
 		// given
@@ -286,7 +291,6 @@ class RefundServiceTest {
 			.isEqualTo(PaymentStatus.REFUND_COMPLETED);
 	}
 
-
 	@Test
 	void 환불_승인__실패__이미_완료됨() {
 		// given
@@ -338,7 +342,6 @@ class RefundServiceTest {
 		).isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.AUTH_PERMISSION_DENIED.name());
 	}
-
 
 	@Test
 	void 환불_거부__성공() {
@@ -427,7 +430,6 @@ class RefundServiceTest {
 			.isEqualByComparingTo(beforeBalance);
 	}
 
-
 	@Test
 	void 배송전_주문취소__Pay_잔액_복구_성공() {
 		// given
@@ -477,7 +479,9 @@ class RefundServiceTest {
 		long quantity = testOrderProduct.getQuantity();
 		ProductEntity product = testOrderProduct.getProduct();
 
-		long beforeStock = product.getStock();
+		long beforeStock = inventoryRepository
+			.findByProductIdOrThrow(product.getId())
+			.getStock();
 
 		refundService.requestRefund(
 			testUser.getId(),
@@ -495,13 +499,12 @@ class RefundServiceTest {
 		);
 
 		// then
-		ProductEntity afterProduct =
-			productRepository.findById(product.getId())
-				.orElseThrow();
+		Long afterStock = inventoryRepository
+			.findByProductIdOrThrow(product.getId())
+			.getStock();
 
-		assertThat(afterProduct.getStock())
+		assertThat(afterStock)
 			.isEqualTo(beforeStock + quantity);
 	}
-
 
 }

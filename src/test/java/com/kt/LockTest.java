@@ -24,12 +24,14 @@ import com.kt.constant.Gender;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -53,6 +55,8 @@ public class LockTest {
 	private OrderRepository orderRepository;
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private InventoryRepository inventoryRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
 	@Autowired
@@ -83,6 +87,7 @@ public class LockTest {
 		// 외래키 제약조건을 고려하여 역순으로 삭제
 		orderProductRepository.deleteAll();
 		productRepository.deleteAll(); // 상품 삭제
+		inventoryRepository.deleteAll(); // 재고 삭제
 		orderRepository.deleteAll();  // 주문 먼저 삭제
 		addressRepository.deleteAll(); // 주소 삭제
 		categoryRepository.deleteAll(); // 카테고리 삭제
@@ -103,13 +108,14 @@ public class LockTest {
 		);
 		accountRepository.save(seller);
 		product1 = ProductEntity.create(
-			"상품1", 100_000L, productStock1, category, seller
+			"상품1", 100_000L, category, seller
 		);
 		product2 = ProductEntity.create(
-			"상품2", 100_000L, productStock2, category, seller
+			"상품2", 100_000L, category, seller
 		);
 		productRepository.saveAll(List.of(product1, product2));
-		productRepository.flush();
+		InventoryEntity inventory = InventoryEntity.create(product1.getId(), productStock1);
+		inventoryRepository.save(inventory);
 	}
 
 	@Test
@@ -160,10 +166,10 @@ public class LockTest {
 		countDownLatch.await();
 		executorService.shutdown();
 
-		ProductEntity foundProduct = productRepository.findById(product1.getId()).orElse(null);
+		InventoryEntity foundInventory = inventoryRepository.findByProductIdOrThrow(product1.getId());
 
 		assertThat(successCount.get()).isEqualTo((int)productStock1);
 		assertThat(failureCount.get()).isEqualTo(repeatCount - (int)productStock1);
-		assertThat(foundProduct.getStock()).isEqualTo(0);
+		assertThat(foundInventory.getStock()).isEqualTo(0);
 	}
 }
