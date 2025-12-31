@@ -5,10 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.UUID;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.PaymentEntity;
-import com.kt.domain.entity.SellerEntity;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -22,6 +18,7 @@ import com.kt.common.CategoryEntityCreator;
 import com.kt.common.CourierEntityCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
@@ -33,6 +30,7 @@ import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
@@ -155,11 +153,14 @@ class OrderServiceTest {
 		OrderRequest orderRequest = new OrderRequest(items, address.getId());
 
 		// when, then
-		assertThatThrownBy(() ->
-			orderService.createOrder(
-				testUser.getId(),
-				orderRequest
-			)
+		assertThatThrownBy(() -> {
+				orderService.checkStock(orderRequest.items());
+				orderService.createOrder(
+					testUser.getId(),
+					orderRequest
+				);
+				orderService.reduceStock(orderRequest.items());
+			}
 		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("PRODUCT_NOT_FOUND");
@@ -179,11 +180,14 @@ class OrderServiceTest {
 		OrderRequest orderRequest = new OrderRequest(items, address.getId());
 
 		// when, then
-		assertThatThrownBy(() ->
-			orderService.createOrder(
+		assertThatThrownBy(() -> {
+				orderService.checkStock(orderRequest.items());
+				orderService.createOrder(
 					testUser.getId(),
 					orderRequest
-				)
+				);
+				orderService.reduceStock(orderRequest.items());
+			}
 		)
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining("STOCK_NOT_ENOUGH");

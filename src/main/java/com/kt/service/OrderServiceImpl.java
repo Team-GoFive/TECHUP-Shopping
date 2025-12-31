@@ -56,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
 		return OrderResponse.OrderProducts.from(orderId, orderProducts);
 	}
 
+	// TODO: 삭제
 	// 비관적 락을 사용하여 재고 확인
 	public void checkStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
@@ -77,8 +78,6 @@ public class OrderServiceImpl implements OrderService {
 		List<OrderRequest.Item> items = request.items();
 		UUID addressId = request.addressId();
 
-		checkStock(items);
-
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
 		AddressEntity address = addressRepository.findByIdAndCreatedByOrThrow(addressId, user);
@@ -99,21 +98,20 @@ public class OrderServiceImpl implements OrderService {
 			ProductEntity product =
 				productRepository.findByIdOrThrow(item.productId());
 
-			OrderProductEntity orderProduct = new OrderProductEntity(
+			OrderProductEntity orderProduct = OrderProductEntity.create(
 				item.quantity(),
 				product.getPrice(),
-				OrderProductStatus.CREATED,
 				order,
 				product
 			);
 
 			order.addOrderProduct(orderProduct);
 			orderProductRepository.save(orderProduct);
-			reduceStock(order.getId());
 		}
 		return order;
 	}
 
+	// TODO: 삭제
 	@Transactional
 	public void reduceStock(UUID orderId) {
 		List<OrderProductEntity> orderProducts =
@@ -129,6 +127,17 @@ public class OrderServiceImpl implements OrderService {
 
 			product.decreaseStock(quantity);
 			orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
+		}
+	}
+
+	public void reduceStock(List<OrderRequest.Item> items) {
+		for (OrderRequest.Item item : items) {
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
+
+			if (product.getStock() < item.quantity()) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+			product.decreaseStock(item.quantity());
 		}
 	}
 

@@ -22,6 +22,8 @@ public interface OrderService {
 
 	void reduceStock(UUID orderId);
 
+	void reduceStock(List<OrderRequest.Item> items);
+
 	void cancelOrderProduct(UUID userId, UUID orderProductId);
 
 	void changeOrderAddress(UUID userId, UUID orderId, OrderRequest.Update orderRequest);
