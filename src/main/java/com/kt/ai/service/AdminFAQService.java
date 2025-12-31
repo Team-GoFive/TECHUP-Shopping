@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.kt.constant.FAQCategory;
 
-public interface FAQService {
+public interface AdminFAQService {
 
 	void create(String title, String Content, FAQCategory category) throws Exception;
 

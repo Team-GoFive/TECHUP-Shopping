@@ -70,6 +70,7 @@ public enum ErrorCode {
 	INVALID_REFUND_REASON(HttpStatus.BAD_REQUEST, "이유는 반드시 작성해야 합니다."),
 	NOT_FOUND_VECTOR_STORE(HttpStatus.NOT_FOUND, "벡터스토어가 존재하지 않습니다."),
 	NOT_FOUND_FAQ(HttpStatus.NOT_FOUND, "FAQ가 존재하지 않습니다."),
+	NOT_FOUND_VECTOR_TYPE(HttpStatus.NOT_FOUND, "챗봇 문의 타입이 존재하지 않습니다."),
 	CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니가 존재하지 않습니다."),
 	CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니 상품을 찾을 수 없습니다."),
 	INVALID_CART_ITEM_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 상품 수량은 1 이상이어야 합니다."),

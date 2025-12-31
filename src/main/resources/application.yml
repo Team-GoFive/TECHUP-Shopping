@@ -43,7 +43,6 @@ spring:
         max-redirects: 3
   ai:
     openai:
-      base-url: https://api.openai.com/v1
       api-key: ${OPENAI_API_KEY}
       chat:
         options:

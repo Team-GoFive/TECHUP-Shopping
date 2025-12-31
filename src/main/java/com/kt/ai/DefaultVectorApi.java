@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 
 import com.kt.ai.dto.request.OpenAIRequest;
+import com.kt.ai.dto.response.OpenAIResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -70,6 +71,15 @@ public class DefaultVectorApi implements VectorApi {
 		openAIClient.deleteFile(
 			fileId,
 			token()
+		);
+	}
+
+	@Override
+	public OpenAIResponse.Search search(String vectorStoreId, String question) {
+		return openAIClient.search(
+			vectorStoreId,
+			token(),
+			new OpenAIRequest.Search(question)
 		);
 	}
 }

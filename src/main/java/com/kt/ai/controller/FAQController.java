@@ -1,11 +1,13 @@
 package com.kt.ai.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kt.ai.client.FAQChatClient;
+import com.kt.ai.service.RAGService;
+import com.kt.security.DefaultCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,16 +16,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FAQController {
 
-	private final FAQChatClient faqChatClient;
+	private final RAGService ragService;
 
-	@GetMapping("/faq")
-	public String ask(
-		@RequestParam String userId,
-		@RequestParam String message
+	@PostMapping("/faq")
+	public String askFAQ(
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@RequestBody String question
 	) {
-		// TODO: 실제 채팅방 ID로 변경 필요
-		String conversationId = "faq:" + userId;
 
-		return faqChatClient.ask(message, conversationId);
+		return ragService.askFAQ(defaultCurrentUser.getId(), question);
 	}
+
 }

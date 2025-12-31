@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FAQServiceImpl implements FAQService {
+public class AdminFAQServiceImpl implements AdminFAQService {
 	private final FAQRepository faqRepository;
 	private final VectorApi vectorApi;
 	private final VectorStoreRepository vectorStoreRepository;

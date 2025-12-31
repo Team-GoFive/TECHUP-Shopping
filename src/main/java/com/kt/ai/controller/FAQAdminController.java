@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.ai.dto.request.FAQRequest;
-import com.kt.ai.service.FAQService;
+import com.kt.ai.service.AdminFAQService;
 import com.kt.common.api.ApiResult;
 
 import jakarta.validation.Valid;
@@ -24,20 +24,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FAQAdminController {
 
-	private final FAQService faqService;
+	private final AdminFAQService adminFaqService;
 
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createFAQ(
 		@RequestBody @Valid FAQRequest.Create request
 	) throws Exception {
-		faqService.create(request.title(), request.content(), request.category());
+		adminFaqService.create(request.title(), request.content(), request.category());
 
 		return empty();
 	}
 
 	@DeleteMapping("/{faqId}")
 	public ResponseEntity<ApiResult<Void>> deleteFAQ(@PathVariable UUID faqId) {
-		faqService.delete(faqId);
+		adminFaqService.delete(faqId);
 		return empty();
 	}
 
