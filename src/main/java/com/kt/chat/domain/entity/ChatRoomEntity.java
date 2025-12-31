@@ -21,12 +21,28 @@ public class ChatRoomEntity extends BaseTimeEntity {
 
 	@Id
 	@Column(length = 200)
-	private String sessionId;
+	private UUID conversationId;
 
 	private UUID userId;
 	private UUID counselorId;
 
 	@Enumerated(EnumType.STRING)
 	private ChatStatus status;
+
+	private ChatRoomEntity(UUID conversationId, UUID userId, ChatStatus status) {
+		this.conversationId = conversationId;
+		this.userId = userId;
+		this.counselorId = null;
+		this.status = status;
+	}
+
+	public static ChatRoomEntity create(UUID conversationId, UUID userId, ChatStatus status) {
+		return new ChatRoomEntity(conversationId, userId, status);
+	}
+
+	public void acceptCounselor(UUID counselorId) {
+		this.counselorId = counselorId;
+		this.status = ChatStatus.CONNECTED;
+	}
 
 }

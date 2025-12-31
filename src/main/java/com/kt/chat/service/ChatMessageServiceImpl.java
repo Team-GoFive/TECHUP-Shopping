@@ -18,8 +18,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
 	private final ChatMessageRepository messageRepository;
 
-	public void save(String sessionId, UUID senderId, String senderRole, String message) {
-		ChatMessageEntity msg = ChatMessageEntity.create(sessionId, senderId, senderRole, message);
+	public void save(UUID conversationId, UUID senderId, String senderRole, String message) {
+		ChatMessageEntity msg = ChatMessageEntity.create(conversationId, senderId, senderRole, message);
 		messageRepository.save(msg);
 	}
 }

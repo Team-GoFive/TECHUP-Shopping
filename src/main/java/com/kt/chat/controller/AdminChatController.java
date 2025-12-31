@@ -24,9 +24,9 @@ public class AdminChatController {
 	@PostMapping("/handover/accept")
 	public void accept(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
-		@RequestBody UUID sessionId
+		@RequestBody UUID conversationId
 	) {
-		chatRoomService.accept(sessionId, defaultCurrentUser.getId());
+		chatRoomService.accept(conversationId, defaultCurrentUser.getId());
 	}
 
 }

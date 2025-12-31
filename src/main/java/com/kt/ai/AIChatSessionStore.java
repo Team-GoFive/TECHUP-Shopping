@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class AIChatSessionStore {
 	private final RedisCache redisCache;
 
-	public String getOrCreate(UUID userId) {
+	public UUID getOrCreate(UUID userId) {
 		String key = RedisKey.AI_CHAT_SESSION.key(userId);
 		String conversationId = redisCache.get(key, String.class);
 
@@ -22,7 +22,7 @@ public class AIChatSessionStore {
 			redisCache.set(RedisKey.AI_CHAT_SESSION, userId, UUID.randomUUID().toString());
 		}
 
-		return conversationId;
+		return UUID.fromString(conversationId);
 	}
 
 	public int increaseFail(UUID userId) {

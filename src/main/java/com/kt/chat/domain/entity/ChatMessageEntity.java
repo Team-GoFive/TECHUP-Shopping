@@ -26,7 +26,7 @@ public class ChatMessageEntity extends BaseTimeEntity {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private UUID id;
 
-	private String sessionId;
+	private UUID conversationId;
 
 	private UUID senderId;
 	private String senderRole;
@@ -35,23 +35,23 @@ public class ChatMessageEntity extends BaseTimeEntity {
 	private String message;
 
 	private ChatMessageEntity(
-		String sessionId,
+		UUID conversationId,
 		UUID senderId,
 		String senderRole,
 		String message
 	) {
-		this.sessionId = sessionId;
+		this.conversationId = conversationId;
 		this.senderId = senderId;
 		this.senderRole = senderRole;
 		this.message = message;
 	}
 
 	public static ChatMessageEntity create(
-		String sessionId,
+		UUID conversationId,
 		UUID senderId,
 		String senderRole,
 		String message
 	) {
-		return new ChatMessageEntity(sessionId, senderId, senderRole, message);
+		return new ChatMessageEntity(conversationId, senderId, senderRole, message);
 	}
 }

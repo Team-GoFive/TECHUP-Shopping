@@ -76,7 +76,8 @@ public enum ErrorCode {
 	INVALID_CART_ITEM_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 상품 수량은 1 이상이어야 합니다."),
 	MAX_CART_ITEM_QUANTITY(HttpStatus.FORBIDDEN, "장바구니에 담을 수 있는 최대 수량은 100개입니다."),
 	BANK_ACCOUNT_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "계좌 잔액이 충분하지 않습니다."),
-	PAY_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "페이 전액이 충분하지 않습니다.")
+	PAY_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "페이 전액이 충분하지 않습니다."),
+	SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
 
 	;
 

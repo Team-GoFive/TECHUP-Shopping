@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,18 +23,18 @@ public class ChatController {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ChatMessageService chatMessageService;
 
-	@MessageMapping("/chat/{sessionId}")
+	@MessageMapping("/chat/{conversationId}")
 	public void handleChat(
-		@DestinationVariable String sessionId,
+		@DestinationVariable UUID conversationId,
 		@Payload String message,
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
 	) {
 		UUID senderId = defaultCurrentUser.getId();
 		String role = defaultCurrentUser.getRole().name();
 
-		chatMessageService.save(sessionId, senderId, role, message);
+		chatMessageService.save(conversationId, senderId, role, message);
 
-		messagingTemplate.convertAndSend("/sub/chat/" + sessionId, message);
+		messagingTemplate.convertAndSend("/sub/chat/" + conversationId, message);
 	}
 
 }

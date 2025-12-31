@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public interface ChatRoomService {
 
-	void createOrWaiting(UUID sessionId, UUID userId);
-	
+	void createOrWaiting(UUID conversationId, UUID userId);
+
 }

@@ -5,6 +5,6 @@ import java.util.UUID;
 public record HandoverEvent(
 	UUID userId,
 	String lastQuestion,
-	String conversationId
+	UUID conversationId
 ) {
 }

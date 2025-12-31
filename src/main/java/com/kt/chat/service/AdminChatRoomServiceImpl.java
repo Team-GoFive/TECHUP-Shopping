@@ -18,8 +18,8 @@ public class AdminChatRoomServiceImpl implements AdminChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 
 	@Override
-	public void accept(UUID sessionId, UUID counselorId) {
-		ChatRoomEntity chatRoomEntity = chatRoomRepository.findBySessionIdOrElseThrow(sessionId);
+	public void accept(UUID conversationId, UUID counselorId) {
+		ChatRoomEntity chatRoomEntity = chatRoomRepository.findByConversationIdOrElseThrow(conversationId);
 		chatRoomEntity.acceptCounselor(counselorId);
 	}
 }
