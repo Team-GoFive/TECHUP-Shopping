@@ -7,15 +7,12 @@ import com.kt.common.support.SwaggerSupporter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.UUID;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.RefundHistoryRequest;
-import com.kt.domain.dto.request.RefundRejectRequest;
 import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
 
