@@ -8,13 +8,13 @@ import com.kt.domain.dto.response.AddressResponse;
 
 public interface AddressService {
 
-	UUID create(String email, AddressRequest request);
+	UUID create(UUID userId, AddressRequest request);
 
-	List<AddressResponse> getMyAddresses(String email);
+	List<AddressResponse> getMyAddresses(UUID userId);
 
-	AddressResponse getOne(String email, UUID addressId);
+	AddressResponse getOne(UUID userId, UUID addressId);
 
-	void update(String email, UUID addressId, AddressRequest request);
+	void update(UUID userId, UUID addressId, AddressRequest request);
 
-	void delete(String email, UUID addressId);
+	void delete(UUID userId, UUID addressId);
 }

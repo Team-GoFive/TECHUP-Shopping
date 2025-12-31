@@ -5,8 +5,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.kt.common.UserEntityCreator;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
@@ -40,7 +39,7 @@ class AddressSearchTest extends MockMvcTest {
 	void 주소_목록조회_성공__주소없을때_빈리스트_반환() throws Exception {
 		// when
 		ResultActions actions = mockMvc.perform(get("/api/addresses")
-			.with(user(getMemberUserDetails(testUser.getEmail())))
+			.with(user(getMemberUserDetails(testUser.getId())))
 		);
 
 		// then
@@ -79,7 +78,7 @@ class AddressSearchTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			get("/api/addresses")
-				.with(user(getMemberUserDetails(testUser.getEmail())))
+				.with(user(getMemberUserDetails(testUser.getId())))
 		);
 
 		// then
