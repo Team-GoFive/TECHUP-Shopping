@@ -20,6 +20,8 @@ import com.kt.security.DefaultCurrentUser;
 import com.kt.service.RefundQueryService;
 import com.kt.service.seller.SellerRefundService;
 
+import static com.kt.common.api.ApiResult.*;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +38,7 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 		@AuthenticationPrincipal DefaultCurrentUser currentSeller,
 		Paging paging
 	) {
-		return ApiResult.page(
+		return page(
 			refundQueryService.getRequestedRefunds(currentSeller.getId(), paging)
 		);
 	}
@@ -51,7 +53,7 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 			refundId
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 
 	@PatchMapping("/{refundId}/reject")
@@ -66,6 +68,6 @@ public class SellerRefundController implements SellerRefundSwaggerSupporter{
 			request.reason()
 		);
 
-		return ApiResult.empty();
+		return empty();
 	}
 }
