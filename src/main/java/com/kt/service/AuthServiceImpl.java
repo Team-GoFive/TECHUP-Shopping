@@ -17,7 +17,6 @@ import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.domain.entity.CartEntity;
 
 import com.kt.exception.CustomException;
 import com.kt.infra.mail.EmailClient;
@@ -25,7 +24,6 @@ import com.kt.infra.redis.RedisCache;
 
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.PasswordRequestRepository;
-import com.kt.repository.cart.CartRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -53,7 +51,6 @@ public class AuthServiceImpl implements AuthService {
 	private final AccountRepository accountRepository;
 	private final PasswordRequestRepository passwordRequestRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final CartRepository cartRepository;
 
 	private final JwtTokenProvider jwtTokenProvider;
 
@@ -77,7 +74,6 @@ public class AuthServiceImpl implements AuthService {
 		);
 
 		userRepository.save(member);
-		cartRepository.save(CartEntity.create(member));
 	}
 
 	@Override
