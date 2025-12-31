@@ -1,5 +1,7 @@
 package com.kt.ai;
 
+import com.kt.ai.dto.response.OpenAIResponse;
+
 public interface VectorApi {
 	/**
 	 *
@@ -12,4 +14,6 @@ public interface VectorApi {
 	String uploadFile(String vectorStoreId, byte[] json);
 
 	void delete(String vectorStoreId, String fileId);
+
+	OpenAIResponse.Search search(String vectorStoreId, String question);
 }
