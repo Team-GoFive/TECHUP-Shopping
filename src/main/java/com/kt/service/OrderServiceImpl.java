@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.PaymentStatus;
 import com.kt.constant.ShippingType;
-import com.kt.constant.AccountRole;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
@@ -28,8 +28,8 @@ import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.PayRepository;
 import com.kt.repository.PaymentRepository;
-import com.kt.repository.order.OrderRepository;
 import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -50,21 +50,23 @@ public class OrderServiceImpl implements OrderService {
 	private final PaymentRepository paymentRepository;
 	private final PayRepository payRepository;
 
-
 	@Override
 	public OrderResponse.OrderProducts getOrderProducts(UUID orderId) {
 		List<OrderProductEntity> orderProducts = orderProductRepository.findWithProductByOrderId(orderId);
 		return OrderResponse.OrderProducts.from(orderId, orderProducts);
 	}
 
-	// TODO: @Lock 붙이기
+	// TODO: 삭제
+	// 비관적 락을 사용하여 재고 확인
 	public void checkStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
-			ProductEntity product = productRepository.findByIdOrThrow(item.productId());
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
 
 			if (product.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
+
+			// TODO: 재고 부족시 현재 상품, 상품 수량을 그대로 장바구니에 저장
 		}
 	}
 
@@ -72,12 +74,9 @@ public class OrderServiceImpl implements OrderService {
 	public OrderEntity createOrder(
 		UUID userId,
 		OrderRequest request
-	)
-	{
+	) {
 		List<OrderRequest.Item> items = request.items();
 		UUID addressId = request.addressId();
-
-		checkStock(items);
 
 		UserEntity user = userRepository.findByIdOrThrow(userId);
 
@@ -99,10 +98,9 @@ public class OrderServiceImpl implements OrderService {
 			ProductEntity product =
 				productRepository.findByIdOrThrow(item.productId());
 
-			OrderProductEntity orderProduct = new OrderProductEntity(
+			OrderProductEntity orderProduct = OrderProductEntity.create(
 				item.quantity(),
 				product.getPrice(),
-				OrderProductStatus.CREATED,
 				order,
 				product
 			);
@@ -113,17 +111,33 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 
+	// TODO: 삭제
 	@Transactional
 	public void reduceStock(UUID orderId) {
 		List<OrderProductEntity> orderProducts =
 			orderProductRepository.findAllByOrderId(orderId);
 
 		for (OrderProductEntity orderProduct : orderProducts) {
-			ProductEntity product = orderProduct.getProduct();
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(orderProduct.getProduct().getId());
 			Long quantity = orderProduct.getQuantity();
+
+			if (product.getStock() < quantity) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
 
 			product.decreaseStock(quantity);
 			orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
+		}
+	}
+
+	public void reduceStock(List<OrderRequest.Item> items) {
+		for (OrderRequest.Item item : items) {
+			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
+
+			if (product.getStock() < item.quantity()) {
+				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
+			}
+			product.decreaseStock(item.quantity());
 		}
 	}
 
