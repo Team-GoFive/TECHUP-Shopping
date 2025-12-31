@@ -16,7 +16,7 @@ import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.CartService;
-import com.kt.service.OrderApplicationService;
+import com.kt.service.OrderCartUseCase;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class CartController implements CartSwaggerSupporter {
 
 	private final CartService cartService;
-	private final OrderApplicationService orderApplicationService;
+	private final OrderCartUseCase orderCartUseCase;
 
 	@Override
 	@GetMapping
@@ -99,7 +99,7 @@ public class CartController implements CartSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid OrderRequest.CartOrderRequest request
 	) {
-		orderApplicationService.createOrderFromCart(
+		orderCartUseCase.createOrderFromCart(
 			currentUser.getId(),
 			request
 		);
