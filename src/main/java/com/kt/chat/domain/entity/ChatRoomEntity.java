@@ -20,7 +20,6 @@ import lombok.NoArgsConstructor;
 public class ChatRoomEntity extends BaseTimeEntity {
 
 	@Id
-	@Column(length = 200)
 	private UUID conversationId;
 
 	private UUID userId;
