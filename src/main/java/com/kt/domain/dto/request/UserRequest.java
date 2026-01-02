@@ -27,7 +27,7 @@ public class UserRequest {
 		)
 		String mobile,
 
-		@NotNull(message = "생일날짜는 필수 항목입니다.")
+		@NotNull(message = "생년월일은 필수 항목입니다.")
 		LocalDate birth
 	){}
 }
