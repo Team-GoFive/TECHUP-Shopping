@@ -13,10 +13,8 @@ import com.kt.exception.CustomException;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, UUID> {
 
-	Optional<ChatRoomEntity> findByConversationId(UUID conversationId);
-
-	default ChatRoomEntity findByConversationIdOrElseThrow(UUID conversationId) {
-		return findByConversationId(conversationId)
+	default ChatRoomEntity findByIdOrElseThrow(UUID conversationId) {
+		return findById(conversationId)
 			.orElseThrow(() -> new CustomException(ErrorCode.SESSION_NOT_FOUND));
 	}
 

@@ -20,6 +20,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
 	@Override
 	public void createOrWaiting(UUID conversationId, UUID userId) {
+
+		if (chatRoomRepository.existsById(conversationId)) {
+			return;
+		}
 		if (!chatRoomRepository.existsById(conversationId)) {
 			ChatRoomEntity chatRoom = ChatRoomEntity.create(conversationId, userId, ChatStatus.WAITING);
 			chatRoomRepository.save(chatRoom);

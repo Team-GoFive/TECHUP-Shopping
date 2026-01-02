@@ -22,7 +22,7 @@ public class AdminChatRoomServiceImpl implements AdminChatRoomService {
 
 	@Override
 	public void accept(UUID conversationId, UUID counselorId) {
-		ChatRoomEntity chatRoomEntity = chatRoomRepository.findByConversationIdOrElseThrow(conversationId);
+		ChatRoomEntity chatRoomEntity = chatRoomRepository.findByIdOrElseThrow(conversationId);
 		chatRoomEntity.acceptCounselor(counselorId);
 	}
 
