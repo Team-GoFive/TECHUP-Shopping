@@ -9,18 +9,19 @@ public final class SecurityPath {
 		"/api/health/**",
 		"/swagger-ui/**",
 		"/v3/api-docs/**",
-		"/ws/**",
-		"/pub/**",
-		"/sub/**",
-
 		// view
 		"/index.html",
 		"/main.css",
-		"/stomp.js",
+		"/main.js",
+		"/login.**",
+		"/ws/**",
+
 	};
 	public static final String[] AUTHENTICATED = {
 		"/api/ai/**",
-		"/api/matches/**"
+		"/api/matches/**",
+		"/pub/**",
+		"/sub/**",
 	};
 	public static final String[] MEMBER = {
 		"/api/orders/**",
