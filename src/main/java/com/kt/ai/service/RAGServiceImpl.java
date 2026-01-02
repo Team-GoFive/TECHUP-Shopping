@@ -9,6 +9,7 @@ import com.kt.ai.AIChatSessionStore;
 import com.kt.ai.RAGRetriever;
 import com.kt.ai.client.FAQChatClient;
 import com.kt.ai.dto.mapper.AIChatMapper;
+import com.kt.ai.dto.response.FAQResponse;
 import com.kt.chat.event.HandoverEvent;
 import com.kt.chat.event.HandoverPublisher;
 import com.kt.chat.service.ChatRoomService;
@@ -29,9 +30,9 @@ public class RAGServiceImpl implements RAGService {
 	private final ChatRoomService chatRoomService;
 
 	@Override
-	public String askFAQ(UUID userId, String question) {
+	public FAQResponse.ChatBot askFAQ(UUID userId, String question) {
 
-		UUID conversationId = chatSessionStore.getOrCreate(userId);
+		UUID conversationId = chatSessionStore.getOrCreateConversationId(userId);
 		AIChatMapper.VectorSearchResult rag = ragRetriever.retrieve(question);
 
 		if (rag.score() < THRESHOLD) {
@@ -44,11 +45,18 @@ public class RAGServiceImpl implements RAGService {
 
 				// TODO: service 간 호출 지양 리팩토링
 				chatRoomService.createOrWaiting(conversationId, userId);
-				return "정확한 답변이 어려워 상담사에게 연결해드릴게요.";
+				return new FAQResponse.ChatBot(
+					"정확한 답변이 어려워 상담사에게 연결해드릴게요.",
+					conversationId,
+					true
+				);
 			}
 
 		}
 
-		return chatClient.ask(question, rag, conversationId);
+		return new FAQResponse.ChatBot
+			(chatClient.ask(question, rag, conversationId),
+				conversationId,
+				false);
 	}
 }
