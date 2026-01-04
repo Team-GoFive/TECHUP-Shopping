@@ -3,6 +3,8 @@ package com.kt.controller.auth;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.PasswordManagementRequest;
 
+import com.kt.service.user.UserSignupService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -32,6 +34,7 @@ import static com.kt.common.api.ApiResult.*;
 public class AuthController extends SwaggerAssistance {
 
 	private final AuthService authService;
+	private final UserSignupService userSignupService;
 
 	@Operation(
 		summary = "이메일 인증 코드 전송",
@@ -65,7 +68,7 @@ public class AuthController extends SwaggerAssistance {
 	public ResponseEntity<ApiResult<Void>> signupUser(
 		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
-		authService.signupUser(request);
+		userSignupService.signupUser(request);
 		return empty();
 	}
 

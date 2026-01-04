@@ -1,7 +1,6 @@
 package com.kt.service;
 
 import com.kt.config.jwt.JwtTokenProvider;
-import com.kt.constant.AccountRole;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.TokenType;
@@ -16,8 +15,6 @@ import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.domain.entity.CartEntity;
 
 import com.kt.exception.CustomException;
 import com.kt.infra.mail.EmailClient;
@@ -25,7 +22,6 @@ import com.kt.infra.redis.RedisCache;
 
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.PasswordRequestRepository;
-import com.kt.repository.cart.CartRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -48,12 +44,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-	private final UserRepository userRepository;
 	private final CourierRepository courierRepository;
 	private final AccountRepository accountRepository;
 	private final PasswordRequestRepository passwordRequestRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final CartRepository cartRepository;
 
 	private final JwtTokenProvider jwtTokenProvider;
 
@@ -61,30 +55,10 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailClient emailClient;
 
 	@Override
-	public void signupUser(SignupRequest.SignupUser request) {
-		String email = request.email();
-		requireVerifiedEmail(email);
-		requireDuplicatedEmail(email);
-
-		UserEntity member = UserEntity.create(
-			request.name(),
-			email,
-			passwordEncoder.encode(request.password()),
-			AccountRole.MEMBER,
-			request.gender(),
-			request.birth(),
-			request.mobile()
-		);
-
-		userRepository.save(member);
-		cartRepository.save(CartEntity.create(member));
-	}
-
-	@Override
 	public void signupCourier(SignupRequest.SignupCourier request) {
 		String email = request.email();
-		requireVerifiedEmail(email);
-		requireDuplicatedEmail(email);
+		validateSignupEmailVerified(email);
+		validateEmailNotDuplicated(email);
 
 		CourierEntity courier = CourierEntity.create(
 			request.name(),
@@ -257,12 +231,12 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private void requireDuplicatedEmail(String email) {
+	private void validateEmailNotDuplicated(String email) {
 		if (accountRepository.findByEmail(email).isPresent())
 			throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
 	}
 
-	private void requireVerifiedEmail(String email) {
+	private void validateSignupEmailVerified(String email) {
 		Boolean result = redisCache.get(
 			RedisKey.SIGNUP_VERIFIED.key(email),
 			Boolean.class

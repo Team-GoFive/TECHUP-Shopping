@@ -23,7 +23,7 @@ public class UserEntityCreator {
 	public static UserEntity create() {
 		return UserEntity.create(
 			"테스트유저",
-			"member@test.com",
+			"user@test.com",
 			"1234",
 			AccountRole.MEMBER,
 			Gender.MALE,
