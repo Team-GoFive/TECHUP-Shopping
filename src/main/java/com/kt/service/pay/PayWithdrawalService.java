@@ -11,6 +11,7 @@ import com.kt.domain.entity.PayTransactionEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.user.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -29,12 +30,13 @@ public class PayWithdrawalService {
 	private final UserRepository userRepository;
 	private final BankAccountTransactionRepository bankAccountTransactionRepository;
 	private final PayTransactionRepository payTransactionRepository;
+	private final BankAccountRepository bankAccountRepository;
 
 	@Transactional
-	public void withdraw(long amount, UUID userId) {
-		UserEntity user = userRepository.findByIdOrThrow(userId);
+	public void withdraw(long amount, UUID holderId) {
+		UserEntity user = userRepository.findByIdOrThrow(holderId);
 		PayEntity pay = user.getPay();
-		BankAccountEntity bankAccount = user.getBankAccount();
+		BankAccountEntity bankAccount = bankAccountRepository.findByHolderIdOrThrow(holderId);
 		pay.withdraw(amount);
 		bankAccount.deposit(amount);
 
