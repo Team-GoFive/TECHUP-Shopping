@@ -7,6 +7,7 @@ import com.kt.domain.entity.UserEntity;
 
 import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.pay.PayChargeService;
 
@@ -40,7 +41,12 @@ public class PayChargeServiceTest {
 	@Autowired
 	PayTransactionRepository payTransactionRepository;
 
+	@Autowired
+	BankAccountRepository bankAccountRepository;
+
 	UserEntity testUser;
+	BankAccountEntity bankAccount;
+
 	static final long DEPOSIT_BANK_ACCOUNT_AMOUNT = 1_000_000;
 	static final long CHARGE_PAY_AMOUNT = 10_000;
 
@@ -48,14 +54,16 @@ public class PayChargeServiceTest {
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-		testUser.getBankAccount().deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
+		bankAccount = BankAccountEntity.create(testUser);
+		bankAccountRepository.save(bankAccount);
+		bankAccount.deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
 	}
 
 	@Test
 	@Transactional
 	void 유저_페이충전_성공() {
 		PayEntity pay = testUser.getPay();
-		BankAccountEntity bankAccount = testUser.getBankAccount();
+
 		payChargeService.charge(CHARGE_PAY_AMOUNT, testUser.getId());
 		BigDecimal bankAccountBalance = BigDecimal.valueOf(DEPOSIT_BANK_ACCOUNT_AMOUNT - CHARGE_PAY_AMOUNT);
 		BigDecimal payBalance = BigDecimal.valueOf(CHARGE_PAY_AMOUNT);

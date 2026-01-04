@@ -24,22 +24,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BankAccountTransactionEntityTest {
 
 	UserEntity testUser;
-
+	BankAccountEntity bankAccount;
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
+		bankAccount = BankAccountEntity.create(testUser);
 	}
 
 	@Test
 	void 계좌거래내역_객체생성_성공() {
 		BankAccountTransactionEntity bankAccountTransaction =
 			BankAccountTransactionEntity.create(
-				testUser.getBankAccount(),
+				bankAccount,
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			);
 		assertNotNull(bankAccountTransaction);
 	}
@@ -49,12 +50,12 @@ public class BankAccountTransactionEntityTest {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
-				testUser.getBankAccount(),
+				bankAccount,
 				null,
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -68,12 +69,12 @@ public class BankAccountTransactionEntityTest {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
-				testUser.getBankAccount(),
+				bankAccount,
 				BankAccountTransactionType.DEPOSIT,
 				null,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 				log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -86,12 +87,12 @@ public class BankAccountTransactionEntityTest {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
-				testUser.getBankAccount(),
+				bankAccount,
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
 				0,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -105,12 +106,12 @@ public class BankAccountTransactionEntityTest {
 
 		assertThatThrownBy(() ->
 			BankAccountTransactionEntity.create(
-				testUser.getBankAccount(),
+				bankAccount,
 				BankAccountTransactionType.DEPOSIT,
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(-1),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		).isInstanceOfSatisfying(
 			FieldValidationException.class, ex -> {
