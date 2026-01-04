@@ -1,5 +1,6 @@
 package com.kt.domain.entity;
 
+import com.kt.domain.capability.BankAccountHolder;
 import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import com.kt.constant.UserStatus;
 @Entity(name = "seller")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("SELLER")
-public class SellerEntity extends BankAccountHolderEntity {
+public class SellerEntity extends AbstractAccountEntity implements BankAccountHolder {
 
 	@Column(nullable = false)
 	private String storeName;
@@ -37,7 +38,6 @@ public class SellerEntity extends BankAccountHolderEntity {
 		this.role = AccountRole.SELLER;
 		this.status = UserStatus.ENABLED;
 		this.gender = gender;
-		this.bankAccount = BankAccountEntity.create(this);
 	}
 
 	public static SellerEntity create(
