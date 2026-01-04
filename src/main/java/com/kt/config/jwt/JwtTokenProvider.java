@@ -34,14 +34,16 @@ public class JwtTokenProvider {
 	private static final String TOKEN_PREFIX = "Bearer ";
 	private static final String ROLE_CLAIM_KEY = "role";
 	private static final String EMAIL_CLAIM_KEY = "email";
-
+	private static final String JWT_ID_KEY = "jti";
 	public String create(UUID id, String email, AccountRole role, TokenType tokenType) {
 		Date issuedAt = new Date();
 		Duration validTime = tokenType == TokenType.ACCESS ?
 			jwtProperties.getAccessValidTime() : jwtProperties.getRefreshValidTime();
 		Date expireAt = new Date(issuedAt.getTime() + validTime.toMillis());
+		String randomUUID = UUID.randomUUID().toString();
 		return Jwts.builder()
 			.subject(id.toString())
+			.claim(JWT_ID_KEY, randomUUID)
 			.claim(ROLE_CLAIM_KEY, role.name())
 			.claim(EMAIL_CLAIM_KEY, email)
 			.issuedAt(issuedAt)
@@ -75,6 +77,10 @@ public class JwtTokenProvider {
 
 	public String getAccountId(String token) {
 		return getClaims(token).getSubject();
+	}
+
+	public String getJti(String token) {
+		return getClaims(token).get(JWT_ID_KEY, String.class);
 	}
 
 	private DefaultCurrentUser toCurrentUser(String token) {
