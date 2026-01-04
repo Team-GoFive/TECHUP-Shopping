@@ -38,7 +38,6 @@ public enum ErrorCode {
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
 	PARENT_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 카테고리가 존재하지 않습니다."),
 	ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문상품이 존재하지 않습니다."),
-	INVENTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문상품이 존재하지 않습니다."),
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
 	CHILD_CATEGORY_EXISTS(HttpStatus.BAD_REQUEST, "자식 카테고리가 존재합니다."),
 	STOCK_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "상품 재고가 없습니다."),
@@ -78,8 +77,8 @@ public enum ErrorCode {
 	MAX_CART_ITEM_QUANTITY(HttpStatus.FORBIDDEN, "장바구니에 담을 수 있는 최대 수량은 100개입니다."),
 	BANK_ACCOUNT_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "계좌 잔액이 충분하지 않습니다."),
 	PAY_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "페이 전액이 충분하지 않습니다."),
+	BANK_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "계좌가 존재하지 않습니다."),
 	SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
-
 	;
 
 	private final HttpStatus status;

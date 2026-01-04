@@ -4,7 +4,9 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.PayRequest;
+import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.UserEntity;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.kt.security.DefaultCurrentUser;
@@ -33,7 +35,11 @@ public class PayChargeTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	BankAccountRepository bankAccountRepository;
+
 	UserEntity testUser;
+	BankAccountEntity bankAccount;
 	DefaultCurrentUser authenticator;
 	static final long DEPOSIT_AMOUNT = 1_000_000;
 	static final long CHARGE_AMOUNT = 10_000;
@@ -41,8 +47,11 @@ public class PayChargeTest extends MockMvcTest {
 	@BeforeEach
 	void setup() {
 		testUser = UserEntityCreator.create();
-		testUser.getBankAccount().deposit(DEPOSIT_AMOUNT);
 		userRepository.save(testUser);
+
+		bankAccount = BankAccountEntity.create(testUser);
+		bankAccountRepository.save(bankAccount);
+		bankAccount.deposit(DEPOSIT_AMOUNT);
 
 		authenticator = new DefaultCurrentUser(
 			testUser.getId(),

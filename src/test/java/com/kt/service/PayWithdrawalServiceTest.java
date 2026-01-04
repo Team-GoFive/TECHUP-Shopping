@@ -6,6 +6,7 @@ import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.kt.service.pay.PayWithdrawalService;
@@ -40,7 +41,12 @@ public class PayWithdrawalServiceTest {
 	@Autowired
 	PayTransactionRepository payTransactionRepository;
 
+	@Autowired
+	BankAccountRepository bankAccountRepository;
+
 	UserEntity testUser;
+	BankAccountEntity bankAccount;
+
 	static final long DEPOSIT_BANK_ACCOUNT_AMOUNT = 1_000_000;
 	static final long CHARGE_PAY_AMOUNT = 10_000;
 	static final long WITHDRAW_PAY_AMOUNT = 5_000;
@@ -49,8 +55,12 @@ public class PayWithdrawalServiceTest {
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-		testUser.getBankAccount().deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
-		testUser.getBankAccount().withdraw(CHARGE_PAY_AMOUNT);
+
+		bankAccount = BankAccountEntity.create(testUser);
+		bankAccountRepository.save(bankAccount);
+		bankAccount.deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
+		bankAccount.withdraw(CHARGE_PAY_AMOUNT);
+
 		testUser.getPay().charge(CHARGE_PAY_AMOUNT);
 	}
 
@@ -58,7 +68,6 @@ public class PayWithdrawalServiceTest {
 	@Transactional
 	void 유저_페이인출_성공() {
 		PayEntity pay = testUser.getPay();
-		BankAccountEntity bankAccount = testUser.getBankAccount();
 		payWithdrawalService.withdraw(WITHDRAW_PAY_AMOUNT, testUser.getId());
 		BigDecimal payBalance = BigDecimal.valueOf(CHARGE_PAY_AMOUNT - WITHDRAW_PAY_AMOUNT);
 		BigDecimal bankAccountBalance = BigDecimal.valueOf(
