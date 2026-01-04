@@ -213,6 +213,7 @@ public class AuthServiceImpl implements AuthService {
 		passwordRequestRepository.save(passwordRequest);
 	}
 
+
 	@Override
 	public Pair<String, String> reissueToken(TokenReissueRequest request) {
 		String requestRefreshToken = request.refreshToken();
