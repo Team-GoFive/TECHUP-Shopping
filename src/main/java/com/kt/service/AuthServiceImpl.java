@@ -118,10 +118,11 @@ public class AuthServiceImpl implements AuthService {
 			TokenType.REFRESH
 		);
 
+		String refreshJti = jwtTokenProvider.getJti(refreshToken);
 		redisCache.set(
 			RedisKey.REFRESH_TOKEN,
 			account.getId(),
-			refreshToken
+			refreshJti
 		);
 
 		return Pair.of(accessToken, refreshToken);
@@ -223,19 +224,20 @@ public class AuthServiceImpl implements AuthService {
 		String requestRefreshToken = request.refreshToken();
 		UUID accountId = parseAccountId(requestRefreshToken);
 
-		validateRefreshToken(requestRefreshToken, accountId);
+		validateRefreshJti(requestRefreshToken, accountId);
 
 		AbstractAccountEntity account = accountRepository.findByIdOrThrow(accountId);
 
 		String reissuedAccessToken = createToken(account, TokenType.ACCESS);
 		String reissuedRefreshToken = createToken(account, TokenType.REFRESH);
 
+		String refreshJti = jwtTokenProvider.getJti(reissuedRefreshToken);
 		redisCache.delete(RedisKey.REFRESH_TOKEN.key(account.getId()));
 
 		redisCache.set(
 			RedisKey.REFRESH_TOKEN,
 			account.getId(),
-			reissuedRefreshToken
+			refreshJti
 		);
 
 		return Pair.of(reissuedAccessToken, reissuedRefreshToken);
@@ -289,15 +291,16 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private void validateRefreshToken(String requestToken, UUID accountId) {
-		String savedRefreshToken = redisCache.get(
+	private void validateRefreshJti(String refreshToken, UUID accountId) {
+		String refreshJti = jwtTokenProvider.getJti(refreshToken);
+		String cachedRefreshJti = redisCache.get(
 			RedisKey.REFRESH_TOKEN.key(accountId),
 			String.class
 		);
-		if (!StringUtils.hasText(savedRefreshToken))
+		if (!StringUtils.hasText(cachedRefreshJti))
 			throw new CustomException(ErrorCode.AUTH_REFRESH_EXPIRED);
 
-		if (!savedRefreshToken.equals(requestToken))
+		if (!cachedRefreshJti.equals(refreshJti))
 			throw new CustomException(ErrorCode.AUTH_INVALID);
 	}
 
