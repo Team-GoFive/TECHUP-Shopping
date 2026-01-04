@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController implements AuthSwaggerSupporter {
 
 	private final AuthService authService;
+	private final UserSignupService userSignupService;
 
 	@Operation(
 		summary = "이메일 인증 코드 전송",
@@ -63,7 +64,7 @@ public class AuthController implements AuthSwaggerSupporter {
 	public ResponseEntity<ApiResult<Void>> signupUser(
 		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
-		authService.signupUser(request);
+		userSignupService.signupUser(request);
 		return empty();
 	}
 

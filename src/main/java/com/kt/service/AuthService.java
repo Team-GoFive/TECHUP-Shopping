@@ -8,8 +8,6 @@ import com.mysema.commons.lang.Pair;
 
 public interface AuthService {
 
-	void signupUser(SignupRequest.SignupUser request);
-
 	void signupSeller(SignupRequest.SignupSeller request);
 
 	void signupCourier(SignupRequest.SignupCourier request);
