@@ -1,6 +1,7 @@
 package com.kt.domain.entity;
 
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.capability.BankAccountHolder;
 import com.kt.domain.entity.common.BaseEntity;
 
 import com.kt.exception.CustomException;
@@ -9,14 +10,12 @@ import com.kt.util.ValidationUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -31,21 +30,16 @@ public class BankAccountEntity extends BaseEntity {
 	@Version
 	private Long version;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(
-		name = "holder_id",
-		nullable = false,
-		unique = true
-	)
-	private BankAccountHolderEntity holder;
+	@Column(nullable = false, unique = true)
+	private UUID holderId;
 
-	private BankAccountEntity(BankAccountHolderEntity holder) {
+	private BankAccountEntity(UUID holderId) {
+		this.holderId = holderId;
 		this.balance = BigDecimal.ZERO;
-		this.holder = holder;
 	}
 
-	public static BankAccountEntity create(final BankAccountHolderEntity holder) {
-		return new BankAccountEntity(holder);
+	public static BankAccountEntity create(final BankAccountHolder holder) {
+		return new BankAccountEntity(holder.getId());
 	}
 
 	public void deposit(long amount) {
