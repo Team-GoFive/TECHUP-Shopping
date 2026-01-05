@@ -27,13 +27,11 @@ public class PayTransactionEntityTest {
 	BankAccountEntity bankAccount;
 
 	static final long AMOUNT = 20_000;
-	static final String DISPLAY_NAME_SUFFIX = "_계좌";
 
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
-		String bankAccountDisplayName = testUser.getName() + DISPLAY_NAME_SUFFIX;
-		bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccount.deposit(1_000_000);
 	}
 

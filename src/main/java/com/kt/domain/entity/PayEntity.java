@@ -24,6 +24,11 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class PayEntity extends BaseEntity {
 
+	private static final String DISPLAY_NAME_SUFFIX = "_페이";
+
+	@Column(nullable = false)
+	private String displayName;
+
 	@Column(precision = 19, scale = 0, nullable = false)
 	private BigDecimal balance;
 
@@ -41,6 +46,7 @@ public class PayEntity extends BaseEntity {
 	private PayEntity(UserEntity user) {
 		this.balance = BigDecimal.ZERO;
 		this.user = user;
+		this.displayName = user.getName() + DISPLAY_NAME_SUFFIX;
 	}
 
 	public static PayEntity create(final UserEntity user) {

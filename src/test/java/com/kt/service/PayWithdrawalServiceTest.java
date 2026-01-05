@@ -55,8 +55,8 @@ public class PayWithdrawalServiceTest {
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-		String bankAccountDisplayName = testUser.getName() + "_계좌";
-		bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
+
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccountRepository.save(bankAccount);
 		bankAccount.deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
 		bankAccount.withdraw(CHARGE_PAY_AMOUNT);

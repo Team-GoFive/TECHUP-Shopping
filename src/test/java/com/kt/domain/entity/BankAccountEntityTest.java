@@ -16,13 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 public class BankAccountEntityTest {
 
-	static final String DISPLAY_NAME_SUFFIX = "_계좌";
-
 	@Test
 	void 계좌_객체생성_성공() {
 		UserEntity testUser = UserEntityCreator.create();
-		String bankAccountDisplayName = testUser.getName() + DISPLAY_NAME_SUFFIX;
-		BankAccountEntity bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
+		BankAccountEntity bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 
 		assertNotNull(bankAccount);
 		assertEquals(BigDecimal.ZERO, bankAccount.getBalance());
