@@ -1,12 +1,6 @@
 package com.kt.controller.auth;
 
-import com.kt.common.support.SwaggerAssistance;
-import com.kt.domain.dto.request.PasswordManagementRequest;
-
-import com.kt.domain.dto.request.TokenReissueRequest;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import static com.kt.common.api.ApiResult.*;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,15 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.LoginRequest;
+import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.dto.response.TokenResponse;
 import com.kt.service.AuthService;
 import com.mysema.commons.lang.Pair;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import static com.kt.common.api.ApiResult.*;
 
 @Tag(name = "Auth", description = "인증 관련 API")
 @RestController
@@ -68,6 +64,18 @@ public class AuthController implements AuthSwaggerSupporter {
 		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
 		authService.signupUser(request);
+		return empty();
+	}
+
+	@Operation(
+		summary = "판매자 회원 가입",
+		description = "판매자 회원 가입 API"
+	)
+	@PostMapping("/singup/seller")
+	public ResponseEntity<ApiResult<Void>> signupSeller(
+		@RequestBody @Valid SignupRequest.SignupSeller request
+	) {
+		authService.signupSeller(request);
 		return empty();
 	}
 

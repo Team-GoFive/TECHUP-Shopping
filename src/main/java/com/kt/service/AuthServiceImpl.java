@@ -1,5 +1,13 @@
 package com.kt.service;
 
+import java.util.Random;
+import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.kt.config.jwt.JwtTokenProvider;
 import com.kt.constant.AccountRole;
 import com.kt.constant.PasswordRequestStatus;
@@ -9,37 +17,28 @@ import com.kt.constant.mail.MailTemplate;
 import com.kt.constant.message.ErrorCode;
 import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
-
 import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
-
 import com.kt.exception.CustomException;
 import com.kt.infra.mail.EmailClient;
 import com.kt.infra.redis.RedisCache;
-
-import com.kt.repository.account.AccountRepository;
 import com.kt.repository.PasswordRequestRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.repository.cart.CartRepository;
 import com.kt.repository.courier.CourierRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
-
 import com.mysema.commons.lang.Pair;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -47,6 +46,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
 	private final UserRepository userRepository;
+	private final SellerRepository sellerRepository;
 	private final CourierRepository courierRepository;
 	private final AccountRepository accountRepository;
 	private final PasswordRequestRepository passwordRequestRepository;
@@ -74,6 +74,24 @@ public class AuthServiceImpl implements AuthService {
 		);
 
 		userRepository.save(member);
+	}
+
+	@Override
+	public void signupSeller(SignupRequest.SignupSeller request) {
+		String email = request.email();
+		requireVerifiedEmail(email);
+		requireDuplicatedEmail(email);
+
+		SellerEntity seller = SellerEntity.create(
+			request.name(),
+			email,
+			passwordEncoder.encode(request.password()),
+			request.storeName(),
+			request.mobile(),
+			request.gender()
+		);
+
+		sellerRepository.save(seller);
 	}
 
 	@Override
@@ -214,7 +232,6 @@ public class AuthServiceImpl implements AuthService {
 		passwordRequestRepository.save(passwordRequest);
 	}
 
-
 	@Override
 	public Pair<String, String> reissueToken(TokenReissueRequest request) {
 		String requestRefreshToken = request.refreshToken();
@@ -282,7 +299,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (ExpiredJwtException e) {
 			throw new CustomException(ErrorCode.AUTH_REFRESH_EXPIRED);
-		} catch(JwtException | IllegalArgumentException e) {
+		} catch (JwtException | IllegalArgumentException e) {
 			throw new CustomException(ErrorCode.AUTH_INVALID);
 		}
 	}
