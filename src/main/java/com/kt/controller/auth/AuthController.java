@@ -3,6 +3,8 @@ package com.kt.controller.auth;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.domain.dto.request.PasswordManagementRequest;
 
+import com.kt.domain.dto.request.TokenReissueRequest;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -29,7 +31,7 @@ import static com.kt.common.api.ApiResult.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController extends SwaggerAssistance {
+public class AuthController implements AuthSwaggerSupporter {
 
 	private final AuthService authService;
 
@@ -132,6 +134,19 @@ public class AuthController extends SwaggerAssistance {
 	) {
 		authService.requestPasswordUpdate(request);
 		return empty();
+	}
+
+	@PostMapping("/token/reissue")
+	public ResponseEntity<ApiResult<TokenResponse>> reissueToken(
+		@RequestBody TokenReissueRequest request
+	) {
+		Pair<String, String> tokens = authService.reissueToken(request);
+		return wrap(
+			new TokenResponse(
+				tokens.getFirst(),
+				tokens.getSecond()
+			)
+		);
 	}
 
 }

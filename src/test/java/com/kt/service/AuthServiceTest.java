@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import com.kt.common.UserEntityCreator;
 
+import com.kt.config.jwt.JwtTokenProvider;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +65,9 @@ public class AuthServiceTest {
 	RedisCache redisCache;
 	@Autowired
 	RedisTemplate redisTemplate;
+
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 
 	UserEntity testMember;
 
@@ -156,17 +161,22 @@ public class AuthServiceTest {
 		// then
 		assertNotNull(result.getFirst());
 		assertNotNull(result.getSecond());
-		UserEntity savedUser = userRepository.findByEmailOrThrow(testMember.getEmail());
+		String refreshToken = result.getSecond();
 
-		String redisRefreshToken = redisCache.get(
-			RedisKey.REFRESH_TOKEN.key(savedUser.getId()),
+		String refreshJti = jwtTokenProvider.getJti(refreshToken);
+
+		String cachedRefreshJti = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(testMember.getId()),
 			String.class
 		);
 
-		assertEquals(result.getSecond(), redisRefreshToken);
+		assertEquals(cachedRefreshJti, refreshJti);
 
 		log.info("access token : {}", result.getFirst());
 		log.info("refresh token : {}", result.getSecond());
+
+		log.info("cachedRefreshJti :: {}", cachedRefreshJti);
+		log.info("refreshJti :: {}", refreshJti);
 	}
 
 	@Test
@@ -226,6 +236,7 @@ public class AuthServiceTest {
 			CustomException.class,
 			() -> authService.login(login)
 		);
+		assertEquals(ErrorCode.AUTH_ACCOUNT_RETIRED, exception.error());
 	}
 
 	@Test
@@ -458,7 +469,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
-	void 토큰_재발급_성공() throws InterruptedException {
+	void 토큰_재발급_성공() {
 
 		LoginRequest login = new LoginRequest(
 			testMember.getEmail(),
@@ -467,23 +478,26 @@ public class AuthServiceTest {
 
 		Pair<String, String> loginResult = authService.login(login);
 
-		Thread.sleep(3000);
-
 		TokenReissueRequest tokenReissueRequest =
 			new TokenReissueRequest(loginResult.getSecond());
 
 		Pair<String, String> reissued =
 			authService.reissueToken(tokenReissueRequest);
-
-		String savedRefreshToken = redisCache.get(
+		String reissuedRefreshToken = reissued.getSecond();
+		String savedRefreshJti = redisCache.get(
 			RedisKey.REFRESH_TOKEN.key(testMember.getId()),
 			String.class
 		);
+		String reissuedRefreshJti = jwtTokenProvider.getJti(reissuedRefreshToken);
 		assertNotEquals(loginResult.getSecond(), reissued.getSecond());
-		assertEquals(reissued.getSecond(), savedRefreshToken);
+		assertEquals(savedRefreshJti, reissuedRefreshJti);
+
 		log.info("Before reissued refreshToken :: {}", loginResult.getSecond());
 		log.info("After reissued refreshToken :: {}", reissued.getSecond());
-		log.info("Save In Redis redisRefreshToken :: {}", savedRefreshToken);
+
+		log.info("savedRefreshJti :: {}", savedRefreshJti);
+		log.info("reissuedRefreshJti :: {}", reissuedRefreshJti);
+
 	}
 
 	@Test
@@ -518,6 +532,8 @@ public class AuthServiceTest {
 
 		Pair<String, String> loginResult = authService.login(login);
 		String differentRefreshToken = loginResult.getSecond().replaceAll("e", "f");
+		differentRefreshToken = differentRefreshToken.replaceAll("1", "a");
+		differentRefreshToken = differentRefreshToken.replaceAll("b", "c");
 
 		TokenReissueRequest tokenReissueRequest =
 			new TokenReissueRequest(differentRefreshToken);
