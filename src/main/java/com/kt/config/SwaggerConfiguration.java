@@ -45,7 +45,7 @@ public class SwaggerConfiguration {
 	public GroupedOpenApi userApi() {
 		return GroupedOpenApi.builder()
 			.group("User API")
-			.pathsToExclude("/api/admin/**")
+			.pathsToExclude("/api/admin/**", "/api/seller/**")
 			.build();
 	}
 
