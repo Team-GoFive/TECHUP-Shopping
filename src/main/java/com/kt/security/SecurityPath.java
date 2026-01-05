@@ -8,15 +8,24 @@ public final class SecurityPath {
 		"/api/auth/**",
 		"/api/health/**",
 		"/swagger-ui/**",
-		"/v3/api-docs/**"
+		"/v3/api-docs/**",
+		// view
+		"/index.html",
+		"/main.css",
+		"/main.js",
+		"/login.**",
+		"/ws/**",
+
 	};
 	public static final String[] AUTHENTICATED = {
 		"/api/ai/**",
-		"/api/matches/**"
+		"/api/matches/**",
+		"/pub/**",
+		"/sub/**",
 	};
 	public static final String[] MEMBER = {
-		"api/orders/**",
-		"api/addresses/**"
+		"/api/orders/**",
+		"/api/addresses/**"
 	};
 	public static final String[] ADMIN = {
 		"/api/admin/**"

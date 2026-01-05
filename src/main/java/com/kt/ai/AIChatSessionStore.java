@@ -1,5 +1,6 @@
 package com.kt.ai;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -14,14 +15,16 @@ import lombok.RequiredArgsConstructor;
 public class AIChatSessionStore {
 	private final RedisCache redisCache;
 
-	public String getOrCreate(UUID userId) {
+	public Optional<UUID> getConversationId(UUID userId) {
 		String key = RedisKey.AI_CHAT_SESSION.key(userId);
 		String conversationId = redisCache.get(key, String.class);
 
-		if (conversationId == null) {
-			redisCache.set(RedisKey.AI_CHAT_SESSION, userId, UUID.randomUUID().toString());
-		}
+		return Optional.ofNullable(conversationId).map(UUID::fromString);
+	}
 
+	public UUID createConversationId(UUID userId) {
+		UUID conversationId = UUID.randomUUID();
+		redisCache.set(RedisKey.AI_CHAT_SESSION, userId, conversationId.toString());
 		return conversationId;
 	}
 
