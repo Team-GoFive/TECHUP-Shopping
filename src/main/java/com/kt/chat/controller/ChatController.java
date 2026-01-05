@@ -24,17 +24,16 @@ import com.kt.common.api.ApiResult;
 import com.kt.security.DefaultCurrentUser;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
-public class ChatController {
+public class ChatController implements ChatSwaggerSupporter {
 
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ChatMessageService chatMessageService;
 	private final ChatRoomService chatRoomService;
 
+	@Override
 	@PostMapping("/api/chat/apply")
 	public ResponseEntity<ApiResult<Void>> applyChat(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
