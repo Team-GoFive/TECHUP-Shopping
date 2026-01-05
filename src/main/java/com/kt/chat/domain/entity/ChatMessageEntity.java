@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity(name = "chat_message")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class ChatMessageEntity extends BaseTimeEntity {
 
 	@Id
