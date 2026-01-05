@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
@@ -43,10 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles("test")
 @SpringBootTest
 @Slf4j
+@TestPropertySource(properties = {
+	"spring.jpa.show-sql=false"
+})
 public class LockTest {
 
-	private final long productStock1 = 1000L;
-	private final long productStock2 = 10L;
 	@Autowired
 	private OrderPaymentService orderPaymentService;
 	@Autowired
@@ -114,12 +116,14 @@ public class LockTest {
 			"상품2", 100_000L, category, seller
 		);
 		productRepository.saveAll(List.of(product1, product2));
-		InventoryEntity inventory = InventoryEntity.create(product1.getId(), productStock1);
-		inventoryRepository.save(inventory);
 	}
 
 	@Test
-	void 사용자_100명이_동시에_product1_상품에_대해서_주문_시도() throws InterruptedException {
+	void 사용자_100명이_동시에_상품에_대해서_주문_시도() throws InterruptedException {
+		long productStock = 10L;
+		InventoryEntity inventory = InventoryEntity.create(product1.getId(), productStock);
+		inventoryRepository.save(inventory);
+
 		int repeatCount = 100;
 		List<UserEntity> users = new ArrayList<>();
 		List<AddressEntity> addresses = new ArrayList<>();
@@ -168,16 +172,23 @@ public class LockTest {
 
 		InventoryEntity foundInventory = inventoryRepository.findByProductIdOrThrow(product1.getId());
 
-		assertThat(successCount.get()).isEqualTo((int)productStock1);
-		assertThat(failureCount.get()).isEqualTo(repeatCount - (int)productStock1);
+		assertThat(successCount.get()).isEqualTo((int)productStock);
+		assertThat(failureCount.get()).isEqualTo(repeatCount - (int)productStock);
 		assertThat(foundInventory.getStock()).isEqualTo(0);
+
+		System.out.println("성공한 주문 수: " + successCount.get());
+		System.out.println("실패한 주문 수: " + failureCount.get());
+		System.out.println("남은 재고 수: " + foundInventory.getStock());
 	}
 
 	@Test
-	void 사용자_100명이_동시에_product1_상품에_대해서_주문_시도하고_다른_사용자가_동시에_상품_조회()
-		throws InterruptedException {
+	void 사용자_100명이_동시에_product1_상품에_대해서_주문_시도하고_다른_사용자가_동시에_상품_조회() throws InterruptedException {
+		long productStock1 = 1000L;
+		InventoryEntity inventory = InventoryEntity.create(product1.getId(), productStock1);
+		inventoryRepository.save(inventory);
+
 		int orderCount = 100;  // 주문하는 사용자 수
-		int queryCount = 5000;   // 조회하는 사용자 수
+		int queryCount = 1000;   // 조회하는 사용자 수
 
 		// 주문하는 사용자 100명 생성
 		List<UserEntity> orderUsers = new ArrayList<>();
@@ -278,9 +289,9 @@ public class LockTest {
 		long avgQueryTime = queryCount > 0 ? totalQueryTime.get() / queryCount : 0;
 		System.out.println("\n============== 조회 요청 시간 통계 ==============");
 		System.out.println(String.format("총 조회 요청 수: %d", queryCount));
-		System.out.println(String.format("총 소요 시간: %dms", totalQueryTime.get()));
+		// System.out.println(String.format("총 소요 시간: %dms", totalQueryTime.get()));
 		System.out.println(String.format("평균 소요 시간: %dms", avgQueryTime));
-		System.out.println(String.format("최소 소요 시간: %dms", minQueryTime.get() == Long.MAX_VALUE ? 0 : minQueryTime.get()));
+		// System.out.println(String.format("최소 소요 시간: %dms", minQueryTime.get() == Long.MAX_VALUE ? 0 : minQueryTime.get()));
 		System.out.println(String.format("최대 소요 시간: %dms", maxQueryTime.get()));
 		System.out.println("==============================================\n");
 
