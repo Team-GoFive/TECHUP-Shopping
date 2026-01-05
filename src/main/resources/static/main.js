@@ -170,12 +170,9 @@ adminConnectBtn.onclick = () => {
 
 async function loadWaiting() {
     const res = await authFetch("/api/admin/chat/rooms/waiting");
-    // if (!res.ok) return;
-    console.log(res);
 
     const json = await res.json();
     const rooms = json.data;
-    console.log(rooms);
     waitingList.innerHTML = "";
 
     rooms.forEach((r) => {
