@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.chat.domain.dto.AdminChatRequest;
 import com.kt.chat.domain.dto.ChatRoomInfoResponse;
 import com.kt.chat.service.AdminChatRoomService;
 import com.kt.common.api.ApiResult;
@@ -24,29 +25,33 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/admin/chat/rooms")
 @RequiredArgsConstructor
 
-public class AdminChatController {
+public class AdminChatController implements AdminChatSwaggerSupporter {
 
 	private final AdminChatRoomService chatRoomService;
 
+	@Override
 	@PostMapping("/handover/accept")
 	public ResponseEntity<ApiResult<Void>> accept(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
-		@RequestBody UUID conversationId
+		@RequestBody AdminChatRequest.AcceptChat request
 	) {
-		chatRoomService.accept(conversationId, defaultCurrentUser.getId());
+		chatRoomService.accept(request.conversationId(), defaultCurrentUser.getId());
 		return empty();
 	}
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<List<ChatRoomInfoResponse>>> getAllRooms() {
 		return wrap(chatRoomService.getAll());
 	}
 
+	@Override
 	@GetMapping("/waiting")
 	public ResponseEntity<ApiResult<List<ChatRoomInfoResponse>>> getWaitingRooms() {
 		return wrap(chatRoomService.getWaitingRooms());
 	}
 
+	@Override
 	@GetMapping("/connected")
 	public ResponseEntity<ApiResult<List<ChatRoomInfoResponse>>> getConnectedRooms() {
 		return wrap(chatRoomService.getConnectedRooms());
