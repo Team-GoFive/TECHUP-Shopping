@@ -27,7 +27,6 @@ public class RAGServiceImpl implements RAGService {
 	private final AIChatSessionStore chatSessionStore;
 	private final RAGRetriever ragRetriever;
 	private final HandoverPublisher handoverPublisher;
-	private final ChatRoomService chatRoomService;
 
 	@Override
 	public FAQResponse.ChatBot askFAQ(UUID userId, String question) {
@@ -45,10 +44,8 @@ public class RAGServiceImpl implements RAGService {
 				);
 				chatSessionStore.clear(userId);
 
-				// TODO: service 간 호출 지양 리팩토링
-				chatRoomService.createOrWaiting(conversationId, userId);
 				return new FAQResponse.ChatBot(
-					"정확한 답변이 어려워 상담사에게 연결해드릴게요.",
+					"정확한 답변이 어려워 상담사에게 연결해드릴게요. 상담연결 버튼을 누른 후 대기 부탁드려요.",
 					conversationId,
 					true
 				);

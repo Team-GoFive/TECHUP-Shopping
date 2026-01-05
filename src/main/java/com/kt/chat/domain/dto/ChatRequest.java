@@ -5,4 +5,10 @@ public class ChatRequest {
 		String message
 	) {
 	}
+
+	public record ApplyChat(
+		String conversationId
+	) {
+
+	}
 }

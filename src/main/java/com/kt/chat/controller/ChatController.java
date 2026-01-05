@@ -1,18 +1,26 @@
 package com.kt.chat.controller;
 
+import static com.kt.common.api.ApiResult.*;
+
 import java.security.Principal;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.kt.chat.domain.dto.ChatRequest;
 import com.kt.chat.domain.dto.ChatResponse;
 import com.kt.chat.service.ChatMessageService;
+import com.kt.chat.service.ChatRoomService;
+import com.kt.common.api.ApiResult;
 import com.kt.security.DefaultCurrentUser;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +33,20 @@ public class ChatController {
 
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ChatMessageService chatMessageService;
+	private final ChatRoomService chatRoomService;
+
+	@PostMapping("/api/chat/apply")
+	public ResponseEntity<ApiResult<Void>> applyChat(
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
+		@RequestBody ChatRequest.ApplyChat request
+	) {
+		chatRoomService.createOrWaiting(
+			UUID.fromString(request.conversationId()),
+			defaultCurrentUser.getId()
+		);
+
+		return empty();
+	}
 
 	@MessageMapping("/chat/{conversationId}")
 	public void handleChat(
