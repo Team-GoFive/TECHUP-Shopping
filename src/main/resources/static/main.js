@@ -89,8 +89,10 @@ aiSendBtn.onclick = async () => {
 
     const res = await authFetch("/api/ai/faq", {
         method: "POST",
-        headers: {"Content-Type": "text/plain"},
-        body: q,
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            question: q,
+        }),
     });
 
     if (!res.ok) {
@@ -115,7 +117,22 @@ aiSendBtn.onclick = async () => {
 /*********************************
  * 사용자 채팅
  *********************************/
-userConnectBtn.onclick = () => {
+userConnectBtn.onclick = async () => {
+    if (!conversationId) return;
+
+    const res = await authFetch("/api/chat/apply", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            conversationId: conversationId
+        }),
+    });
+
+    if (!res.ok) {
+        add(aiMessages, "ERROR", "상담 신청 실패");
+        return;
+    }
+
     userStomp = connectWS(() => {
         userStomp.subscribe(`/sub/chat/${conversationId}`, (msg) => {
             const payload = JSON.parse(msg.body);
@@ -131,7 +148,6 @@ userConnectBtn.onclick = () => {
         userStatus.textContent = "상담중";
     });
 };
-
 userSendBtn.onclick = () => {
     const msg = userMessageInput.value;
     if (!msg) return;
@@ -154,9 +170,12 @@ adminConnectBtn.onclick = () => {
 
 async function loadWaiting() {
     const res = await authFetch("/api/admin/chat/rooms/waiting");
-    if (!res.ok) return;
+    // if (!res.ok) return;
+    console.log(res);
 
-    const rooms = await res.json();
+    const json = await res.json();
+    const rooms = json.data;
+    console.log(rooms);
     waitingList.innerHTML = "";
 
     rooms.forEach((r) => {
