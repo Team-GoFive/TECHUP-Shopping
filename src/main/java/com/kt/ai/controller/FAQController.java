@@ -30,5 +30,5 @@ public class FAQController {
 
 		return ApiResult.wrap(answer);
 	}
-
+i
 }

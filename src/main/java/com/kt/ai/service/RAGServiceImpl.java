@@ -32,7 +32,9 @@ public class RAGServiceImpl implements RAGService {
 	@Override
 	public FAQResponse.ChatBot askFAQ(UUID userId, String question) {
 
-		UUID conversationId = chatSessionStore.getOrCreateConversationId(userId);
+		UUID conversationId = chatSessionStore.getConversationId(userId)
+			.orElseGet(() -> chatSessionStore.createConversationId(userId));
+
 		AIChatMapper.VectorSearchResult rag = ragRetriever.retrieve(question);
 
 		if (rag.score() < THRESHOLD) {
