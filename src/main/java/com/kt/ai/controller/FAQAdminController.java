@@ -26,6 +26,7 @@ public class FAQAdminController implements FAQAdminSwaggerSupporter {
 
 	private final AdminFAQService adminFaqService;
 
+	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createFAQ(
 		@RequestBody @Valid AdminFAQRequest.Create request
@@ -35,6 +36,7 @@ public class FAQAdminController implements FAQAdminSwaggerSupporter {
 		return empty();
 	}
 
+	@Override
 	@DeleteMapping("/{faqId}")
 	public ResponseEntity<ApiResult<Void>> deleteFAQ(@PathVariable UUID faqId) {
 		adminFaqService.delete(faqId);

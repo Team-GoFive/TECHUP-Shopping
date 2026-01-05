@@ -22,6 +22,7 @@ public class FAQController implements FAQSwaggerSupporter {
 
 	private final RAGService ragService;
 
+	@Override
 	@PostMapping("/faq")
 	public ResponseEntity<ApiResult<FAQResponse.ChatBot>> askFAQ(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
