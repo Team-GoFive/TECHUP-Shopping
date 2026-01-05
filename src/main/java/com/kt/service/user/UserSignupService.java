@@ -28,6 +28,8 @@ public class UserSignupService {
 	private final PasswordEncoder passwordEncoder;
 	private final BankAccountRepository bankAccountRepository;
 
+	static final String DISPLAY_NAME_SUFFIX = "_계좌";
+
 	@Transactional
 	public void signupUser(SignupRequest.SignupUser signup) {
 		validateSignupEmailVerified(signup.email());
@@ -43,8 +45,10 @@ public class UserSignupService {
 		);
 
 		userRepository.save(user);
-
-		BankAccountEntity bankAccount = BankAccountEntity.create(user);
+		String bankAccountDisplayName = user.getName() + DISPLAY_NAME_SUFFIX;
+		BankAccountEntity bankAccount = BankAccountEntity.create(
+			user, bankAccountDisplayName
+		);
 		bankAccountRepository.save(bankAccount);
 	}
 

@@ -43,13 +43,14 @@ public class PayChargeTest extends MockMvcTest {
 	DefaultCurrentUser authenticator;
 	static final long DEPOSIT_AMOUNT = 1_000_000;
 	static final long CHARGE_AMOUNT = 10_000;
+	static final String DISPLAY_NAME_SUFFIX = "_계좌";
 
 	@BeforeEach
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-
-		bankAccount = BankAccountEntity.create(testUser);
+		String bankAccountDisplayName = testUser.getName() + DISPLAY_NAME_SUFFIX;
+		bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
 		bankAccountRepository.save(bankAccount);
 		bankAccount.deposit(DEPOSIT_AMOUNT);
 

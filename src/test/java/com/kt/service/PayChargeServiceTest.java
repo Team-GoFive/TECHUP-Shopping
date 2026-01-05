@@ -5,9 +5,9 @@ import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.UserEntity;
 
-import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
+import com.kt.repository.bankaccount.transaction.BankAccountTransactionRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.pay.PayChargeService;
 
@@ -49,12 +49,13 @@ public class PayChargeServiceTest {
 
 	static final long DEPOSIT_BANK_ACCOUNT_AMOUNT = 1_000_000;
 	static final long CHARGE_PAY_AMOUNT = 10_000;
-
+	static final String DISPLAY_NAME_SUFFIX = "_계좌";
 	@BeforeEach
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-		bankAccount = BankAccountEntity.create(testUser);
+		String bankAccountDisplayName = testUser.getName() + DISPLAY_NAME_SUFFIX;
+		bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
 		bankAccountRepository.save(bankAccount);
 		bankAccount.deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
 	}

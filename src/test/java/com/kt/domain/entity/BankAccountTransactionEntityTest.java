@@ -25,10 +25,12 @@ public class BankAccountTransactionEntityTest {
 
 	UserEntity testUser;
 	BankAccountEntity bankAccount;
+	static final String DISPLAY_NAME_SUFFIX = "_계좌";
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
-		bankAccount = BankAccountEntity.create(testUser);
+		String bankAccountDisplayName = testUser.getName() + DISPLAY_NAME_SUFFIX;
+		bankAccount = BankAccountEntity.create(testUser, bankAccountDisplayName);
 	}
 
 	@Test
