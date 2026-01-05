@@ -22,7 +22,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import com.kt.common.interceptor.SimpleApiLoggingInterceptor;
 
-//@Component
+// @Component
 public class HttpInterfaceBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String BASE_PACKAGE = "com.kt";
 	private static final String SUFFIX_CLIENT = "Client";
