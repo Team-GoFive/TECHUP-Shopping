@@ -80,7 +80,7 @@ public class ProductReviewTest extends MockMvcTest {
 		productRepository.save(testProduct);
 		for (int i = 0; i < 3; i++) {
 			List<OrderRequest.Item> items = List.of(
-				new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
+				new OrderRequest.Item(testProduct.getId(), 1L)
 			);
 			orderService.createOrder(
 				testMember.getId(),

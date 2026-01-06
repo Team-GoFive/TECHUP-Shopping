@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -129,8 +128,7 @@ public class LockTest {
 		System.out.println("============== setup ==============");
 		OrderRequest.Item item = new OrderRequest.Item(
 			product1.getId(),
-			1L,
-			UUID.randomUUID()
+			1L
 		);
 
 		// 동시에 주문해야하니까 쓰레드를 100개

@@ -79,7 +79,7 @@ public class OrderSearchTest extends MockMvcTest {
 
 		for (int i = 0; i < 2; i++) {
 			List<OrderRequest.Item> items = List.of(
-				new OrderRequest.Item(testProduct.getId(), 1L, testSeller.getId())
+				new OrderRequest.Item(testProduct.getId(), 1L)
 			);
 			OrderRequest orderRequest = new OrderRequest(
 				items,

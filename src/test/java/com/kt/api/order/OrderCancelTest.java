@@ -90,8 +90,7 @@ public class OrderCancelTest extends MockMvcTest {
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(
 				testProduct.getId(),
-				1L,
-				testSeller.getId()
+				1L
 			)
 		);
 		OrderRequest orderRequest = new OrderRequest(

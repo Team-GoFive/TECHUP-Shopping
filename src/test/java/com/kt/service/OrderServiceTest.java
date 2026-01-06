@@ -118,8 +118,8 @@ class OrderServiceTest {
 		ProductEntity product2 = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(product1.getId(), 2L, testSeller.getId()),
-			new OrderRequest.Item(product2.getId(), 3L, testSeller.getId())
+			new OrderRequest.Item(product1.getId(), 2L),
+			new OrderRequest.Item(product2.getId(), 3L)
 		);
 
 		OrderRequest orderRequest = new OrderRequest(
@@ -148,7 +148,7 @@ class OrderServiceTest {
 
 		UUID invalidId = UUID.fromString("11111111-2222-3333-4444-555555555555");
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(invalidId, 1L, testSeller.getId()));
+			new OrderRequest.Item(invalidId, 1L));
 
 		OrderRequest orderRequest = new OrderRequest(items, address.getId());
 
@@ -174,7 +174,7 @@ class OrderServiceTest {
 		ProductEntity product = productRepository.save(ProductEntityCreator.createProduct(category, testSeller));
 
 		List<OrderRequest.Item> items = List.of(
-			new OrderRequest.Item(product.getId(), 99999999L, testSeller.getId())
+			new OrderRequest.Item(product.getId(), 99999999L)
 		);
 
 		OrderRequest orderRequest = new OrderRequest(items, address.getId());
