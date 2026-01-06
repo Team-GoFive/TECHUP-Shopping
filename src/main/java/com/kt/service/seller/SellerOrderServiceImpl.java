@@ -57,7 +57,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 	@Override
 	public void confirmPaidOrderProduct(UUID orderProductId, UUID sellerId) {
 		OrderProductEntity orderProduct = orderProductRepository.findByIdOrThrow(orderProductId);
-		Preconditions.validate(orderProduct.getProduct().getSeller().getId() == sellerId,
+		Preconditions.validate(orderProduct.getProduct().getSeller().getId().toString().equals(sellerId.toString()),
 			ErrorCode.ORDER_PRODUCT_NOT_OWNER);
 		OrderProductStatus status = orderProduct.getStatus();
 
