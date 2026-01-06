@@ -11,10 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.kt.domain.entity.BankAccountEntity;
-
-import com.kt.repository.bankaccount.BankAccountRepository;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +24,7 @@ import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
+import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -35,7 +32,10 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.PaymentRepository;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -54,6 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LockTest {
 
 	@Autowired
+	BankAccountRepository bankAccountRepository;
+	@Autowired
 	private OrderPaymentService orderPaymentService;
 	@Autowired
 	private OrderService orderService;
@@ -71,10 +73,10 @@ public class LockTest {
 	private AddressRepository addressRepository;
 	@Autowired
 	private OrderProductRepository orderProductRepository;
-
 	@Autowired
-	BankAccountRepository bankAccountRepository;
-
+	private PaymentRepository paymentRepository;
+	@Autowired
+	private PayTransactionRepository payTransactionRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	private ProductEntity product1;
@@ -95,6 +97,8 @@ public class LockTest {
 	@AfterEach
 	void cleanUp() {
 		// 외래키 제약조건을 고려하여 역순으로 삭제
+		payTransactionRepository.deleteAll(); // 결제 내역 삭제
+		paymentRepository.deleteAll(); // 페이 삭제
 		orderProductRepository.deleteAll();
 		productRepository.deleteAll(); // 상품 삭제
 		inventoryRepository.deleteAll(); // 재고 삭제
