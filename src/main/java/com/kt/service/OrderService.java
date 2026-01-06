@@ -20,8 +20,6 @@ public interface OrderService {
 		OrderRequest request
 	);
 
-	void reduceStock(UUID orderId);
-
 	void reduceStock(List<OrderRequest.Item> items);
 
 	void cancelOrderProduct(UUID userId, UUID orderProductId);

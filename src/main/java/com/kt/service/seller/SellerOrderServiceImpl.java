@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.SellerOrderResponse;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.SellerEntity;
 import com.kt.exception.CustomException;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.util.Preconditions;
@@ -27,6 +28,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
 	private final SellerRepository sellerRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final InventoryRepository inventoryRepository;
 
 	@Override
 	public void cancelOrderProduct(UUID orderProductId, UUID sellerId) {
@@ -41,7 +43,8 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 		}
 
 		ProductEntity product = orderProduct.getProduct();
-		product.addStock(orderProduct.getQuantity());
+		InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(product.getId());
+		inventory.addStock(orderProduct.getQuantity());
 		orderProduct.cancel();
 	}
 

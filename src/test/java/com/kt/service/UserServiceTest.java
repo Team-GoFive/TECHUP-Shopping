@@ -4,14 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.AdminEntity;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.account.AccountRepository;
-import com.kt.constant.AccountRole;
-
-import com.kt.repository.admin.AdminRepository;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,27 +15,32 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.UserStatus;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
+import com.kt.domain.entity.AdminEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.account.AccountRepository;
+import com.kt.repository.admin.AdminRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
-import com.kt.repository.user.UserRepository;
-
 import com.kt.repository.seller.SellerRepository;
+import com.kt.repository.user.UserRepository;
 
 @Transactional
 @SpringBootTest
@@ -149,7 +146,6 @@ class UserServiceTest {
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
 			category,
 			testSeller
 		);
@@ -173,7 +169,6 @@ class UserServiceTest {
 
 		ProductEntity product = ProductEntity.create(
 			"테스트물건",
-			3L,
 			3L,
 			category,
 			testSeller

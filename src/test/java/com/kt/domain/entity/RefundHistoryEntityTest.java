@@ -13,7 +13,6 @@ import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.RefundStatus;
 
-
 @ActiveProfiles("test")
 class RefundHistoryEntityTest {
 	@Test
@@ -53,7 +52,6 @@ class RefundHistoryEntityTest {
 		ProductEntity product = ProductEntity.create(
 			"테스트상품",
 			15_000L,
-			10L,
 			category,
 			seller
 		);

@@ -1,15 +1,11 @@
 package com.kt.service.seller;
 
 import static com.kt.common.SellerEntityCreator.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import com.kt.domain.dto.request.SellerProductRequest;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.seller.SellerRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.ProductStatus;
 import com.kt.constant.searchtype.ProductSearchType;
+import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -36,6 +37,7 @@ class SellerProductServiceTest {
 
 	private final SellerProductService sellerProductService;
 	private final ProductRepository productRepository;
+	private final InventoryRepository inventoryRepository;
 	private final CategoryRepository categoryRepository;
 	private final OrderProductRepository orderProductRepository;
 	private final SellerRepository sellerRepository;
@@ -43,11 +45,13 @@ class SellerProductServiceTest {
 
 	@Autowired
 	SellerProductServiceTest(SellerProductService sellerProductService, ProductRepository productRepository,
-		CategoryRepository categoryRepository, OrderProductRepository orderProductRepository,
+		InventoryRepository inventoryRepository, CategoryRepository categoryRepository,
+		OrderProductRepository orderProductRepository,
 		SellerRepository sellerRepository) {
 		this.orderProductRepository = orderProductRepository;
 		this.sellerProductService = sellerProductService;
 		this.productRepository = productRepository;
+		this.inventoryRepository = inventoryRepository;
 		this.categoryRepository = categoryRepository;
 		this.sellerRepository = sellerRepository;
 	}
@@ -99,12 +103,13 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create(
 			"상품1",
 			1000L,
-			10L,
 			category,
 			testSeller
 		);
 
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		// when
 		SellerProductRequest.Update request = new SellerProductRequest.Update(
@@ -138,7 +143,6 @@ class SellerProductServiceTest {
 		ProductEntity product = ProductEntity.create(
 			"상품1",
 			1000L,
-			10L,
 			category,
 			testSeller
 		);
@@ -163,13 +167,19 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				category,
 				testSeller
 			);
 			products.add(product);
 		}
 		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(1, 10);
@@ -194,7 +204,6 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categoryDog,
 				testSeller
 			);
@@ -205,13 +214,19 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);
 			products.add(product);
 		}
 		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
@@ -238,13 +253,19 @@ class SellerProductServiceTest {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);
 			products.add(product);
 		}
 		productRepository.saveAll(products);
+
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		PageRequest pageRequest = PageRequest.of(0, 5);
@@ -266,8 +287,10 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		// when
 		ProductResponse.Detail detail = sellerProductService.detail(product.getId(), testSeller.getId());
@@ -282,7 +305,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = productRepository.findAll()
@@ -303,7 +326,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = productRepository.findAll()
@@ -324,7 +347,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 		List<UUID> productIds = productRepository.findAll()
 			.stream()
@@ -345,7 +368,7 @@ class SellerProductServiceTest {
 		// given
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
-		ProductEntity product = ProductEntity.create("상품", 1000L, 10L, categorySports, testSeller);
+		ProductEntity product = ProductEntity.create("상품", 1000L, categorySports, testSeller);
 		productRepository.save(product);
 
 		List<UUID> productIds = List.of(product.getId());
@@ -366,17 +389,23 @@ class SellerProductServiceTest {
 		CategoryEntity categorySports = CategoryEntity.create("운동", null);
 		categoryRepository.save(categorySports);
 		List<ProductEntity> products = new ArrayList<>();
+		List<InventoryEntity> inventories = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			ProductEntity product = ProductEntity.create(
 				"상품" + i,
 				1000L,
-				10L,
 				categorySports,
 				testSeller
 			);
 			products.add(product);
 		}
 		productRepository.saveAll(products);
+
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 
 		// when
 		sellerProductService.soldOutProducts(
@@ -385,7 +414,7 @@ class SellerProductServiceTest {
 
 		// then
 		assertThat(
-			productRepository.findAll()
+			inventoryRepository.findAll()
 				.stream()
 				.allMatch(it -> it.getStock() == 0)
 		).isTrue();

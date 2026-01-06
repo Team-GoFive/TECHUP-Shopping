@@ -1,12 +1,6 @@
 package com.kt.service.admin;
 
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.admin.AdminRepository;
-import com.kt.repository.seller.SellerRepository;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,20 +14,26 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.CategoryEntityCreator;
 import com.kt.common.ProductEntityCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.admin.AdminRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @Transactional
@@ -47,6 +47,8 @@ class AdminOrderServiceTest {
 	UserRepository userRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
 	@Autowired
 	OrderRepository orderRepository;
 	@Autowired
@@ -88,8 +90,10 @@ class AdminOrderServiceTest {
 
 		productRepository.save(product);
 
-		product.decreaseStock(quantity);
-		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), quantity);
+		inventoryRepository.save(inventory);
+
+		inventory.decreaseStock(quantity);
 
 		return orderProductRepository.save(
 			OrderProductEntity.create(
@@ -191,6 +195,5 @@ class AdminOrderServiceTest {
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.INVALID_FORCE_STATUS_TRANSITION.name());
 	}
-
 
 }

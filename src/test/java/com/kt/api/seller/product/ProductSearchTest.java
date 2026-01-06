@@ -1,18 +1,14 @@
 package com.kt.api.seller.product;
 
-import com.kt.common.CurrentUserCreator;
-import com.kt.common.MockMvcTest;
-import com.kt.common.SellerEntityCreator;
-import com.kt.common.UserEntityCreator;
-import com.kt.domain.entity.CategoryEntity;
-import com.kt.domain.entity.ProductEntity;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.domain.entity.UserEntity;
-import com.kt.repository.CategoryRepository;
-import com.kt.repository.product.ProductRepository;
-import com.kt.repository.seller.SellerRepository;
-import com.kt.repository.user.UserRepository;
-import com.kt.security.DefaultCurrentUser;
+import static com.kt.common.CategoryEntityCreator.*;
+import static com.kt.common.ProductEntityCreator.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,22 +16,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.kt.common.CategoryEntityCreator.createCategory;
-import static com.kt.common.ProductEntityCreator.createProduct;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.kt.common.CurrentUserCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.inventory.InventoryRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
+import com.kt.repository.user.UserRepository;
+import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("판매자 상품 목록 조회 - GET /api/seller/products")
 public class ProductSearchTest extends MockMvcTest {
 
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private InventoryRepository inventoryRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
 	@Autowired
@@ -73,6 +76,12 @@ public class ProductSearchTest extends MockMvcTest {
 			products.add(inactiveProduct);
 		}
 		productRepository.saveAll(products);
+		List<InventoryEntity> inventories = new ArrayList<>();
+		for (ProductEntity product : products) {
+			InventoryEntity inventory = InventoryEntity.create(product.getId(), 1000L);
+			inventories.add(inventory);
+		}
+		inventoryRepository.saveAll(inventories);
 	}
 
 	@Test

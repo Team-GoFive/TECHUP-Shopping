@@ -58,9 +58,9 @@ public class RefundServiceImpl implements RefundService {
 		}
 
 		boolean alreadyRequested = refundHistoryRepository.existsByOrderProductAndStatus(
-				orderProduct,
-				RefundStatus.REQUESTED
-			);
+			orderProduct,
+			RefundStatus.REQUESTED
+		);
 
 		if (alreadyRequested) {
 			throw new CustomException(ErrorCode.REFUND_ALREADY_REQUESTED);

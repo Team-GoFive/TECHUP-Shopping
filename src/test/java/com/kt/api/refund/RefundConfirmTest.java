@@ -1,6 +1,5 @@
 package com.kt.api.refund;
 
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -11,20 +10,33 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.*;
-import com.kt.constant.*;
-import com.kt.domain.entity.*;
-import com.kt.repository.*;
+import com.kt.common.CategoryEntityCreator;
+import com.kt.common.MockMvcTest;
+import com.kt.common.OrderEntityCreator;
+import com.kt.common.ProductEntityCreator;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.AccountRole;
+import com.kt.constant.OrderProductStatus;
+import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
+import com.kt.domain.entity.OrderEntity;
+import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.PaymentEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.PaymentRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -49,6 +61,8 @@ public class RefundConfirmTest extends MockMvcTest {
 	@Autowired
 	ProductRepository productRepository;
 	@Autowired
+	InventoryRepository inventoryRepository;
+	@Autowired
 	OrderRepository orderRepository;
 	@Autowired
 	OrderProductRepository orderProductRepository;
@@ -71,6 +85,9 @@ public class RefundConfirmTest extends MockMvcTest {
 		ProductEntity product = productRepository.save(
 			ProductEntityCreator.createProduct(category, seller)
 		);
+
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		OrderEntity order = orderRepository.save(
 			OrderEntityCreator.createOrderEntity(member)

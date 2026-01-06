@@ -16,6 +16,7 @@ import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.domain.entity.AddressEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.PayEntity;
@@ -29,6 +30,7 @@ import com.kt.repository.AddressRepository;
 import com.kt.repository.PayRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.ShippingDetailRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -43,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
 
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
+	private final InventoryRepository inventoryRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
 	private final ShippingDetailRepository shippingDetailRepository;
@@ -60,9 +63,10 @@ public class OrderServiceImpl implements OrderService {
 	// 비관적 락을 사용하여 재고 확인
 	public void checkStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
-			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
+			productRepository.findByIdOrThrow(item.productId());
+			InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(item.productId());
 
-			if (product.getStock() < item.quantity()) {
+			if (inventory.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
 
@@ -111,33 +115,14 @@ public class OrderServiceImpl implements OrderService {
 		return order;
 	}
 
-	// TODO: 삭제
-	@Transactional
-	public void reduceStock(UUID orderId) {
-		List<OrderProductEntity> orderProducts =
-			orderProductRepository.findAllByOrderId(orderId);
-
-		for (OrderProductEntity orderProduct : orderProducts) {
-			ProductEntity product = productRepository.findByIdWithLockOrThrow(orderProduct.getProduct().getId());
-			Long quantity = orderProduct.getQuantity();
-
-			if (product.getStock() < quantity) {
-				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
-			}
-
-			product.decreaseStock(quantity);
-			orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
-		}
-	}
-
 	public void reduceStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
-			ProductEntity product = productRepository.findByIdWithLockOrThrow(item.productId());
+			InventoryEntity inventory = inventoryRepository.findByProductIdWithLockOrThrow(item.productId());
 
-			if (product.getStock() < item.quantity()) {
+			if (inventory.getStock() < item.quantity()) {
 				throw new CustomException(ErrorCode.STOCK_NOT_ENOUGH);
 			}
-			product.decreaseStock(item.quantity());
+			inventory.decreaseStock(item.quantity());
 		}
 	}
 
@@ -160,7 +145,8 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		ProductEntity product = orderProduct.getProduct();
-		product.addStock(orderProduct.getQuantity());
+		InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(product.getId());
+		inventory.addStock(orderProduct.getQuantity());
 
 		PaymentEntity payment = paymentRepository.findByOrderProduct(orderProduct)
 			.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));

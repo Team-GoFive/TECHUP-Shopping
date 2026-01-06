@@ -27,9 +27,6 @@ public class ProductEntity extends BaseEntity {
 	private Long price;
 
 	@Column(nullable = false)
-	private Long stock;
-
-	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
@@ -44,14 +41,12 @@ public class ProductEntity extends BaseEntity {
 	protected ProductEntity(
 		String name,
 		Long price,
-		Long stock,
 		ProductStatus status,
 		CategoryEntity category,
 		SellerEntity seller
 	) {
 		this.name = name;
 		this.price = price;
-		this.stock = stock;
 		this.status = status;
 		this.category = category;
 		this.seller = seller;
@@ -60,42 +55,21 @@ public class ProductEntity extends BaseEntity {
 	public static ProductEntity create(
 		final String name,
 		final Long price,
-		final Long stock,
 		final CategoryEntity category,
 		final SellerEntity seller
 	) {
 		return new ProductEntity(
 			name,
 			price,
-			stock,
 			ProductStatus.ACTIVATED,
 			category,
 			seller
 		);
 	}
 
-	public static ProductEntity create(
-		final String name,
-		final Long price,
-		final Long stock,
-		final ProductStatus status,
-		final CategoryEntity category,
-		final SellerEntity seller
-	) {
-		return new ProductEntity(
-			name,
-			price,
-			stock,
-			status,
-			category,
-			seller
-		);
-	}
-
-	public void update(String name, Long price, Long stock, CategoryEntity category) {
+	public void update(String name, Long price, CategoryEntity category) {
 		this.name = name;
 		this.price = price;
-		this.stock = stock;
 		this.category = category;
 	}
 
@@ -120,14 +94,6 @@ public class ProductEntity extends BaseEntity {
 		if (status == ProductStatus.IN_ACTIVATED) {
 			activate();
 		}
-	}
-
-	public void addStock(Long quantity) {
-		this.stock += quantity;
-	}
-
-	public void decreaseStock(Long quantity) {
-		this.stock -= quantity;
 	}
 
 	public boolean isSellable() {
