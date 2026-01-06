@@ -4,6 +4,8 @@ import static com.kt.common.api.ApiResult.*;
 
 import java.util.UUID;
 
+import com.kt.service.OrderPaymentService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderController implements OrderSwaggerSupporter {
 
 	private final OrderService orderService;
+	private final OrderPaymentService orderPaymentService;
 
 	@Override
 	@GetMapping
@@ -66,6 +69,16 @@ public class OrderController implements OrderSwaggerSupporter {
 		);
 		return empty();
 	}
+
+	@PostMapping("/pay")
+	public ResponseEntity<ApiResult<Void>> orderPay(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@Valid @RequestBody OrderRequest.Create request
+	) {
+		orderPaymentService.orderPay(currentUser.getId(), request);
+		return ApiResult.empty();
+	}
+
 
 	@Override
 	@PatchMapping("/order-products/{orderProductId}/cancel")

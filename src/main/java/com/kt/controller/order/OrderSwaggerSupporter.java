@@ -48,6 +48,15 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 	);
 
 	@Operation(
+		summary = "주문 및 결제 생성",
+		description = "사용자가 주문생성과 동시에 주문 결제하는 API"
+	)
+	ResponseEntity<ApiResult<Void>> orderPay(
+		DefaultCurrentUser currentUser,
+		OrderRequest.Create request
+	);
+
+	@Operation(
 		summary = "주문 취소",
 		description = "사용자가 자신의 주문을 주문 상품별로 취소하는 API",
 		parameters = {
