@@ -66,7 +66,7 @@ public interface CartSwaggerSupporter extends SwaggerSupporter {
 		summary = "장바구니 선택 상품 주문 생성 API",
 		description = "사용자가 장바구니에서 상품을 선택하여 주문하는 API"
 	)
-	ResponseEntity<ApiResult<Void>> createOrderFromCart(
+	ResponseEntity<ApiResult<Void>> createOrder(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
 		OrderRequest.CartOrderRequest request
 	);
