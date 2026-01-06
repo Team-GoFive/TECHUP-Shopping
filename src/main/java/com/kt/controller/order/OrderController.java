@@ -58,7 +58,7 @@ public class OrderController implements OrderSwaggerSupporter {
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@Valid @RequestBody OrderRequest request
+		@Valid @RequestBody OrderRequest.Create request
 	) {
 		orderService.createOrder(
 			currentUser.getId(),

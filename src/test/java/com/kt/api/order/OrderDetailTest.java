@@ -77,7 +77,7 @@ public class OrderDetailTest extends MockMvcTest {
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(testProduct.getId(), 1L)
 		);
-		OrderRequest orderRequest = new OrderRequest(
+		OrderRequest.Create orderRequest = new OrderRequest.Create(
 			items,
 			testAddress.getId()
 		);

@@ -77,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderEntity createOrder(
 		UUID userId,
-		OrderRequest request
+		OrderRequest.Create request
 	) {
 		List<OrderRequest.Item> items = request.items();
 		UUID addressId = request.addressId();

@@ -68,6 +68,6 @@ public interface CartSwaggerSupporter extends SwaggerSupporter {
 	)
 	ResponseEntity<ApiResult<Void>> createOrder(
 		@Parameter(hidden = true) DefaultCurrentUser currentUser,
-		OrderRequest.CartOrderRequest request
+		OrderRequest.CartOrder request
 	);
 }

@@ -14,13 +14,13 @@ import com.kt.repository.inventory.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
 
 	private final InventoryRepository inventoryRepository;
 
 	@Override
+	@Transactional
 	public void reduceStock(List<OrderRequest.Item> items) {
 		for (OrderRequest.Item item : items) {
 			InventoryEntity inventory = inventoryRepository.findByProductIdWithLockOrThrow(item.productId());

@@ -99,7 +99,7 @@ public class CartController implements CartSwaggerSupporter {
 	@PostMapping("/orders")
 	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@RequestBody @Valid OrderRequest.CartOrderRequest request
+		@RequestBody @Valid OrderRequest.CartOrder request
 	) {
 		List<CartItemEntity> cartItems =
 			cartService.getCartItemsForOrder(
@@ -107,7 +107,7 @@ public class CartController implements CartSwaggerSupporter {
 				request.cartItemIds()
 			);
 
-		OrderRequest orderRequest =
+		OrderRequest.Create orderRequest =
 			OrderRequest.fromCart(cartItems, request.addressId());
 
 		orderService.createOrder(

@@ -44,7 +44,7 @@ public interface OrderSwaggerSupporter extends SwaggerSupporter {
 	)
 	ResponseEntity<ApiResult<Void>> createOrder(
 		DefaultCurrentUser currentUser,
-		OrderRequest request
+		OrderRequest.Create request
 	);
 
 	@Operation(

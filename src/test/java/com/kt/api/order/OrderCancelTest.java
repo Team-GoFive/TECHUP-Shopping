@@ -98,7 +98,7 @@ public class OrderCancelTest extends MockMvcTest {
 				1L
 			)
 		);
-		OrderRequest orderRequest = new OrderRequest(
+		OrderRequest.Create orderRequest = new OrderRequest.Create(
 			items,
 			testAddress.getId()
 		);

@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.*;
 import com.kt.constant.AccountRole;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.request.OrderRequest.CartOrderRequest;
 import com.kt.domain.entity.*;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
@@ -103,8 +102,8 @@ class CartOrderCreateTest extends MockMvcTest {
 				AccountRole.MEMBER
 			);
 
-		CartOrderRequest request =
-			new CartOrderRequest(
+		OrderRequest.CartOrder request =
+			new OrderRequest.CartOrder(
 				List.of(item1.getId()),
 				UUID.randomUUID()
 			);
@@ -121,7 +120,7 @@ class CartOrderCreateTest extends MockMvcTest {
 					))
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(
-						new OrderRequest.CartOrderRequest(
+						new OrderRequest.CartOrder(
 							List.of(item1.getId()),
 							address.getId()
 						)

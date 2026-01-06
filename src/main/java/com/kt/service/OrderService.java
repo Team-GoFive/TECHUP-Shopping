@@ -17,7 +17,7 @@ public interface OrderService {
 
 	OrderEntity createOrder(
 		UUID userId,
-		OrderRequest request
+		OrderRequest.Create request
 	);
 
 	void reduceStock(List<OrderRequest.Item> items);
