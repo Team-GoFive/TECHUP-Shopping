@@ -42,9 +42,7 @@ public class OrderController implements OrderSwaggerSupporter {
 	public ResponseEntity<ApiResult<PageResponse<OrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
-		return ApiResult.page(
-			orderService.searchOrder(paging.toPageable())
-		);
+		return page(orderService.searchOrder(paging.toPageable()));
 	}
 
 	@Override
@@ -52,9 +50,7 @@ public class OrderController implements OrderSwaggerSupporter {
 	public ResponseEntity<ApiResult<OrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
-		return ApiResult.wrap(
-			orderService.getOrderDetail(orderId)
-		);
+		return wrap(orderService.getOrderDetail(orderId));
 	}
 
 	@Override
@@ -63,10 +59,7 @@ public class OrderController implements OrderSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@Valid @RequestBody OrderRequest.Create request
 	) {
-		orderService.createOrder(
-			currentUser.getId(),
-			request
-		);
+		orderService.createOrder(currentUser.getId(), request);
 		return empty();
 	}
 
@@ -76,7 +69,7 @@ public class OrderController implements OrderSwaggerSupporter {
 		@Valid @RequestBody OrderRequest.Create request
 	) {
 		orderPaymentService.orderPay(currentUser.getId(), request);
-		return ApiResult.empty();
+		return empty();
 	}
 
 
