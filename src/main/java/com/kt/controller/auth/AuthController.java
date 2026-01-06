@@ -2,6 +2,8 @@ package com.kt.controller.auth;
 
 import static com.kt.common.api.ApiResult.*;
 
+import com.kt.service.user.UserSignupService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +32,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthController implements AuthSwaggerSupporter {
 
 	private final AuthService authService;
+	private final UserSignupService userSignupService;
 
-	@Operation(
-		summary = "이메일 인증 코드 전송",
-		description = "요청된 이메일로 인증 번호 전송 API"
-	)
 	@PostMapping("/email/code")
 	public ResponseEntity<ApiResult<Void>> sendAuthCode(
 		@RequestBody @Valid SignupRequest.SignupEmail request
@@ -43,10 +42,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "이메일 인증 코드 검증",
-		description = "이메일로 전송된 인증 코드 검증 API"
-	)
 	@PostMapping("/email/verify")
 	public ResponseEntity<ApiResult<Void>> verifyAuthCode(
 		@RequestBody @Valid SignupRequest.VerifySignupCode request
@@ -55,23 +50,15 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "유저 회원 가입",
-		description = "유저 회원 가입 API"
-	)
 	@PostMapping("/signup/user")
 	public ResponseEntity<ApiResult<Void>> signupUser(
 		@RequestBody @Valid SignupRequest.SignupUser request
 	) {
-		authService.signupUser(request);
+		userSignupService.signupUser(request);
 		return empty();
 	}
 
-	@Operation(
-		summary = "판매자 회원 가입",
-		description = "판매자 회원 가입 API"
-	)
-	@PostMapping("/singup/seller")
+	@PostMapping("/signup/seller")
 	public ResponseEntity<ApiResult<Void>> signupSeller(
 		@RequestBody @Valid SignupRequest.SignupSeller request
 	) {
@@ -79,10 +66,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "기사 회원 가입",
-		description = "기사 회원 가입 API"
-	)
 	@PostMapping("/signup/courier")
 	public ResponseEntity<ApiResult<Void>> signupCourier(
 		@RequestBody @Valid SignupRequest.SignupCourier request
@@ -91,10 +74,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "계정 로그인",
-		description = "계정 로그인 API"
-	)
 	@PostMapping("/login")
 	public ResponseEntity<ApiResult<TokenResponse>> login(
 		@RequestBody @Valid LoginRequest request
@@ -108,10 +87,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		);
 	}
 
-	@Operation(
-		summary = "비밀번호 초기화",
-		description = "비밀번호 초기화 API"
-	)
 	@PatchMapping("/password/reset")
 	public ResponseEntity<ApiResult<Void>> resetPassword(
 		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
@@ -120,10 +95,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "비밀번호 초기화 요청",
-		description = "비밀번호 초기화 요청 API"
-	)
 	@PostMapping("/password/reset-requests")
 	public ResponseEntity<ApiResult<Void>> requestPasswordReset(
 		@RequestBody @Valid PasswordManagementRequest.PasswordReset request
@@ -132,10 +103,6 @@ public class AuthController implements AuthSwaggerSupporter {
 		return empty();
 	}
 
-	@Operation(
-		summary = "비밀번호 변경 요청",
-		description = "비밀번호 변경 요청 API"
-	)
 	@PostMapping("/password-update/requests")
 	public ResponseEntity<ApiResult<Void>> requestPasswordUpdate(
 		@RequestBody @Valid PasswordManagementRequest.PasswordUpdate request

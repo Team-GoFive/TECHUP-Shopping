@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.kt.config.jwt.JwtTokenProvider;
-import com.kt.constant.AccountRole;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.TokenType;
@@ -58,29 +57,10 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailClient emailClient;
 
 	@Override
-	public void signupUser(SignupRequest.SignupUser request) {
-		String email = request.email();
-		requireVerifiedEmail(email);
-		requireDuplicatedEmail(email);
-
-		UserEntity member = UserEntity.create(
-			request.name(),
-			email,
-			passwordEncoder.encode(request.password()),
-			AccountRole.MEMBER,
-			request.gender(),
-			request.birth(),
-			request.mobile()
-		);
-
-		userRepository.save(member);
-	}
-
-	@Override
 	public void signupSeller(SignupRequest.SignupSeller request) {
 		String email = request.email();
-		requireVerifiedEmail(email);
-		requireDuplicatedEmail(email);
+		validateSignupEmailVerified(email);
+		validateEmailNotDuplicated(email);
 
 		SellerEntity seller = SellerEntity.create(
 			request.name(),
@@ -94,11 +74,12 @@ public class AuthServiceImpl implements AuthService {
 		sellerRepository.save(seller);
 	}
 
+
 	@Override
 	public void signupCourier(SignupRequest.SignupCourier request) {
 		String email = request.email();
-		requireVerifiedEmail(email);
-		requireDuplicatedEmail(email);
+		validateSignupEmailVerified(email);
+		validateEmailNotDuplicated(email);
 
 		CourierEntity courier = CourierEntity.create(
 			request.name(),
@@ -272,12 +253,12 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	private void requireDuplicatedEmail(String email) {
+	private void validateEmailNotDuplicated(String email) {
 		if (accountRepository.findByEmail(email).isPresent())
 			throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
 	}
 
-	private void requireVerifiedEmail(String email) {
+	private void validateSignupEmailVerified(String email) {
 		Boolean result = redisCache.get(
 			RedisKey.SIGNUP_VERIFIED.key(email),
 			Boolean.class

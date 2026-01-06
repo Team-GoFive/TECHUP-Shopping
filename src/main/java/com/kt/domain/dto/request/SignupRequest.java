@@ -46,7 +46,7 @@ public class SignupRequest {
 		@NotNull(message = "성별은 필수 항목입니다.")
 		Gender gender,
 
-		@NotNull(message = "생일날짜는 필수 항목입니다.")
+		@NotNull(message = "생년월일은 필수 항목입니다.")
 		LocalDate birth,
 
 		@NotBlank(message = "휴대폰 번호는 필수 항목입니다.")

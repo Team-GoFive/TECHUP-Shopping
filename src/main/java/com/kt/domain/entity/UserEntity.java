@@ -9,6 +9,8 @@ import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.UserStatus;
 
+import com.kt.domain.capability.BankAccountHolder;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -25,14 +27,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("USER")
-public class UserEntity extends BankAccountHolderEntity {
+public class UserEntity extends AbstractAccountEntity implements BankAccountHolder {
 
 	@OneToMany(
 		mappedBy = "createdBy",
 		cascade = CascadeType.REMOVE,
 		orphanRemoval = true
 	)
-	List<AddressEntity> addresses;
+	private List<AddressEntity> addresses;
 
 	@OneToOne(
 		mappedBy = "user",
@@ -47,10 +49,11 @@ public class UserEntity extends BankAccountHolderEntity {
 
 	@Column(nullable = false)
 	private LocalDate birth;
+
 	@Column(nullable = false)
 	private String mobile;
 
-	protected UserEntity(
+	private UserEntity(
 		String name,
 		String email,
 		String password,
@@ -68,7 +71,6 @@ public class UserEntity extends BankAccountHolderEntity {
 		this.mobile = mobile;
 		this.status = UserStatus.ENABLED;
 		this.pay = PayEntity.create(this);
-		this.bankAccount = BankAccountEntity.create(this);
 	}
 
 	public static UserEntity create(

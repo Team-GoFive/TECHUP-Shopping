@@ -1,7 +1,5 @@
 package com.kt.domain.dto.request;
 
-
-
 import com.kt.constant.AccountRole;
 import com.kt.constant.CourierWorkStatus;
 

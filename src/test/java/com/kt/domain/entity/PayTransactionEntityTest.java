@@ -24,11 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PayTransactionEntityTest {
 
 	UserEntity testUser;
+	BankAccountEntity bankAccount;
+
 	static final long AMOUNT = 20_000;
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
-		testUser.getBankAccount().deposit(1_000_000);
+		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount.deposit(1_000_000);
 	}
 
 	@Test
@@ -41,7 +44,7 @@ public class PayTransactionEntityTest {
 			PayTransactionPurpose.CHARGE,
 			AMOUNT,
 			pay.getBalance(),
-			testUser.getBankAccount().getId()
+			bankAccount.getId()
 		);
 		assertNotNull(payTransaction);
 		assertEquals(BigDecimal.valueOf(AMOUNT), payTransaction.getBalanceSnapshot());
@@ -56,7 +59,7 @@ public class PayTransactionEntityTest {
 				PayTransactionPurpose.CHARGE,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 			log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -74,7 +77,7 @@ public class PayTransactionEntityTest {
 				null,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 			log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -92,7 +95,7 @@ public class PayTransactionEntityTest {
 				PayTransactionPurpose.CHARGE,
 				0,
 				BigDecimal.valueOf(10_000),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -111,7 +114,7 @@ public class PayTransactionEntityTest {
 				PayTransactionPurpose.WITHDRAW,
 				10_000,
 				BigDecimal.valueOf(-1),
-				testUser.getBankAccount().getId()
+				bankAccount.getId()
 			)
 		).isInstanceOfSatisfying(
 			FieldValidationException.class, ex -> {
