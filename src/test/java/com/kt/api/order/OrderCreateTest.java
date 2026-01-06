@@ -92,7 +92,7 @@ public class OrderCreateTest extends MockMvcTest {
 	void 주문_생성_성공__200_OK() throws Exception {
 		// when
 		OrderRequest request = new OrderRequest(
-			List.of(new OrderRequest.Item(testProduct1.getId(), 1L, testSeller.getId())), address.getId()
+			List.of(new OrderRequest.Item(testProduct1.getId(), 1L)), address.getId()
 		);
 
 		ResultActions actions = mockMvc.perform(
@@ -113,8 +113,8 @@ public class OrderCreateTest extends MockMvcTest {
 		// when
 		OrderRequest request = new OrderRequest(
 			List.of(
-				new OrderRequest.Item(testProduct1.getId(), 1L, testSeller.getId()),
-				new OrderRequest.Item(testProduct2.getId(), 2L, testSeller.getId())),
+				new OrderRequest.Item(testProduct1.getId(), 1L),
+				new OrderRequest.Item(testProduct2.getId(), 2L)),
 			address.getId()
 		);
 

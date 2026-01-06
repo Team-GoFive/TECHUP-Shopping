@@ -1,5 +1,6 @@
 package com.kt.controller.cart;
 
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -14,9 +15,10 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.CartRequest;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
+import com.kt.domain.entity.CartItemEntity;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.CartService;
-import com.kt.service.OrderApplicationService;
+import com.kt.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class CartController implements CartSwaggerSupporter {
 
 	private final CartService cartService;
-	private final OrderApplicationService orderApplicationService;
+	private final OrderService orderService;
 
 	@Override
 	@GetMapping
@@ -95,14 +97,25 @@ public class CartController implements CartSwaggerSupporter {
 
 	@Override
 	@PostMapping("/orders")
-	public ResponseEntity<ApiResult<Void>> createOrderFromCart(
+	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid OrderRequest.CartOrderRequest request
 	) {
-		orderApplicationService.createOrderFromCart(
+		List<CartItemEntity> cartItems =
+			cartService.getCartItemsForOrder(
+				currentUser.getId(),
+				request.cartItemIds()
+			);
+
+		OrderRequest orderRequest =
+			OrderRequest.fromCart(cartItems, request.addressId());
+
+		orderService.createOrder(
 			currentUser.getId(),
-			request
+			orderRequest
 		);
+
+		cartService.removeOrderedItems(cartItems);
 
 		return empty();
 	}

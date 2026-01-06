@@ -26,10 +26,7 @@ public record OrderRequest(
 
 		@NotNull
 		@Min(1)
-		Long quantity,
-
-		@NotNull
-		UUID sellerId
+		Long quantity
 	) {
 	}
 
@@ -77,8 +74,7 @@ public record OrderRequest(
 		List<Item> items = cartItems.stream()
 			.map(ci -> new Item(
 				ci.getProduct().getId(),
-				Long.valueOf(ci.getQuantity()),
-				ci.getProduct().getSeller().getId()
+				Long.valueOf(ci.getQuantity())
 			))
 			.toList();
 
