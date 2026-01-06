@@ -3,7 +3,6 @@ package com.kt.repository.bankaccount.transaction;
 import com.kt.constant.SortDirection;
 import com.kt.constant.bankaccount.BankAccountTransactionType;
 import com.kt.domain.dto.request.BankAccountTransactionRequest;
-import com.kt.domain.dto.response.AccountResponse;
 import com.kt.domain.dto.response.BankAccountTransactionResponse;
 import com.kt.domain.dto.response.QBankAccountTransactionResponse_Search;
 import com.kt.domain.entity.QBankAccountTransactionEntity;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
