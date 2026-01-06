@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.constant.PaymentStatus;
 import com.kt.constant.RefundStatus;
 import com.kt.constant.message.ErrorCode;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.PaymentEntity;
@@ -15,6 +16,7 @@ import com.kt.domain.entity.RefundHistoryEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.PayRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.refund.RefundHistoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class SellerRefundServiceImpl implements SellerRefundService {
 
 	private final RefundHistoryRepository refundHistoryRepository;
+	private final InventoryRepository inventoryRepository;
 	private final PayRepository payRepository;
 
 	@Override
@@ -56,9 +59,13 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 
 		long amount = payment.getRefundAmount();
 
+		InventoryEntity inventory = inventoryRepository.findByProductIdWithLockOrThrow(
+			orderProduct.getProduct().getId());
+
 		pay.refund(amount);
 		payment.refund();
 		orderProduct.completeRefund();
+		inventory.addStock(orderProduct.getQuantity());
 		refundHistory.complete(sellerId);
 	}
 
@@ -82,6 +89,5 @@ public class SellerRefundServiceImpl implements SellerRefundService {
 
 		refundHistory.reject(sellerId, reason);
 	}
-
 
 }

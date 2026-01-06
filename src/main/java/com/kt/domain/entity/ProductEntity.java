@@ -26,9 +26,6 @@ public class ProductEntity extends BaseEntity {
 	@Column(nullable = false)
 	private Long price;
 
-	// @Column(nullable = false)
-	// private Long stock;
-
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
@@ -97,12 +94,6 @@ public class ProductEntity extends BaseEntity {
 		if (status == ProductStatus.IN_ACTIVATED) {
 			activate();
 		}
-	}
-
-	public void addStock(Long quantity) {
-	}
-
-	public void decreaseStock(Long quantity) {
 	}
 
 	public boolean isSellable() {

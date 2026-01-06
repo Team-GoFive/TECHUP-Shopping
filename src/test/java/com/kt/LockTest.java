@@ -213,8 +213,7 @@ public class LockTest {
 		System.out.println("============== setup ==============");
 		OrderRequest.Item item = new OrderRequest.Item(
 			product1.getId(),
-			1L,
-			UUID.randomUUID()
+			1L
 		);
 
 		// 주문 100개 + 조회 10개 = 총 110개의 작업을 동시에 실행

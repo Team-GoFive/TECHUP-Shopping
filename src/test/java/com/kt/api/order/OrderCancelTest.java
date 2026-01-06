@@ -11,35 +11,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import com.kt.common.UserEntityCreator;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import com.kt.common.SellerEntityCreator;
-import com.kt.domain.entity.PaymentEntity;
-import com.kt.domain.entity.SellerEntity;
-import com.kt.repository.PaymentRepository;
-import com.kt.repository.seller.SellerRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.PaymentRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.OrderService;
 
@@ -50,6 +50,8 @@ public class OrderCancelTest extends MockMvcTest {
 	CategoryRepository categoryRepository;
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
 	@Autowired
 	OrderService orderService;
 	@Autowired
@@ -84,6 +86,9 @@ public class OrderCancelTest extends MockMvcTest {
 
 		testProduct = createProduct(category, testSeller);
 		productRepository.save(testProduct);
+
+		InventoryEntity inventory = InventoryEntity.create(testProduct.getId(), 10L);
+		inventoryRepository.save(inventory);
 
 		testAddress = addressRepository.save(AddressCreator.createAddress(testMember));
 
@@ -147,9 +152,9 @@ public class OrderCancelTest extends MockMvcTest {
 		OrderEntity saved = orderRepository.findAll().stream().findFirst().orElseThrow();
 
 		saved.getOrderProducts().get(0)
-		.updateStatus(OrderProductStatus.SHIPPING_READY);
+			.updateStatus(OrderProductStatus.SHIPPING_READY);
 
-		if(saved.getOrderProducts().size() > 1) {
+		if (saved.getOrderProducts().size() > 1) {
 			saved.getOrderProducts().subList(1, saved.getOrderProducts().size())
 				.forEach(orderProduct ->
 					orderProduct.updateStatus(OrderProductStatus.SHIPPING)

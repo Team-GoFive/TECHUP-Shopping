@@ -104,6 +104,7 @@ class RefundServiceTest {
 			);
 
 		order.addOrderProduct(orderProduct);
+		inventory.decreaseStock(quantity);
 		return orderProductRepository.save(orderProduct);
 	}
 
@@ -499,7 +500,7 @@ class RefundServiceTest {
 		);
 
 		// then
-		Long afterStock = inventoryRepository
+		long afterStock = inventoryRepository
 			.findByProductIdOrThrow(product.getId())
 			.getStock();
 

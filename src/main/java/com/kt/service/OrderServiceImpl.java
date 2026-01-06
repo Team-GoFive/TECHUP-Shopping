@@ -145,7 +145,8 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		ProductEntity product = orderProduct.getProduct();
-		product.addStock(orderProduct.getQuantity());
+		InventoryEntity inventory = inventoryRepository.findByProductIdOrThrow(product.getId());
+		inventory.addStock(orderProduct.getQuantity());
 
 		PaymentEntity payment = paymentRepository.findByOrderProduct(orderProduct)
 			.orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));

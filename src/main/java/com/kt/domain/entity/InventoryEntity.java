@@ -19,7 +19,7 @@ public class InventoryEntity extends BaseEntity {
 
 	private UUID productId;
 
-	protected InventoryEntity(UUID productId, Long stock) {
+	private InventoryEntity(UUID productId, Long stock) {
 		this.stock = stock;
 		this.productId = productId;
 	}
