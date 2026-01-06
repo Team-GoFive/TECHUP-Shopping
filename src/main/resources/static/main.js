@@ -4,8 +4,10 @@
 let userStomp = null;
 let adminStomp = null;
 let conversationId = null;
-let loggedIn = false;
 let accessToken = null;
+
+let userCursor = null;
+let adminCursor = null;
 
 /*********************************
  * 공통 fetch (JWT 자동 포함)
@@ -42,8 +44,6 @@ loginBtn.onclick = async () => {
     accessToken = json.data.accessToken;
 
     loginStatus.textContent = "로그인 성공";
-    loggedIn = true;
-
     userTab.disabled = false;
     adminTab.disabled = false;
     switchTab(true);
@@ -90,9 +90,7 @@ aiSendBtn.onclick = async () => {
     const res = await authFetch("/api/ai/faq", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            question: q,
-        }),
+        body: JSON.stringify({question: q}),
     });
 
     if (!res.ok) {
@@ -115,39 +113,67 @@ aiSendBtn.onclick = async () => {
 };
 
 /*********************************
+ * 채팅 내역 로드 (REST)
+ *********************************/
+async function loadChatMessages(conversationId, container, cursor = null) {
+    const params = new URLSearchParams();
+    params.append("size", 20);
+    if (cursor) params.append("cursor", cursor);
+
+    const res = await authFetch(
+        `/api/chat/${conversationId}/messages?` + params.toString()
+    );
+
+    if (!res.ok) return null;
+
+    const json = await res.json();
+    const page = json.data;
+    console.log(page);
+    const messages = page.list;
+
+    console.log(messages);
+    // 서버 DESC → 화면 ASC
+    messages.reverse().forEach(m => {
+        add(
+            container,
+            m.senderRole === "ADMIN" ? "ADMIN" : "USER",
+            m.message
+        );
+    });
+
+    return messages.length > 0 ? messages[0].createdAt : null;
+}
+
+/*********************************
  * 사용자 채팅
  *********************************/
 userConnectBtn.onclick = async () => {
     if (!conversationId) return;
 
-    const res = await authFetch("/api/chat/apply", {
+    await authFetch("/api/chat/apply", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            conversationId: conversationId
-        }),
+        body: JSON.stringify({conversationId}),
     });
 
-    if (!res.ok) {
-        add(aiMessages, "ERROR", "상담 신청 실패");
-        return;
-    }
+    userChatMessages.innerHTML = "";
+    userCursor = await loadChatMessages(conversationId, userChatMessages);
 
     userStomp = connectWS(() => {
         userStomp.subscribe(`/sub/chat/${conversationId}`, (msg) => {
             const payload = JSON.parse(msg.body);
-
-            if (payload.senderRole === "MEMBER") {
-                add(userChatMessages, "ME", payload.message);
-            } else {
-                add(userChatMessages, "ADMIN", payload.message);
-            }
+            add(
+                userChatMessages,
+                payload.senderRole,
+                payload.message
+            );
         });
 
         userSendBtn.disabled = false;
         userStatus.textContent = "상담중";
     });
 };
+
 userSendBtn.onclick = () => {
     const msg = userMessageInput.value;
     if (!msg) return;
@@ -164,18 +190,82 @@ userSendBtn.onclick = () => {
 /*********************************
  * 관리자
  *********************************/
-adminConnectBtn.onclick = () => {
-    adminStomp = connectWS(loadWaiting);
-};
 
-async function loadWaiting() {
-    const res = await authFetch("/api/admin/chat/rooms/waiting");
+async function loadRooms(type) {
+    let url = "/api/admin/chat/rooms";
+
+    if (type === "waiting") url += "/waiting";
+    if (type === "connected") url += "/connected";
+
+    const res = await authFetch(url);
+    if (!res.ok) return;
 
     const json = await res.json();
     const rooms = json.data;
-    waitingList.innerHTML = "";
 
-    rooms.forEach((r) => {
+    roomList.innerHTML = "";
+
+    rooms.forEach(r => {
+        const div = document.createElement("div");
+        div.textContent = `[${r.status}] ${r.conversationId}`;
+        div.onclick = () => openRoom(r.conversationId, r.status);
+        roomList.appendChild(div);
+    });
+}
+
+async function openRoom(cid, status) {
+    conversationId = cid;
+    adminConversationId.textContent = cid;
+    adminChatMessages.innerHTML = "";
+
+    // 대기중이면 accept 먼저
+    if (status === "WAITING") {
+        await authFetch("/api/admin/chat/rooms/handover/accept", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({conversationId: cid}),
+        });
+    }
+
+    // 과거 메시지 로드
+    adminCursor = await loadChatMessages(cid, adminChatMessages);
+
+    // 기존 구독 있으면 해제
+    if (adminStomp && adminStomp.subscription) {
+        adminStomp.subscription.unsubscribe();
+    }
+
+    adminStomp.subscription =
+        adminStomp.subscribe(`/sub/chat/${cid}`, (msg) => {
+            const payload = JSON.parse(msg.body);
+            add(
+                adminChatMessages,
+                payload.senderRole,
+                payload.message
+            );
+        });
+
+    adminSendBtn.disabled = false;
+}
+
+adminConnectBtn.onclick = () => {
+    adminStomp = connectWS(() => {
+        loadRooms("waiting"); // 기본은 대기중
+    });
+};
+
+allRoomsBtn.onclick = () => loadRooms("all");
+waitingRoomsBtn.onclick = () => loadRooms("waiting");
+connectedRoomsBtn.onclick = () => loadRooms("connected");
+
+
+async function loadWaiting() {
+    const res = await authFetch("/api/admin/chat/rooms/waiting");
+    const json = await res.json();
+    const rooms = json.data;
+
+    waitingList.innerHTML = "";
+    rooms.forEach(r => {
         const div = document.createElement("div");
         div.textContent = r.conversationId;
         div.onclick = () => accept(r.conversationId);
@@ -192,15 +282,17 @@ async function accept(cid) {
 
     conversationId = cid;
     adminConversationId.textContent = cid;
+    adminChatMessages.innerHTML = "";
+
+    adminCursor = await loadChatMessages(conversationId, adminChatMessages);
 
     adminStomp.subscribe(`/sub/chat/${conversationId}`, (msg) => {
         const payload = JSON.parse(msg.body);
-
-        if (payload.senderRole === "ADMIN") {
-            add(adminChatMessages, "ME", payload.message);
-        } else {
-            add(adminChatMessages, "USER", payload.message);
-        }
+        add(
+            adminChatMessages,
+            payload.senderRole === "ADMIN" ? "ME" : "USER",
+            payload.message
+        );
     });
 
     adminSendBtn.disabled = false;
