@@ -38,8 +38,8 @@ public class SellerProductServiceImpl implements SellerProductService {
 		SellerEntity seller = sellerRepository.findByIdOrThrow(sellerId);
 
 		ProductEntity product = ProductEntity.create(name, price, category, seller);
-		InventoryEntity inventory = InventoryEntity.create(product.getId(), stock);
 		productRepository.save(product);
+		InventoryEntity inventory = InventoryEntity.create(product.getId(), stock);
 		inventoryRepository.save(inventory);
 	}
 
