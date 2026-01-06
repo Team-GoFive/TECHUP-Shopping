@@ -57,6 +57,25 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailClient emailClient;
 
 	@Override
+	public void signupSeller(SignupRequest.SignupSeller request) {
+		String email = request.email();
+		validateSignupEmailVerified(email);
+		validateEmailNotDuplicated(email);
+
+		SellerEntity seller = SellerEntity.create(
+			request.name(),
+			email,
+			passwordEncoder.encode(request.password()),
+			request.storeName(),
+			request.mobile(),
+			request.gender()
+		);
+
+		sellerRepository.save(seller);
+	}
+
+
+	@Override
 	public void signupCourier(SignupRequest.SignupCourier request) {
 		String email = request.email();
 		validateSignupEmailVerified(email);
