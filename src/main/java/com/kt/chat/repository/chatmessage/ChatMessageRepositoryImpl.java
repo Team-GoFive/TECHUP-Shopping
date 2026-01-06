@@ -17,7 +17,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ChatMesseageRepositoryImpl implements ChatMessageRepositoryCustom {
+public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	private final QChatMessageEntity chatMessage = QChatMessageEntity.chatMessageEntity;
