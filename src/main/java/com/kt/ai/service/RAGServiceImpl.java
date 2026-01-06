@@ -45,7 +45,7 @@ public class RAGServiceImpl implements RAGService {
 				chatSessionStore.clear(userId);
 
 				return new FAQResponse.ChatBot(
-					"정확한 답변이 어려워 상담사에게 연결해드릴게요. 상담연결 버튼을 누른 후 대기 부탁드려요.",
+					"정확한 답변이 어려워 상담사에게 연결해드릴게요. 상담 연결 버튼을 누른 후 메시지를 보내시고 대기 부탁드려요.",
 					conversationId,
 					true
 				);
