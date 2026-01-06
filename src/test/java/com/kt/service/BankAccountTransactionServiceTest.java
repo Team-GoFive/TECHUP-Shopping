@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -82,6 +83,7 @@ public class BankAccountTransactionServiceTest {
 	}
 
 	@Test
+	@Transactional
 	void 계좌_거래내역_조회_성공() {
 		BankAccountTransactionRequest.Search request = new BankAccountTransactionRequest.Search(
 			null,
