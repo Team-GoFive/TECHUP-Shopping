@@ -21,6 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
@@ -48,8 +51,8 @@ public class PayServiceTest {
 	void 페이_잔액_조회_성공() {
 		PayResponse.Balance response = payService.getBalance(testUser.getId());
 
-		Assertions.assertNotNull(response);
-		Assertions.assertEquals(response.balance(), BigDecimal.valueOf(CHARGE_PAY_AMOUNT));
+		assertNotNull(response);
+		assertEquals(response.balance(), BigDecimal.valueOf(CHARGE_PAY_AMOUNT));
 		log.info("balance : {}", response.balance());
 
 	}
