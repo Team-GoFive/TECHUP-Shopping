@@ -1,5 +1,9 @@
 package com.kt.service.payment;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.bankaccount.BankAccountTransactionPurpose;
 import com.kt.constant.bankaccount.BankAccountTransactionType;
 import com.kt.constant.pay.PayTransactionPurpose;
@@ -17,9 +21,6 @@ import com.kt.repository.pay.transaction.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +50,7 @@ public class PaymentSettlementService {
 			0L,
 			orderProduct
 		);
+		orderProduct.updateStatus(OrderProductStatus.PENDING_APPROVE);
 	}
 
 	private void createWithdrawPayTransaction(PayEntity pay, BankAccountEntity bankAccount, long totalPrice) {
