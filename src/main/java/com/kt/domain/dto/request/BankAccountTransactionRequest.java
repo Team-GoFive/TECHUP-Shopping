@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-@Schema(name = "PasswordRequestsSearch")
 public class BankAccountTransactionRequest {
 
 	@Schema(name = "BankAccountTransactionSearch")
