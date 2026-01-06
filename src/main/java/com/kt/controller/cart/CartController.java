@@ -115,6 +115,8 @@ public class CartController implements CartSwaggerSupporter {
 			orderRequest
 		);
 
+		cartService.removeOrderedItems(cartItems);
+
 		return empty();
 	}
 }
