@@ -29,7 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/seller/orders")
 @RequiredArgsConstructor
-public class SellerOrderController {
+public class SellerOrderController implements SellerOrderSwaggerSupporter {
 
 	private final SellerOrderService sellerOrderService;
 
