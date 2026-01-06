@@ -18,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -46,7 +45,10 @@ public class BankAccountTransactionEntity extends BaseEntity {
 	private BigDecimal balanceSnapshot;
 
 	@Column(nullable = false)
-	private UUID targetId;
+	private String withdrawalSource;
+
+	@Column(nullable = false)
+	private String depositSource;
 
 	private BankAccountTransactionEntity(
 		BankAccountEntity bankAccount,
@@ -54,14 +56,16 @@ public class BankAccountTransactionEntity extends BaseEntity {
 		BankAccountTransactionPurpose transactionPurpose,
 		BigDecimal amount,
 		BigDecimal balanceSnapshot,
-		UUID targetId
+		String withdrawalSource,
+		String depositSource
 	) {
 		this.bankAccount = bankAccount;
 		this.transactionType = transactionType;
 		this.transactionPurpose = transactionPurpose;
 		this.amount = amount;
 		this.balanceSnapshot = balanceSnapshot;
-		this.targetId = targetId;
+		this.withdrawalSource = withdrawalSource;
+		this.depositSource = depositSource;
 	}
 
 	public static BankAccountTransactionEntity create(
@@ -70,7 +74,8 @@ public class BankAccountTransactionEntity extends BaseEntity {
 		final BankAccountTransactionPurpose transactionPurpose,
 		final long amount,
 		final BigDecimal balanceSnapshot,
-		final UUID targetId
+		final String withdrawalSource,
+		final String depositSource
 	) {
 		ValidationUtil.validateRequiredEnum(transactionType, "거래 타입");
 		ValidationUtil.validateRequiredEnum(transactionPurpose, "거래 목적");
@@ -83,7 +88,8 @@ public class BankAccountTransactionEntity extends BaseEntity {
 			transactionPurpose,
 			transactionAmount,
 			balanceSnapshot,
-			targetId
+			withdrawalSource,
+			depositSource
 		);
 	}
 }

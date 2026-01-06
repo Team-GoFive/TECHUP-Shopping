@@ -50,7 +50,8 @@ public class PayChargeService {
 				BankAccountTransactionPurpose.PAY_CHARGE,
 				amount,
 				bankAccount.getBalance(),
-				pay.getId()
+				bankAccount.getDisplayName(),
+				pay.getDisplayName()
 			);
 		bankAccountTransactionRepository.save(bankAccountTransaction);
 	}

@@ -52,7 +52,8 @@ public class PayWithdrawalService {
 				BankAccountTransactionPurpose.PAY_WITHDRAW,
 				amount,
 				bankAccount.getBalance(),
-				pay.getId()
+				pay.getDisplayName(),
+				bankAccount.getDisplayName()
 			);
 		bankAccountTransactionRepository.save(bankAccountTransaction);
 	}
