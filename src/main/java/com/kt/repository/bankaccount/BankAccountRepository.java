@@ -5,7 +5,11 @@ import com.kt.domain.entity.BankAccountEntity;
 
 import com.kt.exception.CustomException;
 
+import jakarta.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -21,5 +25,17 @@ public interface BankAccountRepository extends JpaRepository<BankAccountEntity, 
 	}
 
 	Optional<BankAccountEntity> findByHolderId(UUID holderId);
+
+	default BankAccountEntity findByHolderIdWithOrThrow(UUID holderId) {
+		return findByHolderIdWithLock(holderId).orElseThrow(
+			() -> new CustomException(ErrorCode.BANK_ACCOUNT_NOT_FOUND)
+		);
+	}
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT b FROM bank_account b WHERE b.holderId = :holderId")
+	Optional<BankAccountEntity> findByHolderIdWithLock(UUID holderId);
+
+
 
 }

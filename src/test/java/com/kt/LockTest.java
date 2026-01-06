@@ -11,6 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.kt.domain.entity.BankAccountEntity;
+
+import com.kt.repository.bankaccount.BankAccountRepository;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +71,10 @@ public class LockTest {
 	private AddressRepository addressRepository;
 	@Autowired
 	private OrderProductRepository orderProductRepository;
+
+	@Autowired
+	BankAccountRepository bankAccountRepository;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	private ProductEntity product1;
@@ -109,6 +117,8 @@ public class LockTest {
 			Gender.MALE
 		);
 		accountRepository.save(seller);
+		BankAccountEntity sellerBankAccount = BankAccountEntity.create(seller);
+		bankAccountRepository.save(sellerBankAccount);
 		product1 = ProductEntity.create(
 			"상품1", 100_000L, category, seller
 		);
@@ -129,6 +139,7 @@ public class LockTest {
 		List<AddressEntity> addresses = new ArrayList<>();
 		for (int i = 0; i < repeatCount; i++) {
 			UserEntity user = createUser(i);
+			user.getPay().charge(1_000_000);
 			AddressEntity address = createAddress(user);
 			users.add(user);
 			addresses.add(address);
@@ -152,7 +163,7 @@ public class LockTest {
 			executorService.submit(() -> {
 				try {
 					System.out.println(String.format("===== 사용자 %d 주문 시도 =====", finalI));
-					OrderRequest request = new OrderRequest(
+					OrderRequest.Create request = new OrderRequest.Create(
 						List.of(item),
 						addresses.get(finalI).getId()
 					);
@@ -193,8 +204,10 @@ public class LockTest {
 		// 주문하는 사용자 100명 생성
 		List<UserEntity> orderUsers = new ArrayList<>();
 		List<AddressEntity> orderAddresses = new ArrayList<>();
+
 		for (int i = 0; i < orderCount; i++) {
 			UserEntity user = createUser(i);
+			user.getPay().charge(1_000_000);
 			AddressEntity address = createAddress(user);
 			orderUsers.add(user);
 			orderAddresses.add(address);
@@ -234,7 +247,7 @@ public class LockTest {
 			executorService.submit(() -> {
 				try {
 					// System.out.println(String.format("===== 사용자 %d 주문 시도 =====", finalI));
-					OrderRequest request = new OrderRequest(
+					OrderRequest.Create request = new OrderRequest.Create(
 						List.of(item),
 						orderAddresses.get(finalI).getId()
 					);
