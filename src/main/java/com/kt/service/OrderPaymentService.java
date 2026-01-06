@@ -3,10 +3,7 @@ package com.kt.service;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import org.springframework.stereotype.Service;
-
 import com.kt.constant.message.ErrorCode;
-import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -14,10 +11,16 @@ import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.PayRepository;
 import com.kt.repository.product.ProductRepository;
+
 import com.kt.repository.user.UserRepository;
 import com.kt.service.payment.PaymentSettlementService;
 
+import com.kt.domain.dto.request.OrderRequest;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class OrderPaymentService {
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 
+	@Transactional
 	public void orderPay(UUID buyerId, OrderRequest.Create request) {
 
 		UserEntity buyer = userRepository.findByIdOrThrow(buyerId);
