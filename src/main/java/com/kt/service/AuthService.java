@@ -10,6 +10,8 @@ public interface AuthService {
 
 	void signupUser(SignupRequest.SignupUser request);
 
+	void signupSeller(SignupRequest.SignupSeller request);
+
 	void signupCourier(SignupRequest.SignupCourier request);
 
 	Pair<String, String> login(LoginRequest request);
