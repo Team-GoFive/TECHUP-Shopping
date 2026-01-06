@@ -56,6 +56,8 @@ class OrderServiceTest {
 	@Autowired
 	OrderService orderService;
 	@Autowired
+	InventoryService inventoryService;
+	@Autowired
 	UserRepository userRepository;
 	@Autowired
 	ProductRepository productRepository;
@@ -165,7 +167,7 @@ class OrderServiceTest {
 					testUser.getId(),
 					orderRequest
 				);
-				orderService.reduceStock(orderRequest.items());
+				inventoryService.reduceStock(orderRequest.items());
 			}
 		)
 			.isInstanceOf(CustomException.class)
@@ -194,7 +196,7 @@ class OrderServiceTest {
 					testUser.getId(),
 					orderRequest
 				);
-				orderService.reduceStock(orderRequest.items());
+				inventoryService.reduceStock(orderRequest.items());
 			}
 		)
 			.isInstanceOf(CustomException.class)
