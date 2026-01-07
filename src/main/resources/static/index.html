@@ -4,18 +4,23 @@
     <meta charset="UTF-8"/>
     <title>TECHUP 상담 시스템</title>
     <link href="/main.css" rel="stylesheet"/>
+    <link
+            as="style"
+            crossorigin
+            href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
+            rel="stylesheet"
+    />
 
     <!-- STOMP -->
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
-
 <div class="app">
-    <h1>TECHUP AI 상담 시스템</h1>
+    <h1>TECHUP AI 상담시스템</h1>
 
     <!-- 로그인 -->
     <section class="box" id="loginBox">
-        <h2>로그인</h2>
+        <div class="subtitle">로그인</div>
         <input id="loginId" placeholder="아이디"/>
         <input id="loginPw" placeholder="비밀번호" type="password"/>
         <button id="loginBtn">로그인</button>
@@ -31,24 +36,23 @@
     <!-- 사용자 -->
     <section class="panel" id="userPanel">
         <h2>사용자 화면</h2>
-
-        <div class="box">
-            <h3>AI FAQ</h3>
-            <div class="messages" id="aiMessages"></div>
-            <input id="aiInput" placeholder="AI에게 질문"/>
-            <button id="aiSendBtn">질문</button>
-            <div class="status">
-                conversationId: <span id="userConversationId">-</span>
+        <div class="wrap">
+            <div class="box">
+                <div class="subtitle">AI FAQ</div>
+                <div class="messages" id="aiMessages"></div>
+                <input id="aiInput" placeholder="AI에게 질문"/>
+                <button id="aiSendBtn">질문</button>
             </div>
-        </div>
 
-        <div class="box">
-            <h3>상담 채팅</h3>
-            <button disabled id="userConnectBtn">상담 연결</button>
-            <div class="messages" id="userChatMessages"></div>
-            <input id="userMessageInput" placeholder="메시지 입력"/>
-            <button disabled id="userSendBtn">전송</button>
-            <div class="status" id="userStatus">대기중</div>
+            <div class="box">
+                <div class="subtitle">상담 채팅</div>
+                <div class="status">conversationId: <span id="userConversationId">-</span></div>
+                <button disabled id="userConnectBtn">상담 연결</button>
+                <div class="messages" id="userChatMessages"></div>
+                <input id="userMessageInput" placeholder="메시지 입력"/>
+                <button disabled id="userSendBtn">전송</button>
+                <div class="status" id="userStatus">대기중</div>
+            </div>
         </div>
     </section>
 
@@ -56,26 +60,28 @@
     <section class="panel" id="adminPanel">
         <h2>관리자 화면</h2>
 
-        <button id="adminConnectBtn">관리자 연결</button>
+        <div class="wrap">
+            <button id="adminConnectBtn">관리자 연결</button>
 
-        <div class="box">
-            <h3>채팅방 목록</h3>
+            <div class="box">
+                <div class="subtitle">채팅방 목록</div>
 
-            <div class="tabs">
-                <button id="allRoomsBtn">전체</button>
-                <button id="waitingRoomsBtn">대기중</button>
-                <button id="connectedRoomsBtn">상담중</button>
+                <div class="tabs">
+                    <button id="allRoomsBtn">전체</button>
+                    <button id="waitingRoomsBtn">대기중</button>
+                    <button id="connectedRoomsBtn">상담중</button>
+                </div>
+
+                <div class="list" id="roomList"></div>
             </div>
 
-            <div class="list" id="roomList"></div>
-        </div>
+            <div class="box">
+                <div>conversationId: <span id="adminConversationId">-</span></div>
 
-        <div class="box">
-            <h3>상담중</h3>
-            conversationId: <span id="adminConversationId">-</span>
-            <div class="messages" id="adminChatMessages"></div>
-            <input id="adminMessageInput" placeholder="메시지 입력"/>
-            <button disabled id="adminSendBtn">전송</button>
+                <div class="messages" id="adminChatMessages"></div>
+                <input id="adminMessageInput" placeholder="메시지 입력"/>
+                <button disabled id="adminSendBtn">전송</button>
+            </div>
         </div>
     </section>
 </div>

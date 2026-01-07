@@ -5,6 +5,7 @@ let userStomp = null;
 let adminStomp = null;
 let conversationId = null;
 let accessToken = null;
+let aiLocked = false;
 
 let userCursor = null;
 let adminCursor = null;
@@ -81,34 +82,51 @@ function connectWS(onConnect) {
  * AI FAQ
  *********************************/
 aiSendBtn.onclick = async () => {
+    if (aiLocked) return;
+
     const q = aiInput.value;
     if (!q) return;
+
+    // 요청 중에는 무조건 버튼 비활성화
+    aiSendBtn.disabled = true;
 
     add(aiMessages, "ME", q);
     aiInput.value = "";
 
-    const res = await authFetch("/api/ai/faq", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question: q}),
-    });
+    try {
+        const res = await authFetch("/api/ai/faq", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({question: q}),
+        });
 
-    if (!res.ok) {
-        add(aiMessages, "ERROR", "AI 호출 실패");
-        return;
-    }
+        if (!res.ok) {
+            add(aiMessages, "ERROR", "AI 호출 실패");
+            return;
+        }
 
-    const json = await res.json();
-    const data = json.data;
+        const json = await res.json();
+        const data = json.data;
 
-    add(aiMessages, "AI", data.answer);
+        add(aiMessages, "AI", data.answer);
 
-    conversationId = data.conversationId;
-    userConversationId.textContent = conversationId;
+        conversationId = data.conversationId;
+        userConversationId.textContent = conversationId;
 
-    if (data.handoverTriggered) {
-        add(aiMessages, "SYSTEM", "상담사 대기중입니다.");
-        userConnectBtn.disabled = false;
+        if (data.handoverTriggered) {
+            add(aiMessages, "SYSTEM", "상담사 대기중입니다.");
+            userConnectBtn.disabled = false;
+
+            aiLocked = true;
+            aiSendBtn.disabled = true;
+            return;
+        }
+
+        // 정상 응답이면 다시 질문 가능
+        aiSendBtn.disabled = false;
+    } catch (e) {
+        add(aiMessages, "ERROR", "네트워크 오류");
+        aiSendBtn.disabled = false;
     }
 };
 
@@ -120,25 +138,17 @@ async function loadChatMessages(conversationId, container, cursor = null) {
     params.append("size", 20);
     if (cursor) params.append("cursor", cursor);
 
-    const res = await authFetch(
-        `/api/chat/${conversationId}/messages?` + params.toString()
-    );
+    const res = await authFetch(`/api/chat/${conversationId}/messages?${params.toString()}`);
 
     if (!res.ok) return null;
 
     const json = await res.json();
     const page = json.data;
-    console.log(page);
     const messages = page.list;
 
-    console.log(messages);
     // 서버 DESC → 화면 ASC
-    messages.reverse().forEach(m => {
-        add(
-            container,
-            m.senderRole === "ADMIN" ? "ADMIN" : "USER",
-            m.message
-        );
+    messages.reverse().forEach((m) => {
+        add(container, m.senderRole === "ADMIN" ? "ADMIN" : "MEMBER", m.message);
     });
 
     return messages.length > 0 ? messages[0].createdAt : null;
@@ -162,11 +172,7 @@ userConnectBtn.onclick = async () => {
     userStomp = connectWS(() => {
         userStomp.subscribe(`/sub/chat/${conversationId}`, (msg) => {
             const payload = JSON.parse(msg.body);
-            add(
-                userChatMessages,
-                payload.senderRole,
-                payload.message
-            );
+            add(userChatMessages, payload.senderRole, payload.message);
         });
 
         userSendBtn.disabled = false;
@@ -178,11 +184,7 @@ userSendBtn.onclick = () => {
     const msg = userMessageInput.value;
     if (!msg) return;
 
-    userStomp.send(
-        `/pub/chat/${conversationId}`,
-        {},
-        JSON.stringify({message: msg})
-    );
+    userStomp.send(`/pub/chat/${conversationId}`, {}, JSON.stringify({message: msg}));
 
     userMessageInput.value = "";
 };
@@ -190,7 +192,6 @@ userSendBtn.onclick = () => {
 /*********************************
  * 관리자
  *********************************/
-
 async function loadRooms(type) {
     let url = "/api/admin/chat/rooms";
 
@@ -205,7 +206,7 @@ async function loadRooms(type) {
 
     roomList.innerHTML = "";
 
-    rooms.forEach(r => {
+    rooms.forEach((r) => {
         const div = document.createElement("div");
         div.textContent = `[${r.status}] ${r.conversationId}`;
         div.onclick = () => openRoom(r.conversationId, r.status);
@@ -218,7 +219,6 @@ async function openRoom(cid, status) {
     adminConversationId.textContent = cid;
     adminChatMessages.innerHTML = "";
 
-    // 대기중이면 accept 먼저
     if (status === "WAITING") {
         await authFetch("/api/admin/chat/rooms/handover/accept", {
             method: "POST",
@@ -227,30 +227,23 @@ async function openRoom(cid, status) {
         });
     }
 
-    // 과거 메시지 로드
     adminCursor = await loadChatMessages(cid, adminChatMessages);
 
-    // 기존 구독 있으면 해제
     if (adminStomp && adminStomp.subscription) {
         adminStomp.subscription.unsubscribe();
     }
 
-    adminStomp.subscription =
-        adminStomp.subscribe(`/sub/chat/${cid}`, (msg) => {
-            const payload = JSON.parse(msg.body);
-            add(
-                adminChatMessages,
-                payload.senderRole,
-                payload.message
-            );
-        });
+    adminStomp.subscription = adminStomp.subscribe(`/sub/chat/${cid}`, (msg) => {
+        const payload = JSON.parse(msg.body);
+        add(adminChatMessages, payload.senderRole, payload.message);
+    });
 
     adminSendBtn.disabled = false;
 }
 
 adminConnectBtn.onclick = () => {
     adminStomp = connectWS(() => {
-        loadRooms("waiting"); // 기본은 대기중
+        loadRooms("waiting");
     });
 };
 
@@ -258,55 +251,14 @@ allRoomsBtn.onclick = () => loadRooms("all");
 waitingRoomsBtn.onclick = () => loadRooms("waiting");
 connectedRoomsBtn.onclick = () => loadRooms("connected");
 
-
-async function loadWaiting() {
-    const res = await authFetch("/api/admin/chat/rooms/waiting");
-    const json = await res.json();
-    const rooms = json.data;
-
-    waitingList.innerHTML = "";
-    rooms.forEach(r => {
-        const div = document.createElement("div");
-        div.textContent = r.conversationId;
-        div.onclick = () => accept(r.conversationId);
-        waitingList.appendChild(div);
-    });
-}
-
-async function accept(cid) {
-    await authFetch("/api/admin/chat/rooms/handover/accept", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(cid),
-    });
-
-    conversationId = cid;
-    adminConversationId.textContent = cid;
-    adminChatMessages.innerHTML = "";
-
-    adminCursor = await loadChatMessages(conversationId, adminChatMessages);
-
-    adminStomp.subscribe(`/sub/chat/${conversationId}`, (msg) => {
-        const payload = JSON.parse(msg.body);
-        add(
-            adminChatMessages,
-            payload.senderRole === "ADMIN" ? "ME" : "USER",
-            payload.message
-        );
-    });
-
-    adminSendBtn.disabled = false;
-}
-
+/*********************************
+ * 관리자 메시지 전송
+ *********************************/
 adminSendBtn.onclick = () => {
     const msg = adminMessageInput.value;
     if (!msg) return;
 
-    adminStomp.send(
-        `/pub/chat/${conversationId}`,
-        {},
-        JSON.stringify({message: msg})
-    );
+    adminStomp.send(`/pub/chat/${conversationId}`, {}, JSON.stringify({message: msg}));
 
     adminMessageInput.value = "";
 };
