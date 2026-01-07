@@ -1,5 +1,8 @@
 package com.kt.domain.dto.request.common;
 
+import com.kt.constant.message.ErrorCode;
+import com.kt.exception.CustomException;
+
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -9,6 +12,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
 public final class BaseTransactionPeriodResolver {
+
+	static final int YEAR_DAYS = 365;
 
 	public static LocalDate resolveFromDate(
 		LocalDate fromDate,
@@ -36,17 +41,18 @@ public final class BaseTransactionPeriodResolver {
 		LocalDate toDate
 	) {
 		if ((fromDate == null) != (toDate == null)) {
-			throw new IllegalArgumentException("조회 시작일과 종료일은 함께 전달되어야 합니다.");
+			throw new CustomException(ErrorCode.INVALID_SEARCH_PERIOD_PAIR);
 		}
 
 		if (fromDate == null) return;
 
 		if (fromDate.isAfter(toDate)) {
-			throw new IllegalArgumentException("조회 시작일은 종료일보다 이후일 수 없습니다.");
+			throw new CustomException(ErrorCode.INVALID_SEARCH_PERIOD_ORDER);
 		}
 
-		if (ChronoUnit.DAYS.between(fromDate, toDate) > 365) {
-			throw new IllegalArgumentException("조회 기간은 최대 1년까지 가능합니다.");
+		if (ChronoUnit.DAYS.between(fromDate, toDate) > YEAR_DAYS) {
+			throw new CustomException(ErrorCode.INVALID_SEARCH_PERIOD_RANGE);
 		}
+
 	}
 }

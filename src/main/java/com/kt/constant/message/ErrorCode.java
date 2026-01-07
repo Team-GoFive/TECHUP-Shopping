@@ -80,6 +80,9 @@ public enum ErrorCode {
 	PAY_BALANCE_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "페이 잔액이 충분하지 않습니다."),
 	BANK_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "계좌가 존재하지 않습니다."),
 	SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "세션을 찾을 수 없습니다."),
+	INVALID_SEARCH_PERIOD_PAIR(HttpStatus.BAD_REQUEST, "조회 시작일과 종료일 모두 입력해야 합니다."),
+	INVALID_SEARCH_PERIOD_ORDER(HttpStatus.BAD_REQUEST, "조회 시작일은 종료일보다 늦을 수 없습니다."),
+	INVALID_SEARCH_PERIOD_RANGE(HttpStatus.BAD_REQUEST, "최대 1년까지 조회할 수 있습니다."),
 	;
 
 	private final HttpStatus status;
