@@ -25,7 +25,6 @@ public interface SellerRefundSwaggerSupporter extends SwaggerSupporter {
 		summary = "셀러 환불 요청 목록 조회",
 		description = "판매자가 자신의 상품에 대해 발생한 환불 내역을 조회하는 API"
 	)
-	@GetMapping
 	ResponseEntity<ApiResult<PageResponse<RefundQueryResponse>>> getRequestedRefunds(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
@@ -41,7 +40,6 @@ public interface SellerRefundSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "refundId", description = "환불 요청 ID")
 		}
 	)
-	@PatchMapping("/{refundId}/approve")
 	ResponseEntity<ApiResult<Void>> approveRefund(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
