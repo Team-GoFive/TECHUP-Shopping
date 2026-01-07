@@ -121,7 +121,7 @@ public class LockTest {
 			Gender.MALE
 		);
 		accountRepository.save(seller);
-		BankAccountEntity sellerBankAccount = BankAccountEntity.create(seller);
+		BankAccountEntity sellerBankAccount = BankAccountEntity.create(seller, seller.getName());
 		bankAccountRepository.save(sellerBankAccount);
 		product1 = ProductEntity.create(
 			"상품1", 100_000L, category, seller
