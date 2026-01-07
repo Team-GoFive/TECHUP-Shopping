@@ -32,7 +32,7 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.pay.transaction.PayTransactionRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;

@@ -15,7 +15,7 @@ import com.kt.domain.entity.PaymentEntity;
 import com.kt.domain.entity.RefundHistoryEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.PayRepository;
+import com.kt.repository.pay.PayRepository;
 import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.refund.RefundHistoryRepository;
 

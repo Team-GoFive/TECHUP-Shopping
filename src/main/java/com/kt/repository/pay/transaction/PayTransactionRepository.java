@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.pay.transaction;
 
 import com.kt.domain.entity.PayTransactionEntity;
 

@@ -33,7 +33,7 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.PayRepository;
+import com.kt.repository.pay.PayRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;

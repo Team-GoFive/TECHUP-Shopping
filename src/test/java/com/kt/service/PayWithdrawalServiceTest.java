@@ -4,7 +4,7 @@ import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.pay.transaction.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.bankaccount.transaction.BankAccountTransactionRepository;
 import com.kt.repository.user.UserRepository;
