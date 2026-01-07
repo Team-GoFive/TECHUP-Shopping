@@ -1,4 +1,4 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.product;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "Seller Product", description = "판매자 상품 관련 API")
+@Tag(name = "Product", description = "판매자 상품 관련 API")
 public interface SellerProductSwaggerController extends SwaggerSupporter {
 
 	@Operation(

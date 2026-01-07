@@ -1,9 +1,8 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.refund;
 
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.kt.common.Paging;
@@ -25,7 +24,6 @@ public interface SellerRefundSwaggerSupporter extends SwaggerSupporter {
 		summary = "셀러 환불 요청 목록 조회",
 		description = "판매자가 자신의 상품에 대해 발생한 환불 내역을 조회하는 API"
 	)
-	@GetMapping
 	ResponseEntity<ApiResult<PageResponse<RefundQueryResponse>>> getRequestedRefunds(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
@@ -41,7 +39,6 @@ public interface SellerRefundSwaggerSupporter extends SwaggerSupporter {
 			@Parameter(name = "refundId", description = "환불 요청 ID")
 		}
 	)
-	@PatchMapping("/{refundId}/approve")
 	ResponseEntity<ApiResult<Void>> approveRefund(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,

@@ -1,11 +1,9 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.order;
 
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,7 +26,6 @@ public interface SellerOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "판매자 주문상품 목록 조회",
 		description = "판매자가 주문상품 목록을 조회하는 API"
 	)
-	@GetMapping
 	ResponseEntity<ApiResult<PageResponse<SellerOrderResponse.Search>>> searchOrderProducts(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
@@ -50,7 +47,6 @@ public interface SellerOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문상품 취소 처리",
 		description = "판매자가 접수된 주문을 취소 처리하는 API"
 	)
-	@PatchMapping("/{orderProductId}/cancel")
 	ResponseEntity<ApiResult<Void>> cancelOrderProduct(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
@@ -64,7 +60,6 @@ public interface SellerOrderSwaggerSupporter extends SwaggerSupporter {
 		summary = "주문상품 결제 승인",
 		description = "판매자가 결제 완료된 주문상품을 승인 처리하는 API"
 	)
-	@PatchMapping("/{orderProductId}/confirm")
 	ResponseEntity<ApiResult<Void>> confirmPaidOrderProduct(
 		@Parameter(hidden = true)
 		DefaultCurrentUser currentSeller,
