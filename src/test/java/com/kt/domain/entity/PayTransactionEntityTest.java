@@ -45,7 +45,8 @@ public class PayTransactionEntityTest {
 			PayTransactionPurpose.CHARGE,
 			AMOUNT,
 			pay.getBalance(),
-			bankAccount.getId()
+			pay.getDisplayName(),
+			bankAccount.getDisplayName()
 		);
 		assertNotNull(payTransaction);
 		assertEquals(BigDecimal.valueOf(AMOUNT), payTransaction.getBalanceSnapshot());
@@ -53,6 +54,7 @@ public class PayTransactionEntityTest {
 
 	@Test
 	void 객체생성_실패_페이_거래타입_null() {
+		PayEntity pay = testUser.getPay();
 		assertThatThrownBy(() ->
 			PayTransactionEntity.create(
 				testUser.getPay(),
@@ -60,7 +62,8 @@ public class PayTransactionEntityTest {
 				PayTransactionPurpose.CHARGE,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				bankAccount.getDisplayName(),
+				pay.getDisplayName()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 			log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -70,15 +73,16 @@ public class PayTransactionEntityTest {
 
 	@Test
 	void 객체생성_실패_페이_거래목적_null() {
-
+		PayEntity pay = testUser.getPay();
 		assertThatThrownBy(() ->
 			PayTransactionEntity.create(
-				testUser.getPay(),
+				pay,
 				PayTransactionType.CREDIT,
 				null,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				bankAccount.getDisplayName(),
+				pay.getDisplayName()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 			log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -88,15 +92,16 @@ public class PayTransactionEntityTest {
 
 	@Test
 	void 객체생성_실패_페이_거래금액_0_이하() {
-
+		PayEntity pay = testUser.getPay();
 		assertThatThrownBy(() ->
 			PayTransactionEntity.create(
-				testUser.getPay(),
+				pay,
 				PayTransactionType.CREDIT,
 				PayTransactionPurpose.CHARGE,
 				0,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				bankAccount.getDisplayName(),
+				pay.getDisplayName()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -107,15 +112,16 @@ public class PayTransactionEntityTest {
 
 	@Test
 	void 객체생성_실패_페이_거래후_잔액_0_미만() {
-
+		PayEntity pay = testUser.getPay();
 		assertThatThrownBy(() ->
 			PayTransactionEntity.create(
-				testUser.getPay(),
+				pay,
 				PayTransactionType.DEBIT,
 				PayTransactionPurpose.WITHDRAW,
 				10_000,
 				BigDecimal.valueOf(-1),
-				bankAccount.getId()
+				pay.getDisplayName(),
+				bankAccount.getDisplayName()
 			)
 		).isInstanceOfSatisfying(
 			FieldValidationException.class, ex -> {
