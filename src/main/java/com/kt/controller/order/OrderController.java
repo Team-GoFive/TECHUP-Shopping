@@ -4,6 +4,8 @@ import static com.kt.common.api.ApiResult.*;
 
 import java.util.UUID;
 
+import com.kt.service.OrderPaymentService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,15 +35,14 @@ import lombok.RequiredArgsConstructor;
 public class OrderController implements OrderSwaggerSupporter {
 
 	private final OrderService orderService;
+	private final OrderPaymentService orderPaymentService;
 
 	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<OrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
-		return ApiResult.page(
-			orderService.searchOrder(paging.toPageable())
-		);
+		return page(orderService.searchOrder(paging.toPageable()));
 	}
 
 	@Override
@@ -49,23 +50,28 @@ public class OrderController implements OrderSwaggerSupporter {
 	public ResponseEntity<ApiResult<OrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
-		return ApiResult.wrap(
-			orderService.getOrderDetail(orderId)
-		);
+		return wrap(orderService.getOrderDetail(orderId));
 	}
 
 	@Override
 	@PostMapping
 	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@Valid @RequestBody OrderRequest request
+		@Valid @RequestBody OrderRequest.Create request
 	) {
-		orderService.createOrder(
-			currentUser.getId(),
-			request
-		);
+		orderService.createOrder(currentUser.getId(), request);
 		return empty();
 	}
+
+	@PostMapping("/pay")
+	public ResponseEntity<ApiResult<Void>> orderPay(
+		@AuthenticationPrincipal DefaultCurrentUser currentUser,
+		@Valid @RequestBody OrderRequest.Create request
+	) {
+		orderPaymentService.orderPay(currentUser.getId(), request);
+		return empty();
+	}
+
 
 	@Override
 	@PatchMapping("/order-products/{orderProductId}/cancel")

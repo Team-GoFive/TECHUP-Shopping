@@ -48,8 +48,7 @@ public class PayChargeTest extends MockMvcTest {
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-
-		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccountRepository.save(bankAccount);
 		bankAccount.deposit(DEPOSIT_AMOUNT);
 

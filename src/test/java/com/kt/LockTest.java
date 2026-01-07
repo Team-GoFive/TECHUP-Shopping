@@ -24,6 +24,7 @@ import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
+import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
@@ -31,7 +32,10 @@ import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.PaymentRepository;
 import com.kt.repository.account.AccountRepository;
+import com.kt.repository.bankaccount.BankAccountRepository;
 import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -50,6 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LockTest {
 
 	@Autowired
+	BankAccountRepository bankAccountRepository;
+	@Autowired
 	private OrderPaymentService orderPaymentService;
 	@Autowired
 	private OrderService orderService;
@@ -67,6 +73,10 @@ public class LockTest {
 	private AddressRepository addressRepository;
 	@Autowired
 	private OrderProductRepository orderProductRepository;
+	@Autowired
+	private PaymentRepository paymentRepository;
+	@Autowired
+	private PayTransactionRepository payTransactionRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	private ProductEntity product1;
@@ -87,6 +97,8 @@ public class LockTest {
 	@AfterEach
 	void cleanUp() {
 		// 외래키 제약조건을 고려하여 역순으로 삭제
+		payTransactionRepository.deleteAll(); // 결제 내역 삭제
+		paymentRepository.deleteAll(); // 페이 삭제
 		orderProductRepository.deleteAll();
 		productRepository.deleteAll(); // 상품 삭제
 		inventoryRepository.deleteAll(); // 재고 삭제
@@ -109,6 +121,8 @@ public class LockTest {
 			Gender.MALE
 		);
 		accountRepository.save(seller);
+		BankAccountEntity sellerBankAccount = BankAccountEntity.create(seller, seller.getName());
+		bankAccountRepository.save(sellerBankAccount);
 		product1 = ProductEntity.create(
 			"상품1", 100_000L, category, seller
 		);
@@ -129,6 +143,7 @@ public class LockTest {
 		List<AddressEntity> addresses = new ArrayList<>();
 		for (int i = 0; i < repeatCount; i++) {
 			UserEntity user = createUser(i);
+			user.getPay().charge(1_000_000);
 			AddressEntity address = createAddress(user);
 			users.add(user);
 			addresses.add(address);
@@ -152,7 +167,7 @@ public class LockTest {
 			executorService.submit(() -> {
 				try {
 					System.out.println(String.format("===== 사용자 %d 주문 시도 =====", finalI));
-					OrderRequest request = new OrderRequest(
+					OrderRequest.Create request = new OrderRequest.Create(
 						List.of(item),
 						addresses.get(finalI).getId()
 					);
@@ -193,8 +208,10 @@ public class LockTest {
 		// 주문하는 사용자 100명 생성
 		List<UserEntity> orderUsers = new ArrayList<>();
 		List<AddressEntity> orderAddresses = new ArrayList<>();
+
 		for (int i = 0; i < orderCount; i++) {
 			UserEntity user = createUser(i);
+			user.getPay().charge(1_000_000);
 			AddressEntity address = createAddress(user);
 			orderUsers.add(user);
 			orderAddresses.add(address);
@@ -234,7 +251,7 @@ public class LockTest {
 			executorService.submit(() -> {
 				try {
 					// System.out.println(String.format("===== 사용자 %d 주문 시도 =====", finalI));
-					OrderRequest request = new OrderRequest(
+					OrderRequest.Create request = new OrderRequest.Create(
 						List.of(item),
 						orderAddresses.get(finalI).getId()
 					);

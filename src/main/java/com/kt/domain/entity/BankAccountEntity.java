@@ -24,6 +24,11 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class BankAccountEntity extends BaseEntity {
 
+	private static final String DISPLAY_NAME_SUFFIX = "_계좌";
+
+	@Column(nullable = false)
+	private String displayName;
+
 	@Column(precision = 19, scale = 0, nullable = false)
 	private BigDecimal balance;
 
@@ -33,13 +38,17 @@ public class BankAccountEntity extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private UUID holderId;
 
-	private BankAccountEntity(UUID holderId) {
+	private BankAccountEntity(UUID holderId, String holderName) {
+		this.displayName = holderName + DISPLAY_NAME_SUFFIX;
 		this.holderId = holderId;
 		this.balance = BigDecimal.ZERO;
 	}
 
-	public static BankAccountEntity create(final BankAccountHolder holder) {
-		return new BankAccountEntity(holder.getId());
+	public static BankAccountEntity create(
+		final BankAccountHolder holder,
+		final String holderName
+	) {
+		return new BankAccountEntity(holder.getId(), holderName);
 	}
 
 	public void deposit(long amount) {

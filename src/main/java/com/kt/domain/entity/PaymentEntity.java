@@ -34,7 +34,7 @@ public class PaymentEntity extends BaseEntity {
 	@JoinColumn(name = "order_product_id", nullable = false)
 	private OrderProductEntity orderProduct;
 
-	protected PaymentEntity(
+	private PaymentEntity(
 		Long totalProductPrice,
 		Long deliveryPrice,
 		OrderProductEntity orderProduct

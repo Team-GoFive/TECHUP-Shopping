@@ -130,7 +130,7 @@ class OrderServiceTest {
 			new OrderRequest.Item(product2.getId(), 3L)
 		);
 
-		OrderRequest orderRequest = new OrderRequest(
+		OrderRequest.Create orderRequest = new OrderRequest.Create(
 			items,
 			address.getId()
 		);
@@ -158,7 +158,7 @@ class OrderServiceTest {
 		List<OrderRequest.Item> items = List.of(
 			new OrderRequest.Item(invalidId, 1L));
 
-		OrderRequest orderRequest = new OrderRequest(items, address.getId());
+		OrderRequest.Create orderRequest = new OrderRequest.Create(items, address.getId());
 
 		// when, then
 		assertThatThrownBy(() -> {
@@ -187,7 +187,7 @@ class OrderServiceTest {
 			new OrderRequest.Item(product.getId(), 99999999L)
 		);
 
-		OrderRequest orderRequest = new OrderRequest(items, address.getId());
+		OrderRequest.Create orderRequest = new OrderRequest.Create(items, address.getId());
 
 		// when, then
 		assertThatThrownBy(() -> {

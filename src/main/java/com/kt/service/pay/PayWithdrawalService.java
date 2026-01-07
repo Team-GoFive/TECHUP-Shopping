@@ -9,9 +9,9 @@ import com.kt.domain.entity.BankAccountTransactionEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.PayTransactionEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
+import com.kt.repository.bankaccount.transaction.BankAccountTransactionRepository;
 import com.kt.repository.user.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -52,7 +52,8 @@ public class PayWithdrawalService {
 				BankAccountTransactionPurpose.PAY_WITHDRAW,
 				amount,
 				bankAccount.getBalance(),
-				pay.getId()
+				pay.getDisplayName(),
+				bankAccount.getDisplayName()
 			);
 		bankAccountTransactionRepository.save(bankAccountTransaction);
 	}

@@ -84,7 +84,7 @@ public class ProductReviewTest extends MockMvcTest {
 			);
 			orderService.createOrder(
 				testMember.getId(),
-				new OrderRequest(items, address.getId())
+				new OrderRequest.Create(items, address.getId())
 			);
 		}
 

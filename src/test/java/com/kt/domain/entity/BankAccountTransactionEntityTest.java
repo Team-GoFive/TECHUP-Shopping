@@ -25,10 +25,11 @@ public class BankAccountTransactionEntityTest {
 
 	UserEntity testUser;
 	BankAccountEntity bankAccount;
+
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
-		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 	}
 
 	@Test
@@ -40,7 +41,8 @@ public class BankAccountTransactionEntityTest {
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				"급여입금",
+				bankAccount.getDisplayName()
 			);
 		assertNotNull(bankAccountTransaction);
 	}
@@ -55,7 +57,8 @@ public class BankAccountTransactionEntityTest {
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				"급여입금",
+				bankAccount.getDisplayName()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -74,7 +77,8 @@ public class BankAccountTransactionEntityTest {
 				null,
 				10_000,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				"급여입금",
+				bankAccount.getDisplayName()
 			)
 		).isInstanceOfSatisfying(FieldValidationException.class, ex -> {
 				log.info("getErrorMessage : {}", ex.getErrorMessage());
@@ -92,7 +96,8 @@ public class BankAccountTransactionEntityTest {
 				BankAccountTransactionPurpose.SALARY,
 				0,
 				BigDecimal.valueOf(10_000),
-				bankAccount.getId()
+				"급여입금",
+				bankAccount.getDisplayName()
 			)
 		)
 			.isInstanceOfSatisfying(FieldValidationException.class, ex -> {
@@ -111,7 +116,8 @@ public class BankAccountTransactionEntityTest {
 				BankAccountTransactionPurpose.SALARY,
 				10_000,
 				BigDecimal.valueOf(-1),
-				bankAccount.getId()
+				"급여입금",
+				bankAccount.getDisplayName()
 			)
 		).isInstanceOfSatisfying(
 			FieldValidationException.class, ex -> {

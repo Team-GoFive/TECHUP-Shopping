@@ -20,7 +20,6 @@ import com.kt.domain.dto.response.TokenResponse;
 import com.kt.service.AuthService;
 import com.mysema.commons.lang.Pair;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

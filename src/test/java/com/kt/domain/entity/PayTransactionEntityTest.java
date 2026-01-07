@@ -27,10 +27,11 @@ public class PayTransactionEntityTest {
 	BankAccountEntity bankAccount;
 
 	static final long AMOUNT = 20_000;
+
 	@BeforeEach
 	void init() {
 		testUser = UserEntityCreator.create();
-		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccount.deposit(1_000_000);
 	}
 

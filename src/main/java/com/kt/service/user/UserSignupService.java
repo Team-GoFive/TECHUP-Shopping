@@ -43,8 +43,7 @@ public class UserSignupService {
 		);
 
 		userRepository.save(user);
-
-		BankAccountEntity bankAccount = BankAccountEntity.create(user);
+		BankAccountEntity bankAccount = BankAccountEntity.create(user, user.getName());
 		bankAccountRepository.save(bankAccount);
 	}
 

@@ -51,8 +51,7 @@ public class PayWithdrawalTest extends MockMvcTest {
 	void setup() {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
-
-		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccountRepository.save(bankAccount);
 
 		testUser.getPay().charge(CHARGE_AMOUNT);

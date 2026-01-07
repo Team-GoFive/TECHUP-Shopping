@@ -4,9 +4,9 @@ import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.BankAccountEntity;
 import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.BankAccountTransactionRepository;
 import com.kt.repository.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
+import com.kt.repository.bankaccount.transaction.BankAccountTransactionRepository;
 import com.kt.repository.user.UserRepository;
 
 import com.kt.service.pay.PayWithdrawalService;
@@ -56,7 +56,7 @@ public class PayWithdrawalServiceTest {
 		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
-		bankAccount = BankAccountEntity.create(testUser);
+		bankAccount = BankAccountEntity.create(testUser, testUser.getName());
 		bankAccountRepository.save(bankAccount);
 		bankAccount.deposit(DEPOSIT_BANK_ACCOUNT_AMOUNT);
 		bankAccount.withdraw(CHARGE_PAY_AMOUNT);

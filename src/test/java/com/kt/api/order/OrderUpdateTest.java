@@ -84,7 +84,7 @@ public class OrderUpdateTest extends MockMvcTest {
 			new OrderRequest.Item(testProduct.getId(), 1L)
 		);
 
-		OrderRequest orderRequest = new OrderRequest(
+		OrderRequest.Create orderRequest = new OrderRequest.Create(
 			items,
 			testAddress.getId()
 		);

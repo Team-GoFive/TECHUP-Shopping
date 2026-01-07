@@ -91,7 +91,7 @@ public class OrderCreateTest extends MockMvcTest {
 	@Test
 	void 주문_생성_성공__200_OK() throws Exception {
 		// when
-		OrderRequest request = new OrderRequest(
+		OrderRequest.Create request = new OrderRequest.Create(
 			List.of(new OrderRequest.Item(testProduct1.getId(), 1L)), address.getId()
 		);
 
@@ -111,7 +111,7 @@ public class OrderCreateTest extends MockMvcTest {
 	@Test
 	void 여러_상품에_대하여_주문_생성_성공__200_OK() throws Exception {
 		// when
-		OrderRequest request = new OrderRequest(
+		OrderRequest.Create request = new OrderRequest.Create(
 			List.of(
 				new OrderRequest.Item(testProduct1.getId(), 1L),
 				new OrderRequest.Item(testProduct2.getId(), 2L)),
