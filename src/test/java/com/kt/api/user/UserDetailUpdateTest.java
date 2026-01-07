@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.Gender;
 import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
@@ -32,7 +31,7 @@ public class UserDetailUpdateTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		userDetails = new DefaultCurrentUser(
@@ -45,11 +44,11 @@ public class UserDetailUpdateTest extends MockMvcTest {
 	@Test
 	void 내정보수정_성공__200_OK() throws Exception {
 		// given
-		UserRequest.UpdateDetails updateDetails = new UserRequest.UpdateDetails(
+		UserRequest.Update updateDetails = new UserRequest.Update(
 			"변경된테스터",
+			"update_email@test.com",
 			"010-5678-1234",
-			LocalDate.of(1880, 3, 4),
-			Gender.FEMALE
+			LocalDate.of(2010, 3, 4)
 		);
 		String json = objectMapper.writeValueAsString(updateDetails);
 

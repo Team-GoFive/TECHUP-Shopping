@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.Paging;
-import com.kt.service.AccountService;
+import com.kt.service.admin.AdminAccountService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ import static com.kt.common.api.ApiResult.*;
 @RequestMapping("/api/admin/accounts")
 @RequiredArgsConstructor
 public class AdminAccountController implements AdminAccountSwaggerSupporter {
-	private final AccountService accountService;
+	private final AdminAccountService AdminAccountService;
 
 	@Override
 	@GetMapping
@@ -41,7 +41,7 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 		@ModelAttribute Paging paging
 	) {
 		return page(
-			accountService.searchAccounts(
+			AdminAccountService.searchAccounts(
 				request,
 				paging.toPageable()
 			)
@@ -51,26 +51,26 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	@Override
 	@DeleteMapping("/{accountId}")
 	public ResponseEntity<ApiResult<Void>> deleteAccount(@PathVariable UUID accountId) {
-		accountService.deleteAccount(accountId);
+		AdminAccountService.deleteAccount(accountId);
 		return empty();
 	}
 
 	@Override
 	@DeleteMapping("/{accountId}/force")
 	public ResponseEntity<ApiResult<Void>> deleteAccountPermanently(@PathVariable UUID accountId) {
-		accountService.deleteAccountPermanently(accountId);
+		AdminAccountService.deleteAccountPermanently(accountId);
 		return empty();
 	}
 
-	@PatchMapping("/{accountId}/password/reset")
-	public ResponseEntity<ApiResult<Void>> resetAccountPassword(@PathVariable UUID accountId) {
-		accountService.resetAccountPassword(accountId);
+	@PatchMapping("/password-requests/{passwordRequestId}/reset")
+	public ResponseEntity<ApiResult<Void>> resetAccountPassword(@PathVariable UUID passwordRequestId) {
+		AdminAccountService.resetAccountPassword(passwordRequestId);
 		return empty();
 	}
 
-	@PatchMapping("/{accountId}/password/update")
-	public ResponseEntity<ApiResult<Void>> updateAccountPassword(@PathVariable UUID accountId) {
-		accountService.updateAccountPassword(accountId);
+	@PatchMapping("/password-requests/{passwordRequestId}/update")
+	public ResponseEntity<ApiResult<Void>> updateAccountPassword(@PathVariable UUID passwordRequestId) {
+		AdminAccountService.updateAccountPassword(passwordRequestId);
 		return empty();
 	}
 
@@ -79,8 +79,7 @@ public class AdminAccountController implements AdminAccountSwaggerSupporter {
 	public ResponseEntity<ApiResult<PageResponse<PasswordRequestResponse.Search>>> searchPasswordRequests(
 		@ParameterObject PasswordRequest.Search request,
 		@ModelAttribute Paging paging) {
-		return page(accountService.searchPasswordRequests(request, paging.toPageable()));
+		return page(AdminAccountService.searchPasswordRequests(request, paging.toPageable()));
 	}
 }
-
 

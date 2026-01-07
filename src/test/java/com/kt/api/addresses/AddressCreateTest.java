@@ -1,7 +1,6 @@
 package com.kt.api.addresses;
 
 import static com.kt.common.CurrentUserCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.UserEntity;
@@ -31,16 +31,16 @@ class AddressCreateTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 
-	UserEntity testMember;
+	UserEntity testUser;
 	AddressEntity address;
 	AddressRequest validRequest;
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
-		userRepository.save(testMember);
+		testUser = UserEntityCreator.create();
+		userRepository.save(testUser);
 
-		address = AddressCreator.createAddress(testMember);
+		address = AddressCreator.createAddress(testUser);
 		addressRepository.save(address);
 
 		validRequest = new AddressRequest(
@@ -61,7 +61,7 @@ class AddressCreateTest extends MockMvcTest {
 			post("/api/addresses")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(validRequest))
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testUser.getId())))
 		);
 
 		// then

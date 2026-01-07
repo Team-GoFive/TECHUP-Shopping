@@ -2,10 +2,10 @@ package com.kt.security;
 
 import java.util.UUID;
 
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 
 public interface CurrentUser {
 	UUID getId();
 
-	UserRole getRole();
+	AccountRole getRole();
 }

@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +16,12 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
+import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.AddressRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
@@ -32,29 +33,36 @@ public class OrderDetailTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	@Autowired
 	private OrderRepository orderRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Test
 	void 주문_상세_조회_성공_200() throws Exception {
 		// given
-		UserEntity user = UserEntityCreator.createMember();
-
+		UserEntity user = UserEntityCreator.create();
 		savedUser = userRepository.save(user);
-		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);
+
+		AddressEntity address =
+			addressRepository.save(com.kt.common.AddressCreator.createAddress(savedUser));
+
+		OrderEntity order =
+			OrderEntityCreator.createOrderEntity(savedUser);
 		savedOrder = orderRepository.save(order);
+
 
 		mockMvc.perform(get("/api/admin/orders/{orderId}", order.getId())
 				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
 				.contentType(MediaType.APPLICATION_JSON)
 			).
 			andDo(print())
-			.andExpectAll(status().isOk())
+			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value("ok"))
 			.andExpect(jsonPath("$.message").value("성공"));
 	}

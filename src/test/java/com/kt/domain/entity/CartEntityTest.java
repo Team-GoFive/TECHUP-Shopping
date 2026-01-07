@@ -1,6 +1,5 @@
 package com.kt.domain.entity;
 
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -8,8 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
 class CartEntityTest {
@@ -24,32 +24,30 @@ class CartEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
 		);
 
 		testCategory = CategoryEntity.create("테스트 카테고리", null);
+		SellerEntity testSeller = SellerEntityCreator.createSeller();
 		testProduct = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
-			testCategory
+			testCategory,
+			testSeller
 		);
 	}
 
 	@Test
-	void 객체생성_성공(){
-		CartEntity cart = CartEntity.create(
-			5L,
-			testUser,
-			testProduct
-		);
+	void 객체_생성_성공() {
+		// when
+		CartEntity cart = CartEntity.create(testUser);
 
+		// then
 		Assertions.assertNotNull(cart);
-
 		Assertions.assertEquals(testUser, cart.getUser());
-		Assertions.assertEquals(testProduct, cart.getProduct());
+		Assertions.assertTrue(cart.getItems().isEmpty());
 	}
 }

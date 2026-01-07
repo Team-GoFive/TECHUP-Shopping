@@ -17,10 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.CategoryEntity;
+import com.kt.domain.entity.InventoryEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.CategoryRepository;
+import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 
 @DisplayName("상품 상세 조회 - GET /api/products/{productId}")
 public class ProductDetailTest extends MockMvcTest {
@@ -30,8 +35,14 @@ public class ProductDetailTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	InventoryRepository inventoryRepository;
+
+	@Autowired
+	SellerRepository sellerRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	ProductEntity activatedProduct;
 	ProductEntity inActivatedProduct;
@@ -41,12 +52,19 @@ public class ProductDetailTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		activatedProduct = createProduct(testCategory);
-		productRepository.save(activatedProduct);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
 
-		inActivatedProduct = createProduct(testCategory);
+		activatedProduct = createProduct(testCategory, testSeller);
+		productRepository.save(activatedProduct);
+		InventoryEntity inventory1 = InventoryEntity.create(activatedProduct.getId(), 10L);
+		inventoryRepository.save(inventory1);
+
+		inActivatedProduct = createProduct(testCategory, testSeller);
 		inActivatedProduct.inActivate();
 		productRepository.save(inActivatedProduct);
+		InventoryEntity inventory2 = InventoryEntity.create(inActivatedProduct.getId(), 10L);
+		inventoryRepository.save(inventory2);
 	}
 
 	@Test

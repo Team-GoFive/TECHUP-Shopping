@@ -1,7 +1,12 @@
 package com.kt.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import com.kt.common.AdminCreator;
+
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,16 +17,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.CourierEntityCreator;
-import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.courier.CourierService;
 
 @SpringBootTest
 @Transactional
@@ -34,21 +38,22 @@ class CourierServiceTest {
 	CourierRepository courierRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AdminRepository adminRepository;
 
 	CourierEntity testCourier;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		courierRepository.deleteAll();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(testCourier);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 	}
 
 	@Test
-	void 배송기사정보수정_본인_성공(){
+	void 배송기사정보수정_본인_성공() {
 		// given
 		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
 			"변경된 테스터명",
@@ -59,11 +64,11 @@ class CourierServiceTest {
 		courierService.updateDetail(testCourier.getId(), testCourier.getId(), update);
 
 		// then
-		Assertions.assertEquals(testCourier.getName(),update.name());
+		Assertions.assertEquals(testCourier.getName(), update.name());
 	}
 
 	@Test
-	void 배송기사정보수정_어드민_성공(){
+	void 배송기사정보수정_어드민_성공() {
 		// given
 		CourierRequest.UpdateDetails update = new CourierRequest.UpdateDetails(
 			"변경된 테스터명",
@@ -74,11 +79,11 @@ class CourierServiceTest {
 		courierService.updateDetail(testAdmin.getId(), testCourier.getId(), update);
 
 		// then
-		Assertions.assertEquals(testCourier.getName(),update.name());
+		Assertions.assertEquals(testCourier.getName(), update.name());
 	}
 
 	@Test
-	void 배송기사정보수정_실패__본인아님(){
+	void 배송기사정보수정_실패__본인아님() {
 		// given
 		CourierEntity someCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(someCourier);
@@ -97,20 +102,20 @@ class CourierServiceTest {
 	}
 
 	@Test
-	void 배송기사조회_성공_본인(){
+	void 배송기사조회_성공_본인() {
 		// when
 		CourierResponse.Detail savedCourier = courierService.getDetail(testCourier.getId(), testCourier.getId());
 
 		// then
 		assertThat(savedCourier).satisfies(
 			courierEntity -> {
-				Assertions.assertEquals(courierEntity.id(),testCourier.getId());
-					Assertions.assertEquals(courierEntity.email(),testCourier.getEmail());
+				Assertions.assertEquals(courierEntity.id(), testCourier.getId());
+				Assertions.assertEquals(courierEntity.email(), testCourier.getEmail());
 			});
 	}
 
 	@Test
-	void 배송기사조회_실패_본인_아님(){
+	void 배송기사조회_실패_본인_아님() {
 		// given
 		CourierEntity someCourier = CourierEntityCreator.createCourierEntity();
 		courierRepository.save(someCourier);

@@ -18,8 +18,9 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -27,12 +28,14 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 작성 - POST /api/orderproducts/{orderProductId}/reviews")
@@ -50,15 +53,17 @@ public class ReviewCreateTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
-
 	UserEntity testMember;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testMember = UserEntityCreator.createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
@@ -69,10 +74,13 @@ public class ReviewCreateTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 
 		order.getOrderProducts().add(testOrderProduct);
@@ -81,7 +89,7 @@ public class ReviewCreateTest extends MockMvcTest {
 	@Test
 	void 상품리뷰작성_성공__200_OK() throws Exception {
 		// given
-		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		ReviewRequest.Create reviewCreate = new ReviewRequest.Create(
 			testOrderProduct.getId(),
 			"생성한테스트리뷰내용"
@@ -91,7 +99,7 @@ public class ReviewCreateTest extends MockMvcTest {
 		// when
 		ResultActions actions = mockMvc.perform(
 			post("/api/reviews")
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(json)
 		);

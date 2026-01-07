@@ -1,8 +1,8 @@
 package com.kt.repository.account;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
-import com.kt.constant.UserRole;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.domain.dto.request.PasswordRequest;
 import com.kt.domain.dto.response.AccountResponse;
@@ -64,7 +64,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 		if (request.role() != null) {
 			builder.and(account.role.eq(request.role()));
 
-			if (request.role() == UserRole.COURIER) {
+			if (request.role() == AccountRole.COURIER) {
 				query.leftJoin(courier).on(courier.id.eq(account.id));
 				if (request.courierWorkStatus() != null) {
 					builder.and(courier.workStatus.eq(request.courierWorkStatus()));
@@ -138,7 +138,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 			: null;
 	}
 
-	private BooleanExpression equalsRole(UserRole role) {
+	private BooleanExpression equalsRole(AccountRole role) {
 		return role != null
 			? passwordRequest.account.role.eq(role)
 			: null;

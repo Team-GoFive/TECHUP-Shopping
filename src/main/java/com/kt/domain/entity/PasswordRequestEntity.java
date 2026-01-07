@@ -72,7 +72,7 @@ public class PasswordRequestEntity extends BaseEntity {
 			ValidationUtil.validateNotNullAndBlank(requestedPassword, "변경요청 비밀번호");
 			encryptedPassword = EncryptUtil.encrypt(requestedPassword);
 		}
-		ValidationUtil.validationNotNullEnum(requestType, "비밀번호 복원 요청타입");
+		ValidationUtil.validateRequiredEnum(requestType, "비밀번호 복원 요청타입");
 		return new PasswordRequestEntity(
 			account,
 			encryptedPassword,

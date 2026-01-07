@@ -4,6 +4,7 @@ import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.OrderEntityCreator.*;
 import static com.kt.common.OrderProductCreator.*;
 import static com.kt.common.ProductCreator.*;
+import static com.kt.common.SellerEntityCreator.*;
 import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -21,7 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.constant.ReviewStatus;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.response.ReviewResponse;
@@ -30,14 +31,17 @@ import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.review.ReviewService;
 
 @Transactional
 @SpringBootTest
@@ -59,14 +63,20 @@ class ReviewServiceTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = createMember();
+		testUser = create();
 		userRepository.save(testUser);
+
+		testSeller = createSeller();
+		sellerRepository.save(testSeller);
 
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
@@ -74,10 +84,10 @@ class ReviewServiceTest {
 		OrderEntity order = createOrderEntity(testUser);
 		orderRepository.save(order);
 
-		ProductEntity product = createProduct(category);
+		ProductEntity product = createProduct(category, testSeller);
 		productRepository.save(product);
 
-		testOrderProduct = createOrderProduct(order, product);
+		testOrderProduct = createOrderProduct(order, product, testSeller);
 		orderProductRepository.save(testOrderProduct);
 
 		order.getOrderProducts().add(testOrderProduct);
@@ -86,9 +96,9 @@ class ReviewServiceTest {
 	@Test
 	void 리뷰생성_성공() {
 		// given
-		testOrderProduct.getOrder().updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		// when
-		reviewService.create(testUser.getEmail(), testOrderProduct.getId(), "테스트리뷰내용");
+		reviewService.create(testUser.getId(), testOrderProduct.getId(), "테스트리뷰내용");
 		// // then
 		Optional<ReviewEntity> saved = reviewRepository
 			.findAll()
@@ -101,18 +111,18 @@ class ReviewServiceTest {
 
 	@ParameterizedTest
 	@EnumSource(
-		value = OrderStatus.class,
+		value = OrderProductStatus.class,
 		names = {"PURCHASE_CONFIRMED"},
 		mode = EnumSource.Mode.EXCLUDE
 	)
-	void 리뷰생성_실패__주문_구매확정_아님(OrderStatus orderStatus) {
+	void 리뷰생성_실패__주문_구매확정_아님(OrderProductStatus orderProductStatus) {
 		// given
-		testOrderProduct.getOrder().updateStatus(orderStatus);
+		testOrderProduct.updateStatus(orderProductStatus);
 
 		// when and then
 		assertThatThrownBy(
 			() -> reviewService.create(
-				testUser.getEmail(),
+				testUser.getId(),
 				testOrderProduct.getId(),
 				"테스트리뷰내용"
 			)
@@ -129,7 +139,7 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 
 		// when
-		reviewService.update(testUser.getEmail(), review.getId(), "변경된테스트리뷰내용");
+		reviewService.update(testUser.getId(), review.getId(), "변경된테스트리뷰내용");
 
 		// then
 		Assertions.assertEquals("변경된테스트리뷰내용", review.getContent());
@@ -143,7 +153,7 @@ class ReviewServiceTest {
 		reviewRepository.save(review);
 
 		// when
-		reviewService.delete(testUser.getEmail(), review.getId());
+		reviewService.delete(testUser.getId(), review.getId());
 
 		// then
 		Assertions.assertEquals(ReviewStatus.REMOVED, review.getStatus());

@@ -1,6 +1,7 @@
 package com.kt.api.auth;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.domain.dto.request.PasswordManagementRequest;
@@ -23,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static com.kt.common.CurrentUserCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 @Slf4j
-@DisplayName("비밀번호 초기화 요청 - POST /api/auth/password-update/requests")
+@DisplayName("비밀번호 변경 요청 - POST /api/auth/password-update/requests")
 public class AuthUpdatePasswordRequestTest extends MockMvcTest {
 
 	@Autowired
@@ -51,7 +51,7 @@ public class AuthUpdatePasswordRequestTest extends MockMvcTest {
 	}
 
 	void saveTestUser() {
-		testUser = createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 	}
 

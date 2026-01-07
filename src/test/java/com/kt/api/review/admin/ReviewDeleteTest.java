@@ -1,5 +1,12 @@
 package com.kt.api.review.admin;
 
+import com.kt.common.AdminCreator;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.AdminEntity;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.admin.AdminRepository;
+import com.kt.repository.seller.SellerRepository;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -28,7 +35,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
@@ -46,32 +53,41 @@ public class ReviewDeleteTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
+	AdminRepository adminRepository;
+	@Autowired
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
-	UserEntity testAdmin;
-
+	AdminEntity testAdmin;
+	SellerEntity testSeller;
+	UserEntity testUser;
 	@BeforeEach
 	void setUp() throws Exception {
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
-
+		testAdmin = AdminCreator.create();
+		testUser = UserEntityCreator.create();
+		adminRepository.save(testAdmin);
+		userRepository.save(testUser);
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
 
-		OrderEntity order = OrderEntity.create(receiver, testAdmin);
+		OrderEntity order = OrderEntity.create(receiver, testUser);
 		orderRepository.save(order);
 
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
 

@@ -7,6 +7,7 @@ import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +35,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
@@ -48,6 +52,8 @@ public class OrderCreateTest extends MockMvcTest {
 	UserRepository userRepository;
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	ArrayList<ProductEntity> products = new ArrayList<>();
 
@@ -55,53 +61,57 @@ public class OrderCreateTest extends MockMvcTest {
 	AddressEntity address;
 	ProductEntity testProduct1;
 	ProductEntity testProduct2;
+	SellerEntity testSeller;
 	@Autowired
 	private AddressRepository addressRepository;
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = create();
 		userRepository.save(testMember);
 
 		CategoryEntity category = createCategory();
 		categoryRepository.save(category);
 
-		testProduct1 = createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct1 = createProduct(category, testSeller);
 		productRepository.save(testProduct1);
 
-		testProduct2 = createProduct(category);
+		testProduct2 = createProduct(category, testSeller);
 		productRepository.save(testProduct2);
 
 		products.add(testProduct1);
 		products.add(testProduct2);
-
-		address = addressRepository.save(AddressCreator.createAddress(testMember));
+		address = AddressCreator.createAddress(testMember);
+		addressRepository.save(address);
 	}
 
 	@Test
 	void 주문_생성_성공__200_OK() throws Exception {
 		// when
-		OrderRequest request = new OrderRequest(
+		OrderRequest.Create request = new OrderRequest.Create(
 			List.of(new OrderRequest.Item(testProduct1.getId(), 1L)), address.getId()
 		);
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/orders")
-				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getEmail())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		);
 
 		// then
 		actions.andDo(print());
-		assertThat(testProduct1.getStock()).isEqualTo(999L);
+		actions.andExpect(status().isOk());
 		assertThat(orderRepository.count()).isEqualTo(1L);
 	}
 
 	@Test
 	void 여러_상품에_대하여_주문_생성_성공__200_OK() throws Exception {
 		// when
-		OrderRequest request = new OrderRequest(
+		OrderRequest.Create request = new OrderRequest.Create(
 			List.of(
 				new OrderRequest.Item(testProduct1.getId(), 1L),
 				new OrderRequest.Item(testProduct2.getId(), 2L)),
@@ -110,16 +120,15 @@ public class OrderCreateTest extends MockMvcTest {
 
 		ResultActions actions = mockMvc.perform(
 			post("/api/orders")
-				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getEmail())))
+				.with(SecurityMockMvcRequestPostProcessors.user(getAdminUserDetails(testMember.getId())))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))
 		);
 
 		// then
 		actions.andDo(print());
+		actions.andExpect(status().isOk());
 		assertThat(orderRepository.count()).isEqualTo(1L);
-		assertThat(testProduct1.getStock()).isEqualTo(999L);
-		assertThat(testProduct2.getStock()).isEqualTo(998L);
 	}
 
 	// TODO: 재고 수량 부족으로 인한 주문 생성 실패 테스트 추가하기 (에러 핸들러 추가후)

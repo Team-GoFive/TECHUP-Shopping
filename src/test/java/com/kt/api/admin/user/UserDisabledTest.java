@@ -7,22 +7,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.time.LocalDate;
+import com.kt.common.AdminCreator;
+import com.kt.domain.entity.AdminEntity;
 
-import org.junit.jupiter.api.AfterEach;
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.user.UserRepository;
@@ -37,16 +36,18 @@ public class UserDisabledTest extends MockMvcTest {
 	DefaultCurrentUser adminDetails;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	AdminRepository adminRepository;
 
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
+		testAdmin = AdminCreator.create();
 		userRepository.save(testUser);
-		testAdmin = UserEntityCreator.createAdmin();
-		userRepository.save(testAdmin);
+		adminRepository.save(testAdmin);
 		adminDetails = CurrentUserCreator.getAdminUserDetails(testAdmin.getId());
 	}
 

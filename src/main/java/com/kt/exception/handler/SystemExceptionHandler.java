@@ -17,8 +17,7 @@ public class SystemExceptionHandler extends BaseExceptionHandler {
 
 	@ExceptionHandler(FieldValidationException.class)
 	public ResponseEntity<ApiErrorResponse> handleFieldValid(FieldValidationException ex) {
-		ErrorCode error = ErrorCode.INVALID_DOMAIN_FIELD;
-		String errorMessage = error.format(ex.getErrorMessage());
+		String errorMessage = ex.getErrorMessage();
 		log.warn("[FieldValidationException] message = {}", errorMessage);
 		return toResponse(ex.error().getStatus(), errorMessage);
 	}

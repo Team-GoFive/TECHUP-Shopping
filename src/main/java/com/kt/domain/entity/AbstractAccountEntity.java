@@ -2,8 +2,8 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.common.BaseEntity;
 
@@ -35,7 +35,7 @@ public abstract class AbstractAccountEntity extends BaseEntity {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	protected UserRole role;
+	protected AccountRole role;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

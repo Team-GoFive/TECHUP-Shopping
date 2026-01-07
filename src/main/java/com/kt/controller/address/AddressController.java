@@ -20,7 +20,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.dto.response.AddressResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.AddressService;
+import com.kt.service.address.AddressService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,49 +28,54 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/addresses")
 @RequiredArgsConstructor
-public class AddressController {
+public class AddressController implements AddressSwaggerSupporter {
 
 	private final AddressService addressService;
 
+	@Override
 	@PostMapping
-	ResponseEntity<ApiResult<UUID>> createAddress(
+	public ResponseEntity<ApiResult<UUID>> createAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@RequestBody @Valid AddressRequest request
 	) {
-		return wrap(addressService.create(currentUser.getUsername(), request));
+		return wrap(addressService.create(currentUser.getId(), request));
 	}
 
+	@Override
 	@GetMapping
-	ResponseEntity<ApiResult<List<AddressResponse>>> getMyAddresses(
+	public ResponseEntity<ApiResult<List<AddressResponse>>> getMyAddresses(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser
 	) {
-		return wrap(addressService.getMyAddresses(currentUser.getUsername()));
+		return wrap(addressService.getMyAddresses(currentUser.getId()));
 	}
 
+	@Override
 	@GetMapping("/{addressId}")
-	ResponseEntity<ApiResult<AddressResponse>> getAddress(
+	public ResponseEntity<ApiResult<AddressResponse>> getAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId
 	) {
-		return wrap(addressService.getOne(currentUser.getUsername(), addressId));
+		return wrap(addressService.getOne(currentUser.getId(), addressId));
 	}
 
+	@Override
 	@PutMapping("/{addressId}")
-	ResponseEntity<ApiResult<Void>> updateAddress(
+	public ResponseEntity<ApiResult<Void>> updateAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId,
 		@RequestBody @Valid AddressRequest request
 	) {
-		addressService.update(currentUser.getUsername(), addressId, request);
+		addressService.update(currentUser.getId(), addressId, request);
 		return empty();
 	}
 
+	@Override
 	@DeleteMapping("/{addressId}")
-	ResponseEntity<ApiResult<Void>> deleteAddress(
+	public ResponseEntity<ApiResult<Void>> deleteAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID addressId
 	) {
-		addressService.delete(currentUser.getUsername(), addressId);
+		addressService.delete(currentUser.getId(), addressId);
 		return empty();
 	}
 }

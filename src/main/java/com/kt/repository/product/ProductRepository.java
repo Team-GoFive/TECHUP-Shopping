@@ -2,15 +2,12 @@ package com.kt.repository.product;
 
 import java.util.UUID;
 
-import com.kt.exception.CustomException;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.entity.ProductEntity;
-
-import com.kt.repository.product.ProductRepositoryCustom;
+import com.kt.exception.CustomException;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, UUID>, ProductRepositoryCustom {

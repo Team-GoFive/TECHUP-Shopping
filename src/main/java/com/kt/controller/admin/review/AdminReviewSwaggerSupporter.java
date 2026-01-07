@@ -18,7 +18,7 @@ import com.kt.security.DefaultCurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "review", description = "리뷰 관련 API")
+@Tag(name = "Review", description = "리뷰 관련 API")
 public interface AdminReviewSwaggerSupporter {
 
 	@Operation(
@@ -34,7 +34,6 @@ public interface AdminReviewSwaggerSupporter {
 		summary = "리뷰 삭제", description = "관리자가 리뷰를 삭제합니다."
 	)
 	ResponseEntity<ApiResult<Void>> delete(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID reviewId
 	);
 }

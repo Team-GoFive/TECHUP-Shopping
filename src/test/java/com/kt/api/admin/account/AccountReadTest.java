@@ -4,8 +4,8 @@ import com.kt.common.CourierEntityCreator;
 import com.kt.common.CurrentUserCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.UserEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
 
@@ -21,12 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,7 +47,7 @@ class AccountReadTest extends MockMvcTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		testCourier = CourierEntityCreator.createCourierEntity();
 		secondTestCourier = CourierEntityCreator.createCourierEntity();
 		thirdTestCourier = CourierEntity.create(
@@ -74,7 +70,7 @@ class AccountReadTest extends MockMvcTest {
 		ResultActions actions = mockMvc.perform(get("/api/admin/accounts")
 			.param("page", "1")
 			.param("size", "10")
-			.param("role", UserRole.MEMBER.name())
+			.param("role", AccountRole.MEMBER.name())
 			.param("userStatus", "")
 			.param("courierWorkStatus", "")
 			.param("searchKeyword", "")
@@ -102,7 +98,7 @@ class AccountReadTest extends MockMvcTest {
 		ResultActions actions = mockMvc.perform(get("/api/admin/accounts")
 			.param("page", "1")
 			.param("size", "10")
-			.param("role", UserRole.COURIER.name())
+			.param("role", AccountRole.COURIER.name())
 			.param("userStatus", "")
 			.param("courierWorkStatus", "")
 			.param("searchKeyword", "테스트")

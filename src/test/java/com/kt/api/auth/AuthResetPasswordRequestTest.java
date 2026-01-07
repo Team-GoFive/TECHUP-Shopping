@@ -1,6 +1,7 @@
 package com.kt.api.auth;
 
 import com.kt.common.MockMvcTest;
+import com.kt.common.UserEntityCreator;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.domain.dto.request.PasswordManagementRequest;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static com.kt.common.UserEntityCreator.createMember;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,7 +47,7 @@ public class AuthResetPasswordRequestTest extends MockMvcTest {
 	}
 
 	void saveTestUser() {
-		testUser = createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 	}
 

@@ -45,7 +45,7 @@ public class SwaggerConfiguration {
 	public GroupedOpenApi userApi() {
 		return GroupedOpenApi.builder()
 			.group("User API")
-			.pathsToExclude("/api/admin/**")
+			.pathsToExclude("/api/admin/**", "/api/seller/**")
 			.build();
 	}
 
@@ -54,6 +54,14 @@ public class SwaggerConfiguration {
 		return GroupedOpenApi.builder()
 			.group("Admin API")
 			.pathsToMatch("/api/admin/**", "/api/auth/**")
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi sellerApi() {
+		return GroupedOpenApi.builder()
+			.group("Seller API")
+			.pathsToMatch("/api/seller/**")
 			.build();
 	}
 }

@@ -15,7 +15,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.CourierService;
+import com.kt.service.courier.CourierService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +30,7 @@ public class CourierController implements CourierSwaggerSupporter {
 	public ResponseEntity<ApiResult<CourierResponse.Detail>> getCourierDetail(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID courierId
-	){
+	) {
 		return ApiResult.wrap(
 			courierService.getDetail(defaultCurrentUser.getId(), courierId)
 		);
@@ -42,7 +42,7 @@ public class CourierController implements CourierSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID courierId,
 		@RequestBody CourierRequest.UpdateDetails request
-	){
+	) {
 		courierService.updateDetail(defaultCurrentUser.getId(), courierId, request);
 		return ApiResult.empty();
 	}

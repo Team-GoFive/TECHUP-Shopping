@@ -10,6 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.kt.common.AdminCreator;
+import com.kt.constant.AccountRole;
+
+import com.kt.domain.entity.AdminEntity;
+
+import com.kt.repository.admin.AdminRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +27,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.UserEntity;
@@ -41,7 +47,7 @@ class AdminAccountControllerTest extends MockMvcTest {
 	CourierEntity testCourier;
 	CourierEntity secondTestCourier;
 	CourierEntity thirdTestCourier;
-	UserEntity testAdmin;
+	AdminEntity testAdmin;
 	DefaultCurrentUser authority;
 
 	@Autowired
@@ -49,28 +55,22 @@ class AdminAccountControllerTest extends MockMvcTest {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	AdminRepository adminRepository;
+	@Autowired
 	private CourierRepository courierRepository;
 	@Autowired
 	private AccountRepository accountRepository;
 
 	@BeforeEach
 	void setUp() {
-		testAdmin = UserEntity.create(
-			"테스트관리자1",
-			"admintest@gmail.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(1999, 1, 1),
-			"01012340001"
-		);
-		userRepository.save(testAdmin);
+		testAdmin = AdminCreator.create();
+		adminRepository.save(testAdmin);
 
 		testUser = UserEntity.create(
 			"테스트유저1",
 			"usertest@gmail.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(2000, 1, 1),
 			"01012340002"
@@ -108,7 +108,7 @@ class AdminAccountControllerTest extends MockMvcTest {
 		authority = new DefaultCurrentUser(
 			testAdmin.getId(),
 			testAdmin.getEmail(),
-			UserRole.ADMIN
+			AccountRole.ADMIN
 		);
 	}
 
@@ -118,7 +118,7 @@ class AdminAccountControllerTest extends MockMvcTest {
 		ResultActions actions = mockMvc.perform(get("/api/admin/accounts")
 			.param("page", "1")
 			.param("size", "10")
-			.param("role", UserRole.MEMBER.name())
+			.param("role", AccountRole.MEMBER.name())
 			.param("userStatus", "")
 			.param("courierWorkStatus", "")
 			.param("searchKeyword", "")
@@ -140,7 +140,7 @@ class AdminAccountControllerTest extends MockMvcTest {
 		MvcResult result = mockMvc.perform(get("/api/admin/accounts")
 				.param("page", "1")
 				.param("size", "10")
-				.param("role", UserRole.COURIER.name())
+				.param("role", AccountRole.COURIER.name())
 				.param("userStatus", "")
 				.param("courierWorkStatus", "")
 				.param("searchKeyword", "테스트")

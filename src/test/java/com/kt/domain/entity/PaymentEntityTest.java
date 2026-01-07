@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
 class PaymentEntityTest {
@@ -29,11 +29,11 @@ class PaymentEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
-		)	;
+		);
 
 		ReceiverVO receiver = new ReceiverVO(
 			"수신자테스터1",
@@ -49,16 +49,18 @@ class PaymentEntityTest {
 			user
 		);
 
-		ProductEntity product= ProductEntity.create(
+		SellerEntity testSeller = SellerEntityCreator.createSeller();
+
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
-			testCategory
+			testCategory,
+			testSeller
 		);
 
 		orderProductEntity = new OrderProductEntity(
-		5L,
-		5000L,
+			5L,
+			5000L,
 			OrderProductStatus.CREATED,
 			order,
 			product
@@ -66,7 +68,7 @@ class PaymentEntityTest {
 	}
 
 	@Test
-	void 객체생성_성공(){
+	void 객체생성_성공() {
 		PaymentEntity comparisonProduct = PaymentEntity.create(
 			50000L,
 			3000L,

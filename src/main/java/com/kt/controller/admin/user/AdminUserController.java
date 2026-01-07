@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.UserService;
+import com.kt.service.admin.AdminUserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,14 +25,14 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/admin/users")
 public class AdminUserController implements AdminUserSwaggerSupporter {
 
-	private final UserService userService;
+	private final AdminUserService adminUserService;
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(
+	public ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserDetail(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		return wrap(userService.getUserDetail(defaultCurrentUser.getId(), userId));
+		return wrap(adminUserService.getUserDetail(userId));
 	}
 
 	@PatchMapping("/{userId}/enabled")
@@ -40,7 +40,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		userService.enableUser(defaultCurrentUser.getId(), userId);
+		adminUserService.enableUser(userId);
 		return empty();
 	}
 
@@ -49,7 +49,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		userService.disableUser(defaultCurrentUser.getId(), userId);
+		adminUserService.disableUser(userId);
 		return empty();
 	}
 
@@ -58,7 +58,7 @@ public class AdminUserController implements AdminUserSwaggerSupporter {
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	) {
-		userService.deleteUser(defaultCurrentUser.getId(), userId);
+		adminUserService.deleteUser(userId);
 		return empty();
 	}
 

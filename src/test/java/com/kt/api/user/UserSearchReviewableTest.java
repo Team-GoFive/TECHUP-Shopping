@@ -1,5 +1,9 @@
 package com.kt.api.user;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.repository.seller.SellerRepository;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -18,7 +22,7 @@ import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderStatus;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.OrderProductEntity;
@@ -27,7 +31,7 @@ import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
@@ -47,15 +51,18 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	OrderEntity testOrder;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 	UserEntity testUser;
+	SellerEntity testSeller;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testUser = UserEntityCreator.createMember();
+		testUser = UserEntityCreator.create();
 		userRepository.save(testUser);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
@@ -66,26 +73,28 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(testOrder, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
-
 
 	@Test
 	void 주문상품조회_성공__200_OK() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		orderRepository.save(testOrder);
 
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then
@@ -95,11 +104,10 @@ public class UserSearchReviewableTest extends MockMvcTest {
 			.andExpect(jsonPath("$.data.list[0].orderProductId").value(testOrderProduct.getId().toString()));
 	}
 
-
 	@Test
 	void 주문상품조회_실패__작성된리뷰존재_주문상품없음() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
+		testOrderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED);
 		ReviewEntity review = ReviewEntity.create("테스트리뷰내용");
 		review.mapToOrderProduct(testOrderProduct);
 		reviewRepository.saveAndFlush(review);
@@ -108,8 +116,8 @@ public class UserSearchReviewableTest extends MockMvcTest {
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then
@@ -121,15 +129,15 @@ public class UserSearchReviewableTest extends MockMvcTest {
 	@Test
 	void 주문상품조회_실패__주문상태구매확정아님_주문상품없음() throws Exception {
 		// given
-		testOrder.updateStatus(OrderStatus.CANCELED);
+		testOrderProduct.updateStatus(OrderProductStatus.CANCELED);
 		orderRepository.save(testOrder);
 
 		// when
 		ResultActions Actions = mockMvc.perform(
 			get("/api/users/reviewable-products")
 				.with(user(CurrentUserCreator.getMemberUserDetails(testUser.getId())))
-				.param("page","1")
-				.param("size","10")
+				.param("page", "1")
+				.param("size", "10")
 		).andDo(print());
 
 		// then

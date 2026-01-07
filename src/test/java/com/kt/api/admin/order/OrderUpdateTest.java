@@ -1,145 +1,142 @@
 package com.kt.api.admin.order;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.security.test.context.support.WithMockUser;
 
+import com.kt.common.CategoryEntityCreator;
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
-import com.kt.constant.OrderStatus;
-import com.kt.constant.UserRole;
-import com.kt.domain.dto.request.OrderRequest;
+import com.kt.common.OrderProductCreator;
+import com.kt.common.ProductEntityCreator;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.OrderProductStatus;
+import com.kt.domain.dto.request.OrderProductRequest;
+import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
-import com.kt.repository.OrderRepository;
-import com.kt.security.DefaultCurrentUser;
+import com.kt.domain.entity.OrderProductEntity;
+import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
+import com.kt.domain.entity.UserEntity;
+import com.kt.repository.CategoryRepository;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
+import com.kt.repository.user.UserRepository;
 
-@DisplayName("주문 수정(어드민) - Update api/orders/{orderid}/change-status")
+@DisplayName("주문상품 상태 강제 변경(어드민) - PATCH /api/admin/orders/order-products/{orderProductId}/force-change-status")
 public class OrderUpdateTest extends MockMvcTest {
 
 	@Autowired
 	OrderRepository orderRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-	OrderEntity savedOrder;
+	private OrderProductEntity givenShippingReadyOrderProduct() {
+		CategoryEntity category = categoryRepository.save(
+			CategoryEntityCreator.createCategory()
+		);
 
-	DefaultCurrentUser userDetails = new DefaultCurrentUser(
-		UUID.randomUUID(),
-		"test@example.com",
-		UserRole.ADMIN
-	);
+		SellerEntity seller = sellerRepository.save(
+			SellerEntityCreator.createSeller()
+		);
 
-	@BeforeEach
-	void setUp() {
+		UserEntity user = UserEntityCreator.create();
+		userRepository.save(user);
 
-		OrderEntity order = OrderEntityCreator.createOrderEntity();
-		savedOrder = orderRepository.save(order);
+		ProductEntity product = ProductEntityCreator.createProduct(category, seller);
+		productRepository.save(product);
+
+		OrderEntity order = OrderEntityCreator.createOrderEntity(user);
+		orderRepository.save(order);
+
+		OrderProductEntity orderProduct =
+			OrderProductCreator.createOrderProduct(order, product, seller);
+
+		orderProduct.updateStatus(OrderProductStatus.SHIPPING_READY);
+		return orderProductRepository.save(orderProduct);
 	}
 
 	@Test
-	void 주문_상태_변경_성공_200() throws Exception {
+	@WithMockUser(roles = "ADMIN")
+	void 주문상품_상태_강제변경_성공_200() throws Exception {
 
 		// given
-		OrderStatus newStatus = OrderStatus.PURCHASE_CONFIRMED;
-		var request = new OrderRequest.ChangeStatus(
-			newStatus
-		);
-		// when
-		ResultActions result = mockMvc.perform(
-			patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-				.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request))
-		);
+		OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
 
-		// then
-		result.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("ok"))
-			.andExpect(jsonPath("$.message").value("성공"));
+		OrderProductRequest.ForceChangeStatus request =
+			new OrderProductRequest.ForceChangeStatus(
+				OrderProductStatus.SHIPPING
+			);
 
-		OrderEntity updatedOrder = orderRepository.findByIdOrThrow(savedOrder.getId());
-		assertThat(updatedOrder.getStatus()).isEqualTo(newStatus);
-	}
-
-	@ParameterizedTest
-	@NullSource
-	void 주문_상태변경_실패__상태_null_400_BadRequest(
-		OrderStatus newStatus
-	) throws Exception {
+		// when & then
 		mockMvc.perform(
-				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-					.contentType(MediaType.APPLICATION_JSON)
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-					.content(objectMapper.writeValueAsString(newStatus))
-			)
-			.andDo(print())
-			.andExpect(status().isBadRequest());
-
-	}
-
-	@Test
-	void 주문_상태변경_실패_주문없음_404_NotFound() throws Exception {
-
-		// given
-		UUID randomId = UUID.randomUUID();
-		var request = new OrderRequest.ChangeStatus(
-			OrderStatus.SHIPPING_COMPLETED
-		);
-
-		// when
-		mockMvc.perform(
-				patch("/api/admin/orders/{orderId}/change-status", randomId)
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+					orderProduct.getId())
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(request))
 			)
 			.andDo(print())
-			.andExpect(status().isNotFound());
+			.andExpect(status().isOk());
+
 	}
 
 	@Test
-	void 주문_상태변경_실패__이미구매확정_400_BadRequest() throws Exception {
-
+	@WithMockUser(roles = "ADMIN")
+	void 주문상품_상태_강제변경_실패__잘못된_상태전이_400_BadRequest() throws Exception {
 		// given
-		savedOrder.updateStatus(OrderStatus.PURCHASE_CONFIRMED);
-		orderRepository.save(savedOrder);
+		OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
 
+		OrderProductRequest.ForceChangeStatus request =
+			new OrderProductRequest.ForceChangeStatus(
+				OrderProductStatus.PURCHASE_CONFIRMED
+			);
+
+		// when & then
 		mockMvc.perform(
-				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+				patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+					orderProduct.getId())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
+					.content(objectMapper.writeValueAsString(request))
 			)
-			.andDo(print())
 			.andExpect(status().isBadRequest());
 	}
 
-	@Test
-	void 주문_상태변경_실패__배송중_400_BadRequest() throws Exception {
+@Test
+@WithMockUser(roles = "MEMBER")
+void 주문상품_상태_강제변경_API_실패__권한_없음() throws Exception {
+	// given
+	OrderProductEntity orderProduct = givenShippingReadyOrderProduct();
 
-		// given
-		savedOrder.updateStatus(OrderStatus.SHIPPING);
-		orderRepository.save(savedOrder);
+	OrderProductRequest.ForceChangeStatus request =
+		new OrderProductRequest.ForceChangeStatus(
+			OrderProductStatus.SHIPPING
+		);
 
-		mockMvc.perform(
-				patch("/api/admin/orders/{orderId}/change-status", savedOrder.getId())
-					.with(SecurityMockMvcRequestPostProcessors.user(userDetails))
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(OrderStatus.SHIPPING_COMPLETED))
-			)
-			.andDo(print())
-			.andExpect(status().isBadRequest());
-	}
+	// when & then
+	mockMvc.perform(
+			patch("/api/admin/orders/order-products/{orderProductId}/force-change-status",
+				orderProduct.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
+		)
+		.andExpect(status().isForbidden());
+}
+
 }

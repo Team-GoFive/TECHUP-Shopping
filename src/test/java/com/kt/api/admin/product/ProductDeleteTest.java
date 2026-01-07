@@ -11,17 +11,22 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.kt.common.SellerEntityCreator;
+import com.kt.domain.entity.SellerEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.kt.common.MockMvcTest;
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
+import com.kt.constant.AccountRole;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.security.DefaultCurrentUser;
 
 @DisplayName("상품 삭제 (어드민) - DELETE /api/admin/products/{productId}")
@@ -32,13 +37,16 @@ public class ProductDeleteTest extends MockMvcTest {
 
 	@Autowired
 	ProductRepository productRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	CategoryEntity testCategory;
+	SellerEntity testSeller;
 
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@test.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 
 	ProductEntity testProduct;
@@ -48,7 +56,10 @@ public class ProductDeleteTest extends MockMvcTest {
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		testProduct = createProduct(testCategory);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = createProduct(testCategory, testSeller);
 		productRepository.save(testProduct);
 	}
 

@@ -4,6 +4,8 @@ import static com.kt.common.api.ApiResult.*;
 
 import java.util.UUID;
 
+import com.kt.service.orderpay.OrderPaymentService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +22,9 @@ import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.OrderRequest;
-import com.kt.domain.dto.response.AdminOrderResponse;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.OrderService;
+import com.kt.service.order.OrderService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,57 +32,64 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrderSwaggerSupporter {
 
 	private final OrderService orderService;
+	private final OrderPaymentService orderPaymentService;
 
+	@Override
 	@GetMapping
-	ResponseEntity<ApiResult<PageResponse<AdminOrderResponse.Search>>> searchOrders(
+	public ResponseEntity<ApiResult<PageResponse<OrderResponse.Search>>> searchOrders(
 		@ModelAttribute Paging paging
 	) {
-		return ApiResult.page(
-			orderService.searchOrder(paging.toPageable())
-		);
+		return page(orderService.searchOrder(paging.toPageable()));
 	}
 
+	@Override
 	@GetMapping("/{orderId}")
-	ResponseEntity<ApiResult<OrderResponse.OrderProducts>> getOrderDetail(
+	public ResponseEntity<ApiResult<OrderResponse.Detail>> getOrderDetail(
 		@PathVariable UUID orderId
 	) {
-		return ApiResult.wrap(
-			orderService.getOrderProducts(orderId)
-		);
+		return wrap(orderService.getOrderDetail(orderId));
 	}
 
+	@Override
 	@PostMapping
-	ResponseEntity<ApiResult<Void>> createOrder(
+	public ResponseEntity<ApiResult<Void>> createOrder(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@Valid @RequestBody OrderRequest request
+		@Valid @RequestBody OrderRequest.Create request
 	) {
-		orderService.createOrder(
-			currentUser.getUsername(),
-			request.items(),
-			request.addressId()
-		);
+		orderService.createOrder(currentUser.getId(), request);
 		return empty();
 	}
 
-	@PatchMapping("/{orderId}/cancel")
-	ResponseEntity<ApiResult<Void>> cancelOrder(
+	@PostMapping("/pay")
+	public ResponseEntity<ApiResult<Void>> orderPay(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@PathVariable UUID orderId
+		@Valid @RequestBody OrderRequest.Create request
 	) {
-		orderService.cancelOrder(currentUser.getId(), orderId);
+		orderPaymentService.orderPay(currentUser.getId(), request);
 		return empty();
 	}
 
+	@Override
+	@PatchMapping("/order-products/{orderProductId}/cancel")
+	public ResponseEntity<ApiResult<Void>> cancelOrderProduct(
+		@PathVariable UUID orderProductId,
+		@AuthenticationPrincipal DefaultCurrentUser currentUser
+	) {
+		orderService.cancelOrderProduct(currentUser.getId(), orderProductId);
+		return empty();
+	}
+
+	@Override
 	@PutMapping("/{orderId}")
-	ResponseEntity<ApiResult<Void>> updateOrder(
+	public ResponseEntity<ApiResult<Void>> changeOrderAddress(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
 		@PathVariable UUID orderId,
 		@Valid @RequestBody OrderRequest.Update request
 	) {
-		orderService.updateOrder(currentUser.getId(), orderId, request);
+		orderService.changeOrderAddress(currentUser.getId(), orderId, request);
 		return empty();
 	}
 

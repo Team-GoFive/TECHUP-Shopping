@@ -17,6 +17,7 @@ import com.kt.common.MockMvcTest;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.ReceiverCreator;
+import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -24,12 +25,14 @@ import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.ReceiverVO;
 import com.kt.domain.entity.ReviewEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 
 @DisplayName("상품 리뷰 조회 (어드민) - GET /api/admin/reviews")
@@ -47,13 +50,16 @@ public class ReviewSearchTest extends MockMvcTest {
 	OrderRepository orderRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
+	SellerEntity testSeller;
 	OrderProductEntity testOrderProduct;
 	ProductEntity testProduct;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		UserEntity user = UserEntityCreator.createMember();
+		UserEntity user = UserEntityCreator.create();
 		userRepository.save(user);
 
 		ReceiverVO receiver = ReceiverCreator.createReceiver();
@@ -64,10 +70,13 @@ public class ReviewSearchTest extends MockMvcTest {
 		CategoryEntity category = CategoryEntityCreator.createCategory();
 		categoryRepository.save(category);
 
-		testProduct = ProductCreator.createProduct(category);
+		SellerEntity seller = SellerEntityCreator.createSeller();
+		testSeller = sellerRepository.save(seller);
+
+		testProduct = ProductCreator.createProduct(category, testSeller);
 		productRepository.save(testProduct);
 
-		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct);
+		testOrderProduct = OrderProductCreator.createOrderProduct(order, testProduct, testSeller);
 		orderProductRepository.save(testOrderProduct);
 	}
 
@@ -90,7 +99,7 @@ public class ReviewSearchTest extends MockMvcTest {
 
 		// then
 		actions.andExpect(status().isOk())
-		.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
-		.andExpect(jsonPath("$.data.list[0].content").value(review.getContent()));
+			.andExpect(jsonPath("$.data.list[0].reviewId").value(review.getId().toString()))
+			.andExpect(jsonPath("$.data.list[0].content").value(review.getContent()));
 	}
 }

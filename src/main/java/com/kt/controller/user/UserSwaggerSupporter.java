@@ -22,15 +22,15 @@ public interface UserSwaggerSupporter extends SwaggerSupporter {
 	summary = "내 정보 상세 조회",
 	description = "로그인한 유저의 상세정보 조회 관련 API"
 	)
-	ResponseEntity<ApiResult<UserResponse.UserDetail>> me (@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser);
+	ResponseEntity<ApiResult<UserResponse.UserDetail>> me(@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser);
 
 	@Operation(
 		summary = "내 정보 수정",
 		description = "로그인한 유저의 정보 수정 관련 API"
 	)
-	ResponseEntity<ApiResult<Void>> updateUserBySelf(
+	ResponseEntity<ApiResult<Void>> update(
 		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
-		UserRequest.UpdateDetails request
+		UserRequest.Update request
 	);
 
 	@Operation(

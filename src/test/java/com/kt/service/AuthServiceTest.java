@@ -1,14 +1,15 @@
 package com.kt.service;
 
 import static com.kt.common.SignupCourierRequestCreator.*;
-import static com.kt.common.SignupMemberRequestCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.kt.common.UserEntityCreator;
+
+import com.kt.config.jwt.JwtTokenProvider;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.SendEmailTest;
 import com.kt.constant.PasswordRequestStatus;
 import com.kt.constant.PasswordRequestType;
 import com.kt.constant.message.ErrorCode;
@@ -27,6 +29,7 @@ import com.kt.constant.redis.RedisKey;
 import com.kt.domain.dto.request.LoginRequest;
 import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
+import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.entity.CourierEntity;
 import com.kt.domain.entity.PasswordRequestEntity;
 import com.kt.domain.entity.UserEntity;
@@ -35,6 +38,7 @@ import com.kt.infra.redis.RedisCache;
 import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.auth.AuthServiceImpl;
 import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
@@ -61,6 +65,9 @@ public class AuthServiceTest {
 	@Autowired
 	RedisTemplate redisTemplate;
 
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
+
 	UserEntity testMember;
 
 	String testEmail = "test@test.com";
@@ -68,7 +75,7 @@ public class AuthServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testMember = createMember(testEmail, passwordEncoder.encode(rawPassword));
+		testMember = UserEntityCreator.create(testEmail, passwordEncoder.encode(rawPassword));
 		userRepository.save(testMember);
 		String testKey = "techup-shopping-encrypt-test-key";
 		EncryptUtil.loadKey(testKey);
@@ -79,70 +86,7 @@ public class AuthServiceTest {
 		var connection = redisTemplate.getConnectionFactory().getConnection();
 		connection.flushAll();
 	}
-
-	@Test
-	void 맴버_회원가입_성공() {
-		// given
-		String email = "member@email.com";
-		redisCache.set(RedisKey.SIGNUP_VERIFIED, email, true);
-
-		// when
-		SignupRequest.SignupMember request = createSignupMemberRequest(email);
-		authService.signupMember(request);
-
-		// then
-		UserEntity member = userRepository.findByEmailOrThrow(request.email());
-		assertEquals(email, member.getEmail());
-	}
-	// 해야함 인증 정보 null 이거나 false 일때 에러 에러
-
-	@Test
-	void 맴버_회원가입_실패_인증정보_없음_시간초과() throws InterruptedException {
-		// given
-		String email = "member@email.com";
-		redisCache.set(RedisKey.SIGNUP_VERIFIED.key(email), true, Duration.ofMillis(100));
-		Thread.sleep(200);
-
-		// when
-		SignupRequest.SignupMember request = createSignupMemberRequest(email);
-
-		// then
-		assertThrowsExactly(
-			CustomException.class,
-			() -> authService.signupMember(request),
-			ErrorCode.AUTH_EMAIL_UNVERIFIED.getMessage()
-		);
-	}
-
-	@Test
-	void 맴버_회원가입_실패_인증정보_없음_이메일_키값() {
-		// when and then
-		SignupRequest.SignupMember request = createSignupMemberRequest();
-
-		CustomException exception = assertThrowsExactly(
-			CustomException.class,
-			() -> authService.signupMember(request)
-		);
-		assertEquals(ErrorCode.AUTH_EMAIL_UNVERIFIED, exception.error());
-	}
-
-	@Test
-	void 맴버_회원가입_실패_email_중복() {
-		// given
-		String email = "member@email.com";
-		redisCache.set(RedisKey.SIGNUP_VERIFIED, email, true);
-		SignupRequest.SignupMember firstSignup = createSignupMemberRequest(email);
-		authService.signupMember(firstSignup);
-
-		// when and then
-		SignupRequest.SignupMember secondSignup = createSignupMemberRequest(email);
-
-		CustomException exception = assertThrowsExactly(
-			CustomException.class,
-			() -> authService.signupMember(secondSignup)
-		);
-		assertEquals(ErrorCode.DUPLICATED_EMAIL, exception.error());
-	}
+	// 해야함 인증 정보 null 이거나 false 일때 에러
 
 	@Test
 	void 유저_로그인_성공() {
@@ -153,8 +97,22 @@ public class AuthServiceTest {
 		// then
 		assertNotNull(result.getFirst());
 		assertNotNull(result.getSecond());
+		String refreshToken = result.getSecond();
+
+		String refreshJti = jwtTokenProvider.getJti(refreshToken);
+
+		String cachedRefreshJti = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(testMember.getId()),
+			String.class
+		);
+
+		assertEquals(cachedRefreshJti, refreshJti);
+
 		log.info("access token : {}", result.getFirst());
 		log.info("refresh token : {}", result.getSecond());
+
+		log.info("cachedRefreshJti :: {}", cachedRefreshJti);
+		log.info("refreshJti :: {}", refreshJti);
 	}
 
 	@Test
@@ -218,6 +176,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	void 이메일_인증_코드_발송_후_해당_이메일에_대한_redis_키_값_저장_성공() {
 		// when
 		SignupRequest.SignupEmail request = new SignupRequest.SignupEmail(testEmail);
@@ -282,6 +241,7 @@ public class AuthServiceTest {
 	}
 
 	@Test
+	@SendEmailTest
 	@Transactional
 	void 계정_비밀번호_초기화_성공() {
 
@@ -289,7 +249,7 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request
 			= new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.initPassword(request);
+		authService.resetPassword(request);
 
 		// then
 		assertEquals(false, passwordEncoder.matches(rawPassword, testMember.getPassword()));
@@ -303,7 +263,7 @@ public class AuthServiceTest {
 
 		CustomException exception = assertThrowsExactly(
 			CustomException.class, () ->
-				authService.initPassword(resetRequest)
+				authService.resetPassword(resetRequest)
 		);
 		assertEquals(ErrorCode.ACCOUNT_NOT_FOUND, exception.error());
 	}
@@ -359,7 +319,7 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request =
 			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.requestPasswordInit(request);
+		authService.requestPasswordReset(request);
 
 		// then
 		PasswordRequestEntity passwordRequest = passwordRequestRepository
@@ -378,10 +338,10 @@ public class AuthServiceTest {
 		PasswordManagementRequest.PasswordReset request =
 			new PasswordManagementRequest.PasswordReset(testMember.getEmail());
 
-		authService.requestPasswordInit(request);
+		authService.requestPasswordReset(request);
 
 		// when and then
-		assertThatThrownBy(() -> authService.requestPasswordInit(request))
+		assertThatThrownBy(() -> authService.requestPasswordReset(request))
 			.isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.PASSWORD_RESET_ALREADY_REQUESTED.name());
 	}
@@ -442,6 +402,85 @@ public class AuthServiceTest {
 			.getId();
 
 		assertNotEquals(firstId, secondId);
+	}
+
+	@Test
+	void 토큰_재발급_성공() {
+
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		Pair<String, String> reissued =
+			authService.reissueToken(tokenReissueRequest);
+		String reissuedRefreshToken = reissued.getSecond();
+		String savedRefreshJti = redisCache.get(
+			RedisKey.REFRESH_TOKEN.key(testMember.getId()),
+			String.class
+		);
+		String reissuedRefreshJti = jwtTokenProvider.getJti(reissuedRefreshToken);
+		assertNotEquals(loginResult.getSecond(), reissued.getSecond());
+		assertEquals(savedRefreshJti, reissuedRefreshJti);
+
+		log.info("Before reissued refreshToken :: {}", loginResult.getSecond());
+		log.info("After reissued refreshToken :: {}", reissued.getSecond());
+
+		log.info("savedRefreshJti :: {}", savedRefreshJti);
+		log.info("reissuedRefreshJti :: {}", reissuedRefreshJti);
+
+	}
+
+	@Test
+	void 토큰_재발급_실패_Refresh_token_시간_만료() throws InterruptedException {
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+
+		Thread.sleep(4500);
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(loginResult.getSecond());
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_REFRESH_EXPIRED", exception.getMessage());
+	}
+
+	@Test
+	void 토큰_재발급_실패_Refresh_token_인증정보_틀림() {
+		LoginRequest login = new LoginRequest(
+			testMember.getEmail(),
+			rawPassword
+		);
+
+		Pair<String, String> loginResult = authService.login(login);
+		String differentRefreshToken = loginResult.getSecond().replaceAll("e", "f");
+		differentRefreshToken = differentRefreshToken.replaceAll("1", "a");
+		differentRefreshToken = differentRefreshToken.replaceAll("b", "c");
+
+		TokenReissueRequest tokenReissueRequest =
+			new TokenReissueRequest(differentRefreshToken);
+
+		CustomException exception = assertThrowsExactly(
+			CustomException.class,
+			() -> authService.reissueToken(tokenReissueRequest)
+		);
+
+		log.info("exception getMessage :: {}", exception.getMessage());
+		assertEquals("AUTH_INVALID", exception.getMessage());
 	}
 
 }

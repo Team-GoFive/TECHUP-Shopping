@@ -1,37 +1,27 @@
 package com.kt.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 
-import com.kt.constant.PasswordRequestType;
-import com.kt.domain.dto.request.AccountRequest;
+import com.kt.common.AdminCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.AccountRole;
 
-import com.kt.domain.dto.request.PasswordRequest;
-import com.kt.domain.dto.response.PasswordRequestResponse;
-import com.kt.domain.entity.PasswordRequestEntity;
+import com.kt.domain.entity.AdminEntity;
 
-import com.kt.repository.PasswordRequestRepository;
+import com.kt.repository.admin.AdminRepository;
 
 import org.junit.jupiter.api.Assertions;
-
-import lombok.extern.slf4j.Slf4j;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 import com.kt.domain.entity.AbstractAccountEntity;
 import com.kt.domain.entity.CourierEntity;
@@ -40,6 +30,9 @@ import com.kt.exception.CustomException;
 import com.kt.repository.account.AccountRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.account.AccountService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional
@@ -53,47 +46,26 @@ class AccountServiceTest {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
+	AdminRepository adminRepository;
+	@Autowired
 	AccountRepository accountRepository;
 	@Autowired
 	CourierRepository courierRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	@Autowired
-	PasswordRequestRepository passwordRequestRepository;
 
-	UserEntity member1;
-	UserEntity admin1;
+	UserEntity testUser;
+	AdminEntity testAdmin;
 	CourierEntity courier1;
 	CourierEntity courier2;
 
-
 	@BeforeEach
 	void setUp() {
-		courierRepository.deleteAll();
-		userRepository.deleteAll();
-		accountRepository.deleteAll();
+		testUser = UserEntityCreator.create();
+		testAdmin = AdminCreator.create();
 
-		member1 = UserEntity.create(
-			"회원",
-			"bjwnstkdbj@naver.com",
-			"1234",
-			UserRole.MEMBER,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"111111"
-		);
-		admin1 = UserEntity.create(
-			"관리자",
-			"aaa",
-			"1234",
-			UserRole.ADMIN,
-			Gender.MALE,
-			LocalDate.of(2000, 1, 1),
-			"111111"
-		);
-
-		userRepository.save(member1);
-		userRepository.save(admin1);
+		userRepository.save(testUser);
+		adminRepository.save(testAdmin);
 
 		courier1 = CourierEntity.create(
 			"기사1",
@@ -114,78 +86,12 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void 회원_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.MEMBER,
-			null,
-			null,
-			"회원"
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
-	void 관리자_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.ADMIN,
-			null,
-			null,
-			""
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-	}
-
-	@Test
-	void 배송기사_조회_성공() {
-		// given
-
-		AccountRequest.Search request = new AccountRequest.Search(
-			UserRole.COURIER,
-			null,
-			null,
-			""
-		);
-
-		// when
-		Page<?> result = accountService.searchAccounts(
-			request,
-			Pageable.ofSize(10)
-		);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(2);
-	}
-
-	@Test
 	void 회원계정_비밀번호변경_성공() {
 		UserEntity user = UserEntity.create(
 			"회원테스터",
 			"wjd123@naver.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -236,7 +142,7 @@ class AccountServiceTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			passwordEncoder.encode(TEST_PASSWORD),
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			"010-1234-5678"
@@ -290,128 +196,5 @@ class AccountServiceTest {
 
 		Assertions.assertEquals(UserStatus.DELETED, foundedAccount.getStatus());
 	}
-
-	@Test
-	void 계정삭제_성공_hard() {
-		CourierEntity courier = CourierEntity.create(
-			"배송기사테스터",
-			"wjd123@naver.com",
-			passwordEncoder.encode(TEST_PASSWORD),
-			Gender.MALE
-		);
-		courierRepository.save(courier);
-
-		accountService.deleteAccountPermanently(courier.getId());
-
-		assertThatThrownBy(() -> accountRepository.findByIdOrThrow(courier.getId()))
-			.isInstanceOf(CustomException.class);
-
-	}
-
-	@Test
-	void 관리자_다른_계정_비밀번호_초기화_성공() {
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			member1,
-			null,
-			PasswordRequestType.RESET
-		);
-		passwordRequestRepository.save(passwordRequest);
-		String originPassword = "1234";
-
-		accountService.resetAccountPassword(member1.getId());
-
-		log.info(
-			"isMatch :: {}", passwordEncoder.matches(
-				originPassword, member1.getPassword()
-			)
-		);
-
-		assertFalse(
-			passwordEncoder.matches(
-				originPassword,
-				member1.getPassword()
-			)
-		);
-		log.info("passwordRequest status : {}", passwordRequest.getStatus());
-	}
-
-	@Test
-	void 관리자_다른_계정_비밀번호_초기화_실패_요청사항_없음() {
-
-		assertThatThrownBy(
-			() -> accountService.resetAccountPassword(member1.getId())
-		).isInstanceOf(CustomException.class);
-
-	}
-
-
-	@Test
-	void 관리자_다른_계정_비밀번호_변경_성공() {
-		String originPassword = "1234";
-		String updatedPassword = "1231231!";
-		PasswordRequestEntity passwordRequest = PasswordRequestEntity.create(
-			member1,
-			updatedPassword,
-			PasswordRequestType.UPDATE
-		);
-		passwordRequestRepository.save(passwordRequest);
-
-		accountService.updateAccountPassword(member1.getId());
-
-		log.info(
-			"isMatch :: {}", passwordEncoder.matches(
-				originPassword, member1.getPassword()
-			)
-		);
-
-		assertFalse(
-			passwordEncoder.matches(originPassword, member1.getPassword())
-		);
-
-		log.info("passwordRequest status : {}", passwordRequest.getStatus());
-	}
-
-	@Test
-	void 비밀번호_변경_및_초기화_요청_리스트_조회_성공() {
-		String updatePassword = "123123";
-
-		PasswordRequestEntity firstRequest = PasswordRequestEntity.create(
-			member1,
-			null,
-			PasswordRequestType.RESET
-		);
-
-		PasswordRequestEntity secondRequest = PasswordRequestEntity.create(
-			courier1,
-			updatePassword,
-			PasswordRequestType.UPDATE
-		);
-		passwordRequestRepository.save(firstRequest);
-		passwordRequestRepository.save(secondRequest);
-
-
-		Pageable pageable = Pageable.ofSize(10);
-
-		// when
-		PasswordRequest.Search request = new PasswordRequest.Search(
-			UserRole.COURIER,
-			null,
-			null,
-			""
-		);
-
-		Page<PasswordRequestResponse.Search> result =
-			accountService.searchPasswordRequests(request, pageable);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getContent()).hasSize(1);
-		assertThat(result.getContent()
-			.stream()
-			.map(PasswordRequestResponse.Search::accountId)
-		).contains(courier1.getId());
-
-	}
-
 
 }

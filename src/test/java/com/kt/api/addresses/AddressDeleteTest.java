@@ -24,12 +24,12 @@ class AddressDeleteTest extends MockMvcTest {
 	@Autowired
 	UserRepository userRepository;
 
-	UserEntity testMember;
+	UserEntity testUser;
 
 	@BeforeEach
 	void setUp() {
-		testMember = UserEntityCreator.createMember();
-		userRepository.save(testMember);
+		testUser = UserEntityCreator.create();
+		userRepository.save(testUser);
 	}
 
 	@Test
@@ -37,7 +37,7 @@ class AddressDeleteTest extends MockMvcTest {
 		//when
 		ResultActions actions = mockMvc.perform(
 			delete("/api/addresses/{addressId}", UUID.randomUUID())
-				.with(user(getMemberUserDetails(testMember.getEmail())))
+				.with(user(getMemberUserDetails(testUser.getEmail())))
 		);
 
 		// then

@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
+import com.kt.constant.AccountRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,9 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import com.kt.common.MockMvcTest;
 import com.kt.common.OrderEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.UserRole;
 import com.kt.domain.entity.OrderEntity;
 import com.kt.domain.entity.UserEntity;
-import com.kt.repository.OrderRepository;
+import com.kt.repository.order.OrderRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
 
@@ -36,7 +35,7 @@ public class OrderListTest extends MockMvcTest {
 	DefaultCurrentUser userDetails = new DefaultCurrentUser(
 		UUID.randomUUID(),
 		"test@example.com",
-		UserRole.ADMIN
+		AccountRole.ADMIN
 	);
 	@Autowired
 	private UserRepository userRepository;
@@ -44,7 +43,7 @@ public class OrderListTest extends MockMvcTest {
 	@Test
 	void 주문_리스트_조회_성공_200() throws Exception {
 		// given
-		UserEntity user = UserEntityCreator.createMember();
+		UserEntity user = UserEntityCreator.create();
 
 		savedUser = userRepository.save(user);
 		OrderEntity order = OrderEntityCreator.createOrderEntity(savedUser);

@@ -5,15 +5,19 @@ import static lombok.AccessLevel.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
+
+import com.kt.domain.capability.BankAccountHolder;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,24 +27,37 @@ import lombok.NoArgsConstructor;
 @Table(name = "\"user\"")
 @NoArgsConstructor(access = PROTECTED)
 @DiscriminatorValue("USER")
-public class UserEntity extends AbstractAccountEntity {
+public class UserEntity extends AbstractAccountEntity implements BankAccountHolder {
 
 	@OneToMany(
 		mappedBy = "createdBy",
 		cascade = CascadeType.REMOVE,
 		orphanRemoval = true
 	)
-	List<AddressEntity> addresses;
+	private List<AddressEntity> addresses;
+
+	@OneToOne(
+		mappedBy = "user",
+		cascade = {
+			CascadeType.PERSIST,
+			CascadeType.REMOVE
+		},
+		orphanRemoval = true,
+		fetch = FetchType.LAZY
+	)
+	private PayEntity pay;
+
 	@Column(nullable = false)
 	private LocalDate birth;
+
 	@Column(nullable = false)
 	private String mobile;
 
-	protected UserEntity(
+	private UserEntity(
 		String name,
 		String email,
 		String password,
-		UserRole role,
+		AccountRole role,
 		Gender gender,
 		LocalDate birth,
 		String mobile
@@ -53,13 +70,14 @@ public class UserEntity extends AbstractAccountEntity {
 		this.birth = birth;
 		this.mobile = mobile;
 		this.status = UserStatus.ENABLED;
+		this.pay = PayEntity.create(this);
 	}
 
 	public static UserEntity create(
 		final String name,
 		final String email,
 		final String password,
-		final UserRole role,
+		final AccountRole role,
 		final Gender gender,
 		final LocalDate birth,
 		final String mobile
@@ -69,17 +87,19 @@ public class UserEntity extends AbstractAccountEntity {
 		);
 	}
 
-	public void delete(){ this.status = UserStatus.DELETED; }
+	public void delete() {
+		this.status = UserStatus.DELETED;
+	}
 
-	public void updateDetails(
+	public void update(
 		String name,
+		String email,
 		String mobile,
-		LocalDate birth,
-		Gender gender
-	){
+		LocalDate birth
+	) {
 		this.name = name;
+		this.email = email;
 		this.mobile = mobile;
 		this.birth = birth;
-		this.gender = gender;
 	}
 }

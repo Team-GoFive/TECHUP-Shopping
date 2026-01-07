@@ -2,7 +2,6 @@ package com.kt.api.product;
 
 import static com.kt.common.CategoryEntityCreator.*;
 import static com.kt.common.ProductEntityCreator.*;
-import static com.kt.common.UserEntityCreator.*;
 
 import java.util.List;
 
@@ -12,21 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kt.common.AddressCreator;
 import com.kt.common.MockMvcTest;
-import com.kt.constant.OrderStatus;
+import com.kt.common.SellerEntityCreator;
+import com.kt.common.UserEntityCreator;
+import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.entity.AddressEntity;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderProductEntity;
 import com.kt.domain.entity.ProductEntity;
+import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
-import com.kt.repository.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.OrderService;
-import com.kt.service.ReviewService;
+import com.kt.service.order.OrderService;
+import com.kt.service.review.ReviewService;
 
 @DisplayName("상품 리뷰 조회 - GET /api/products/{productId}/reviews")
 public class ProductReviewTest extends MockMvcTest {
@@ -42,6 +44,8 @@ public class ProductReviewTest extends MockMvcTest {
 
 	@Autowired
 	AddressRepository addressRepository;
+	@Autowired
+	SellerRepository sellerRepository;
 
 	@Autowired
 	OrderService orderService;
@@ -53,22 +57,23 @@ public class ProductReviewTest extends MockMvcTest {
 	CategoryEntity testCategory;
 	ProductEntity testProduct;
 	AddressEntity address;
+	SellerEntity testSeller;
 
 	@Autowired
 	OrderProductRepository orderProductRepository;
 
-	@Autowired
-	OrderRepository orderRepository;
-
 	@BeforeEach
 	void setUp() {
-		testMember = createMember();
+		testMember = UserEntityCreator.create();
 		userRepository.save(testMember);
 
 		testCategory = createCategory();
 		categoryRepository.save(testCategory);
 
-		testProduct = createProduct(testCategory);
+		testSeller = SellerEntityCreator.createSeller();
+		sellerRepository.save(testSeller);
+
+		testProduct = createProduct(testCategory, testSeller);
 
 		address = addressRepository.save(AddressCreator.createAddress(testMember));
 
@@ -77,15 +82,19 @@ public class ProductReviewTest extends MockMvcTest {
 			List<OrderRequest.Item> items = List.of(
 				new OrderRequest.Item(testProduct.getId(), 1L)
 			);
-			orderService.createOrder(testMember.getEmail(), items, address.getId());
+			orderService.createOrder(
+				testMember.getId(),
+				new OrderRequest.Create(items, address.getId())
+			);
 		}
 
-		orderRepository.findAll().forEach(order -> order.updateStatus(OrderStatus.PURCHASE_CONFIRMED));
+		orderProductRepository.findAll()
+			.forEach(orderProduct -> orderProduct.updateStatus(OrderProductStatus.PURCHASE_CONFIRMED));
 
 		List<OrderProductEntity> list = orderProductRepository.findAll().stream().toList();
 		for (int i = 0; i < 3; i++) {
 			OrderProductEntity orderProduct = list.get(i);
-			reviewService.create(testMember.getMobile(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
+			reviewService.create(testMember.getId(), orderProduct.getId(), "리뷰 내용: 리뷰" + i);
 		}
 	}
 }

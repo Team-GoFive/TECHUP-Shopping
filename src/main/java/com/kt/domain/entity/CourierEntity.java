@@ -2,9 +2,9 @@ package com.kt.domain.entity;
 
 import static lombok.AccessLevel.*;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.CourierWorkStatus;
 import com.kt.constant.Gender;
-import com.kt.constant.UserRole;
 import com.kt.constant.UserStatus;
 
 import jakarta.persistence.Column;
@@ -35,7 +35,7 @@ public class CourierEntity extends AbstractAccountEntity {
 		this.email = email;
 		this.password = password;
 		this.gender = gender;
-		this.role = UserRole.COURIER;
+		this.role = AccountRole.COURIER;
 		this.status = UserStatus.ENABLED;
 		this.workStatus = CourierWorkStatus.RESTING;
 	}

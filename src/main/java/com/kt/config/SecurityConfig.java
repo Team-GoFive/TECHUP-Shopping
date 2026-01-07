@@ -60,6 +60,7 @@ public class SecurityConfig {
 				auth -> auth
 					.requestMatchers(SecurityPath.PUBLIC).permitAll()
 					.requestMatchers(SecurityPath.ADMIN).hasRole("ADMIN")
+					.requestMatchers(SecurityPath.SELLER).hasRole("SELLER")
 					.anyRequest().authenticated()
 			).addFilterBefore(
 				jwtAuthenticationFilter,

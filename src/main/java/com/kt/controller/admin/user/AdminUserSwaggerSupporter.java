@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "user", description = "회원 관련 API")
+@Tag(name = "User", description = "회원 관련 API")
 public interface AdminUserSwaggerSupporter extends SwaggerSupporter {
 
 	@Operation(
@@ -22,7 +22,7 @@ public interface AdminUserSwaggerSupporter extends SwaggerSupporter {
 		@Parameter(name = "회원 Id")
 	}
 	)
-	ResponseEntity<ApiResult<UserResponse.UserDetail>> getAccountDetail(
+	ResponseEntity<ApiResult<UserResponse.UserDetail>> getUserDetail(
 		@Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
 		@PathVariable UUID userId
 	);

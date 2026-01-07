@@ -2,8 +2,8 @@ package com.kt.config.jwt;
 
 import com.kt.config.properties.jwt.JwtProperties;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.TokenType;
-import com.kt.constant.UserRole;
 
 import com.kt.security.AuthenticationToken;
 
@@ -34,14 +34,16 @@ public class JwtTokenProvider {
 	private static final String TOKEN_PREFIX = "Bearer ";
 	private static final String ROLE_CLAIM_KEY = "role";
 	private static final String EMAIL_CLAIM_KEY = "email";
-
-	public String create(UUID id, String email, UserRole role, TokenType tokenType) {
+	private static final String JWT_ID_KEY = "jti";
+	public String create(UUID id, String email, AccountRole role, TokenType tokenType) {
 		Date issuedAt = new Date();
 		Duration validTime = tokenType == TokenType.ACCESS ?
 			jwtProperties.getAccessValidTime() : jwtProperties.getRefreshValidTime();
 		Date expireAt = new Date(issuedAt.getTime() + validTime.toMillis());
+		String randomUUID = UUID.randomUUID().toString();
 		return Jwts.builder()
 			.subject(id.toString())
+			.claim(JWT_ID_KEY, randomUUID)
 			.claim(ROLE_CLAIM_KEY, role.name())
 			.claim(EMAIL_CLAIM_KEY, email)
 			.issuedAt(issuedAt)
@@ -73,11 +75,19 @@ public class JwtTokenProvider {
 		);
 	}
 
+	public String getAccountId(String token) {
+		return getClaims(token).getSubject();
+	}
+
+	public String getJti(String token) {
+		return getClaims(token).get(JWT_ID_KEY, String.class);
+	}
+
 	private DefaultCurrentUser toCurrentUser(String token) {
 		Claims claims = getClaims(token);
 		UUID id = UUID.fromString(claims.getSubject());
 		String email = claims.get(EMAIL_CLAIM_KEY, String.class);
-		UserRole role = UserRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
+		AccountRole role = AccountRole.valueOf(claims.get(ROLE_CLAIM_KEY, String.class));
 		return new DefaultCurrentUser(id, email, role);
 	}
 

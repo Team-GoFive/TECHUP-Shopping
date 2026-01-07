@@ -1,6 +1,5 @@
 package com.kt.domain.entity;
 
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -8,10 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.SellerEntityCreator;
+import com.kt.constant.AccountRole;
 import com.kt.constant.Gender;
 import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 
 @ActiveProfiles("test")
 class ShippingDetailEntityTest {
@@ -25,7 +24,7 @@ class ShippingDetailEntityTest {
 			"주문자테스터1",
 			"wjd123@naver.com",
 			"1234",
-			UserRole.MEMBER,
+			AccountRole.MEMBER,
 			Gender.MALE,
 			LocalDate.now(),
 			"010-1234-5678"
@@ -50,11 +49,13 @@ class ShippingDetailEntityTest {
 			null
 		);
 
-		ProductEntity product= ProductEntity.create(
+		SellerEntity testSeller = SellerEntityCreator.createSeller();
+
+		ProductEntity product = ProductEntity.create(
 			"테스트상품명",
 			1000L,
-			5L,
-			tempCategory
+			tempCategory,
+			testSeller
 		);
 
 		testOrderProduct = new OrderProductEntity(
@@ -74,7 +75,7 @@ class ShippingDetailEntityTest {
 	}
 
 	@Test
-	void 객체생성_성공(){
+	void 객체생성_성공() {
 		ShippingDetailEntity shippingDetailEntity = ShippingDetailEntity.create(
 			testCourier,
 			testOrderProduct

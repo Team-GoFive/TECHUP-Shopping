@@ -1,17 +1,19 @@
 package com.kt.repository.product;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.kt.constant.AccountRole;
 import com.kt.constant.ProductStatus;
-import com.kt.constant.UserRole;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.domain.dto.response.QProductResponse_Search;
 import com.kt.domain.entity.QCategoryEntity;
+import com.kt.domain.entity.QInventoryEntity;
 import com.kt.domain.entity.QProductEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -25,10 +27,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 	private final JPAQueryFactory jpaQueryFactory;
 	private final QProductEntity product = QProductEntity.productEntity;
 	private final QCategoryEntity category = QCategoryEntity.categoryEntity;
+	private final QInventoryEntity inventory = QInventoryEntity.inventoryEntity;
 
 	@Override
 	public Page<ProductResponse.Search> search(
-		UserRole role,
+		AccountRole role,
 		Pageable pageable,
 		String keyword,
 		ProductSearchType type
@@ -45,10 +48,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 				product.price,
 				product.status,
 				product.category.id,
-				product.stock
+				inventory.stock
 			))
 			.from(product)
 			.join(category).on(category.id.eq(product.category.id))
+			.join(inventory).on(inventory.productId.eq(product.id))
 			.where(booleanBuilder)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -57,14 +61,54 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 		int total = jpaQueryFactory.select(product.id)
 			.from(product)
 			.join(category).on(category.id.eq(product.category.id))
+			.join(inventory).on(inventory.productId.eq(product.id))
 			.where(booleanBuilder)
 			.fetch().size();
 
 		return new PageImpl<>(content, pageable, total);
 	}
 
-	private BooleanExpression isActiveByRole(UserRole role) {
-		if (role == UserRole.ADMIN) {
+	@Override
+	public Page<ProductResponse.Search> searchForSeller(
+		Pageable pageable,
+		String keyword,
+		ProductSearchType type,
+		UUID sellerId
+	) {
+
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		booleanBuilder.and(containsKeyword(keyword, type));
+		booleanBuilder.and(product.seller.id.eq(sellerId));
+
+		List<ProductResponse.Search> content = jpaQueryFactory
+			.select(new QProductResponse_Search(
+				product.id,
+				product.name,
+				product.price,
+				product.status,
+				product.category.id,
+				inventory.stock
+			))
+			.from(product)
+			.join(category).on(category.id.eq(product.category.id))
+			.join(inventory).on(inventory.productId.eq(product.id))
+			.where(booleanBuilder)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		int total = jpaQueryFactory.select(product.id)
+			.from(product)
+			.join(category).on(category.id.eq(product.category.id))
+			.join(inventory).on(inventory.productId.eq(product.id))
+			.where(booleanBuilder)
+			.fetch().size();
+
+		return new PageImpl<>(content, pageable, total);
+	}
+
+	private BooleanExpression isActiveByRole(AccountRole role) {
+		if (role == AccountRole.ADMIN) {
 			return null;
 		}
 		return product.status.eq(ProductStatus.ACTIVATED);

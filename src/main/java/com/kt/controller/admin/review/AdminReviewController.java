@@ -5,7 +5,6 @@ import static com.kt.common.api.ApiResult.*;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,8 +18,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ReviewResponse;
-import com.kt.security.DefaultCurrentUser;
-import com.kt.service.ReviewService;
+import com.kt.service.admin.AdminReviewService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class AdminReviewController implements AdminReviewSwaggerSupporter {
-	private final ReviewService reviewService;
+	private final AdminReviewService adminReviewService;
 
 	@Override
 	@GetMapping
@@ -39,7 +37,7 @@ public class AdminReviewController implements AdminReviewSwaggerSupporter {
 		@RequestParam(required = false) ProductSearchType type
 	) {
 		return page(
-			reviewService.getReviewsByAdmin(
+			adminReviewService.getReviewsByAdmin(
 				paging.toPageable(),
 				keyword,
 				type
@@ -49,11 +47,8 @@ public class AdminReviewController implements AdminReviewSwaggerSupporter {
 
 	@Override
 	@DeleteMapping("/{reviewId}")
-	public ResponseEntity<ApiResult<Void>> delete(
-		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@PathVariable UUID reviewId
-	) {
-		reviewService.delete(currentUser.getEmail(), reviewId);
+	public ResponseEntity<ApiResult<Void>> delete(@PathVariable UUID reviewId) {
+		adminReviewService.delete(reviewId);
 		return empty();
 	}
 }
