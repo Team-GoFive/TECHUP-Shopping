@@ -25,7 +25,7 @@ import static com.kt.common.api.ApiResult.page;
 @RestController
 @RequestMapping("/api/bank-account-transactions")
 @RequiredArgsConstructor
-public class BankAccountTransactionController {
+public class BankAccountTransactionController implements BankAccountTransactionSupporter{
 
 	private final BankAccountTransactionService bankAccountTransactionService;
 

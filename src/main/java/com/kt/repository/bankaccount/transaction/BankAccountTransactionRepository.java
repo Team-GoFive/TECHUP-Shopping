@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface BankAccountTransactionRepository extends
-	JpaRepository<BankAccountTransactionEntity, UUID>,
+public interface BankAccountTransactionRepository extends JpaRepository<BankAccountTransactionEntity, UUID>,
 	BankAccountTransactionRepositoryCustom {
 
 }
