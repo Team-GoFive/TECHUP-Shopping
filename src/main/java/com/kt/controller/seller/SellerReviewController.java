@@ -26,12 +26,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/seller/reviews")
-public class SellerReviewController {
+public class SellerReviewController implements SellerReviewSwaggerSupporter {
 	private final SellerReviewService sellerReviewService;
 
+	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.Search>>> getAllReviews(
-		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@Valid @ParameterObject Paging paging
 	) {
 		return page(
@@ -41,9 +42,10 @@ public class SellerReviewController {
 		);
 	}
 
+	@Override
 	@GetMapping("/{productId}")
 	public ResponseEntity<ApiResult<PageResponse<SellerReviewResponse.Search>>> getReviewsByProduct(
-		@AuthenticationPrincipal @Parameter(hidden = true) DefaultCurrentUser defaultCurrentUser,
+		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@Valid @ParameterObject Paging paging,
 		@PathVariable UUID productId
 	) {
