@@ -13,7 +13,7 @@ import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.repository.bankaccount.transaction.BankAccountTransactionRepository;
-import com.kt.repository.PayTransactionRepository;
+import com.kt.repository.pay.transaction.PayTransactionRepository;
 import com.kt.repository.bankaccount.BankAccountRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,8 @@ public class PaymentSettlementService {
 				PayTransactionPurpose.ORDER_PAYMENT,
 				totalPrice,
 				pay.getBalance(),
-				bankAccount.getId()
+				pay.getDisplayName(),
+				bankAccount.getDisplayName()
 			);
 		payTransactionRepository.save(payTransaction);
 	}

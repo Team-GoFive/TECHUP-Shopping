@@ -45,7 +45,10 @@ public class PayTransactionEntity extends BaseEntity {
 	private BigDecimal balanceSnapshot;
 
 	@Column(nullable = false)
-	private UUID targetId;
+	private String withdrawalSource;
+
+	@Column(nullable = false)
+	private String depositSource;
 
 	private PayTransactionEntity(
 		PayEntity pay,
@@ -53,14 +56,16 @@ public class PayTransactionEntity extends BaseEntity {
 		PayTransactionPurpose transactionPurpose,
 		BigDecimal amount,
 		BigDecimal balanceSnapshot,
-		UUID targetId
+		String withdrawalSource,
+		String depositSource
 	) {
 		this.pay = pay;
 		this.transactionType = transactionType;
 		this.transactionPurpose = transactionPurpose;
 		this.amount = amount;
 		this.balanceSnapshot = balanceSnapshot;
-		this.targetId = targetId;
+		this.withdrawalSource = withdrawalSource;
+		this.depositSource = depositSource;
 	}
 
 	public static PayTransactionEntity create(
@@ -69,7 +74,8 @@ public class PayTransactionEntity extends BaseEntity {
 		final PayTransactionPurpose transactionPurpose,
 		final long amount,
 		final BigDecimal balanceSnapshot,
-		final UUID targetId
+		final String withdrawalSource,
+		final String depositSource
 	) {
 		ValidationUtil.validateRequiredEnum(transactionType, "페이 거래타입");
 		ValidationUtil.validateRequiredEnum(transactionPurpose, "페이 거래목적");
@@ -82,7 +88,8 @@ public class PayTransactionEntity extends BaseEntity {
 			transactionPurpose,
 			transactionAmount,
 			balanceSnapshot,
-			targetId
+			withdrawalSource,
+			depositSource
 		);
 	}
 

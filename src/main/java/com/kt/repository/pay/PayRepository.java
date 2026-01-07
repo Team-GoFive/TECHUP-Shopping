@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.pay;
 
 import java.util.Optional;
 

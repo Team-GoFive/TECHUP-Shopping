@@ -12,7 +12,7 @@ import com.kt.domain.entity.PayEntity;
 import com.kt.domain.entity.ProductEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
-import com.kt.repository.PayRepository;
+import com.kt.repository.pay.PayRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.payment.PaymentSettlementService;

@@ -27,7 +27,7 @@ import com.kt.domain.entity.ShippingDetailEntity;
 import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.AddressRepository;
-import com.kt.repository.PayRepository;
+import com.kt.repository.pay.PayRepository;
 import com.kt.repository.PaymentRepository;
 import com.kt.repository.ShippingDetailRepository;
 import com.kt.repository.inventory.InventoryRepository;

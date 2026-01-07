@@ -33,8 +33,6 @@ public class BankAccountTransactionRepositoryCustomImpl implements BankAccountTr
 
 	private final QBankAccountTransactionEntity bankAccountTransaction = bankAccountTransactionEntity;
 
-
-
 	@Override
 	public Page<BankAccountTransactionResponse.Search> search(
 		UUID holderId,
@@ -90,9 +88,7 @@ public class BankAccountTransactionRepositoryCustomImpl implements BankAccountTr
 		return bankAccountTransaction.bankAccount.holderId.eq(holderId);
 	}
 
-	private BooleanExpression eqType(
-		BankAccountTransactionType type
-	) {
+	private BooleanExpression eqType(BankAccountTransactionType type) {
 		return type == null ? null : bankAccountTransaction.transactionType.eq(type);
 	}
 

@@ -1,12 +1,12 @@
-package com.kt.controller.bankaccount;
+package com.kt.controller.pay.transaction;
 
 import com.kt.common.Paging;
 import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
-import com.kt.domain.dto.request.BankAccountTransactionRequest;
-import com.kt.domain.dto.response.BankAccountTransactionResponse;
+import com.kt.domain.dto.request.PayTransactionRequest;
+import com.kt.domain.dto.response.PayTransactionResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.bankaccount.transaction.BankAccountTransactionService;
+import com.kt.service.pay.transaction.PayTransactionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,28 +23,21 @@ import java.util.UUID;
 import static com.kt.common.api.ApiResult.page;
 
 @RestController
-@RequestMapping("/api/bank-account-transactions")
+@RequestMapping("/api/pay-transactions")
 @RequiredArgsConstructor
-public class BankAccountTransactionController implements BankAccountTransactionSupporter{
+public class PayTransactionController implements PayTransactionSwaggerSupporter {
 
-	private final BankAccountTransactionService bankAccountTransactionService;
+	private final PayTransactionService payTransactionService;
 
 	@GetMapping
-	public ResponseEntity<ApiResult<PageResponse<BankAccountTransactionResponse.Search>>> getMyTransactions(
+	public ResponseEntity<ApiResult<PageResponse<PayTransactionResponse.Search>>> getMyTransactions(
 		@AuthenticationPrincipal DefaultCurrentUser currentUser,
-		@ParameterObject BankAccountTransactionRequest.Search request,
+		@ParameterObject PayTransactionRequest.Search request,
 		@ModelAttribute Paging paging
 	) {
-
-		UUID holderId = currentUser.getId();
-
+		UUID userId = currentUser.getId();
 		return page(
-			bankAccountTransactionService.getTransactions(
-				holderId,
-				request,
-				paging.toPageable()
-			)
+			payTransactionService.getTransactions(userId, request, paging.toPageable())
 		);
 	}
-
 }
