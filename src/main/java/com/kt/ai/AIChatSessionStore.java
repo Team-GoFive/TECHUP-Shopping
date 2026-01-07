@@ -42,6 +42,7 @@ public class AIChatSessionStore {
 	}
 
 	public void clear(UUID userId) {
+		// TODO: 챗봇 상담 실패시 실패 키 삭제 시점
 		redisCache.delete(RedisKey.AI_CHAT_SESSION.key(userId));
 	}
 }
