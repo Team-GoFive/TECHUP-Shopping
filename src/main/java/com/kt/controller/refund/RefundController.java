@@ -14,8 +14,8 @@ import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.RefundHistoryRequest;
 import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.RefundQueryService;
-import com.kt.service.RefundService;
+import com.kt.service.refund.RefundQueryService;
+import com.kt.service.refund.RefundService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,13 +1,10 @@
 package com.kt.service.seller;
 
 import com.kt.common.CategoryEntityCreator;
-import com.kt.common.OrderEntityCreator;
 import com.kt.common.OrderProductCreator;
 import com.kt.common.ProductCreator;
 import com.kt.common.SellerEntityCreator;
 import com.kt.common.UserEntityCreator;
-import com.kt.constant.OrderProductStatus;
-import com.kt.constant.ReviewStatus;
 import com.kt.domain.dto.response.SellerReviewResponse;
 import com.kt.domain.entity.CategoryEntity;
 import com.kt.domain.entity.OrderEntity;
@@ -24,6 +21,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.seller.review.SellerReviewService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

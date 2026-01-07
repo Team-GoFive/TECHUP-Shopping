@@ -16,13 +16,12 @@ import com.kt.domain.dto.request.UserRequest;
 import com.kt.domain.dto.response.OrderProductResponse;
 import com.kt.domain.dto.response.UserResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.UserService;
+import com.kt.service.user.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import static com.kt.common.api.ApiResult.*;
-
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,24 +29,22 @@ import static com.kt.common.api.ApiResult.*;
 public class UserController implements UserSwaggerSupporter {
 	private final UserService userService;
 
-
 	@Override
 	@GetMapping
 	public ResponseEntity<ApiResult<UserResponse.UserDetail>> me(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
-	){
+	) {
 		return wrap(
 			userService.getUserDetailSelf(defaultCurrentUser.getId())
 		);
 	}
-
 
 	@Override
 	@PutMapping
 	public ResponseEntity<ApiResult<Void>> update(
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser,
 		@RequestBody @Valid UserRequest.Update request
-	){
+	) {
 		userService.update(
 			defaultCurrentUser.getId(),
 			request
@@ -60,7 +57,7 @@ public class UserController implements UserSwaggerSupporter {
 	public ResponseEntity<ApiResult<PageResponse<OrderProductResponse.SearchReviewable>>> searchReviewables(
 		@ModelAttribute Paging paging,
 		@AuthenticationPrincipal DefaultCurrentUser defaultCurrentUser
-	){
+	) {
 		return page(
 			userService.getReviewableOrderProducts(
 				paging.toPageable(),

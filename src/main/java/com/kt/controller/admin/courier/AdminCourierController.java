@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.CourierService;
 import com.kt.service.admin.AdminCourierService;
 
 import lombok.RequiredArgsConstructor;

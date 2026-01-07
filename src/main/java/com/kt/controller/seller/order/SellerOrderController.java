@@ -8,7 +8,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.constant.OrderProductStatus;
 import com.kt.domain.dto.response.SellerOrderResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.seller.SellerOrderService;
+import com.kt.service.seller.order.SellerOrderService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;

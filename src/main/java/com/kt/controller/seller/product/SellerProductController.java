@@ -24,7 +24,7 @@ import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.request.SellerProductRequest;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.seller.SellerProductService;
+import com.kt.service.seller.product.SellerProductService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;

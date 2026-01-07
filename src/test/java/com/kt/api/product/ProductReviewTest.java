@@ -27,8 +27,8 @@ import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.OrderService;
-import com.kt.service.ReviewService;
+import com.kt.service.order.OrderService;
+import com.kt.service.review.ReviewService;
 
 @DisplayName("상품 리뷰 조회 - GET /api/products/{productId}/reviews")
 public class ProductReviewTest extends MockMvcTest {

@@ -17,7 +17,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.response.SellerReviewResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.seller.SellerReviewService;
+import com.kt.service.seller.review.SellerReviewService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

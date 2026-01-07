@@ -4,7 +4,7 @@ import static com.kt.common.api.ApiResult.*;
 
 import java.util.UUID;
 
-import com.kt.service.OrderPaymentService;
+import com.kt.service.orderpay.OrderPaymentService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +24,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.OrderResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.OrderService;
+import com.kt.service.order.OrderService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +71,6 @@ public class OrderController implements OrderSwaggerSupporter {
 		orderPaymentService.orderPay(currentUser.getId(), request);
 		return empty();
 	}
-
 
 	@Override
 	@PatchMapping("/order-products/{orderProductId}/cancel")

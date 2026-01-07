@@ -13,9 +13,11 @@ import com.kt.common.UserEntityCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.seller.SellerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +36,7 @@ import com.kt.repository.AddressRepository;
 import com.kt.repository.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.OrderService;
+import com.kt.service.order.OrderService;
 
 @SpringBootTest
 @AutoConfigureMockMvc

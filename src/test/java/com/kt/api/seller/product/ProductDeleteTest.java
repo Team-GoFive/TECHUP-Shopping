@@ -14,7 +14,6 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.seller.SellerProductService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

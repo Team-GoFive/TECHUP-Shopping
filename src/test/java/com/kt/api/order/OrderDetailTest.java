@@ -11,9 +11,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import com.kt.common.SellerEntityCreator;
 import com.kt.domain.entity.SellerEntity;
 import com.kt.repository.seller.SellerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.ResultActions;
@@ -31,7 +33,7 @@ import com.kt.repository.CategoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.OrderService;
+import com.kt.service.order.OrderService;
 
 @DisplayName("상품 상세 조회 - GET /api/orders/{orderId}")
 public class OrderDetailTest extends MockMvcTest {

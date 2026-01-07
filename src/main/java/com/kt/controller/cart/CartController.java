@@ -17,8 +17,8 @@ import com.kt.domain.dto.request.OrderRequest;
 import com.kt.domain.dto.response.CartResponse;
 import com.kt.domain.entity.CartItemEntity;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.CartService;
-import com.kt.service.OrderService;
+import com.kt.service.cart.CartService;
+import com.kt.service.order.OrderService;
 
 import lombok.RequiredArgsConstructor;
 

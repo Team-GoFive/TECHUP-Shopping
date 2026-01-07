@@ -23,7 +23,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.ReviewRequest;
 import com.kt.domain.dto.response.ReviewResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.ReviewService;
+import com.kt.service.review.ReviewService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

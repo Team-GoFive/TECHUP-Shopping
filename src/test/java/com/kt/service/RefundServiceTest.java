@@ -42,7 +42,9 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.refund.RefundHistoryRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.seller.SellerRefundService;
+import com.kt.service.order.OrderService;
+import com.kt.service.refund.RefundService;
+import com.kt.service.seller.refund.SellerRefundService;
 
 @Transactional
 @ActiveProfiles("test")

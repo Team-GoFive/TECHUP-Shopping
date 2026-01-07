@@ -3,7 +3,6 @@ package com.kt.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.domain.dto.response.CategoryResponse;
 import com.kt.domain.entity.CategoryEntity;
-import com.kt.exception.CustomException;
 import com.kt.repository.CategoryRepository;
+import com.kt.service.category.CategoryService;
 
 @SpringBootTest
 @Transactional
