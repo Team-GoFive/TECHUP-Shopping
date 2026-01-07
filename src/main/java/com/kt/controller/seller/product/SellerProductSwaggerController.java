@@ -1,4 +1,4 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.product;
 
 import java.util.UUID;
 

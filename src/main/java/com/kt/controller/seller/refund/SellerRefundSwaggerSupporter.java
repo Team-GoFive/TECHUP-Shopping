@@ -1,9 +1,8 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.refund;
 
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.kt.common.Paging;

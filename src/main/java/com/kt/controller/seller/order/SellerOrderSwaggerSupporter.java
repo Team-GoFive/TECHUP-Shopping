@@ -1,11 +1,9 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.order;
 
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 

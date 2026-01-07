@@ -1,4 +1,4 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.review;
 
 import static com.kt.common.api.ApiResult.*;
 
@@ -19,7 +19,6 @@ import com.kt.domain.dto.response.SellerReviewResponse;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.seller.SellerReviewService;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

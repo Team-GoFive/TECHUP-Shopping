@@ -1,4 +1,4 @@
-package com.kt.controller.seller;
+package com.kt.controller.seller.refund;
 
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/seller/refunds")
 @RequiredArgsConstructor
-public class SellerRefundController implements SellerRefundSwaggerSupporter{
+public class SellerRefundController implements SellerRefundSwaggerSupporter {
 
 	private final SellerRefundService sellerRefundService;
 	private final RefundQueryService refundQueryService;
