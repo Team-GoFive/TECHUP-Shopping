@@ -27,6 +27,7 @@ import com.kt.repository.account.AccountRepository;
 import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
+import com.kt.service.product.ProductService;
 
 @ActiveProfiles("test")
 @SpringBootTest

@@ -19,7 +19,7 @@ import com.kt.common.api.PageResponse;
 import com.kt.constant.searchtype.ProductSearchType;
 import com.kt.domain.dto.response.ProductResponse;
 import com.kt.security.CurrentUser;
-import com.kt.service.ProductService;
+import com.kt.service.product.ProductService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

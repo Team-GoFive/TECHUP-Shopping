@@ -44,7 +44,7 @@ import com.kt.repository.refund.RefundHistoryRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.RefundService;
+import com.kt.service.refund.RefundService;
 
 @SpringBootTest
 @AutoConfigureMockMvc

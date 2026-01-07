@@ -17,8 +17,8 @@ import com.kt.common.api.PageResponse;
 import com.kt.domain.dto.request.RefundRejectRequest;
 import com.kt.domain.dto.response.RefundQueryResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.RefundQueryService;
-import com.kt.service.seller.SellerRefundService;
+import com.kt.service.refund.RefundQueryService;
+import com.kt.service.seller.refund.SellerRefundService;
 
 import static com.kt.common.api.ApiResult.*;
 

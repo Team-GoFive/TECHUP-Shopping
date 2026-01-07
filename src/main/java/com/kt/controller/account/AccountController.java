@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.AccountRequest;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.AccountService;
+import com.kt.service.account.AccountService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

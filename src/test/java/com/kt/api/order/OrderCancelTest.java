@@ -41,7 +41,7 @@ import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.OrderService;
+import com.kt.service.order.OrderService;
 
 @DisplayName("주문 취소 - PATCH /api/orders/order-products/{orderProductId}/cancel")
 public class OrderCancelTest extends MockMvcTest {

@@ -1,6 +1,5 @@
 package com.kt.api.refund;
 
-import static com.kt.common.UserEntityCreator.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -45,7 +44,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.RefundService;
+import com.kt.service.refund.RefundService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -94,12 +93,12 @@ public class RefundSearchTest extends MockMvcTest {
 		orderRepository.save(testOrder);
 
 		testOrderProduct = OrderProductEntity.create(
-				1L,
-				testProduct.getPrice(),
-				OrderProductStatus.SHIPPING_COMPLETED,
-				testOrder,
-				testProduct
-			);
+			1L,
+			testProduct.getPrice(),
+			OrderProductStatus.SHIPPING_COMPLETED,
+			testOrder,
+			testProduct
+		);
 		testOrder.addOrderProduct(testOrderProduct);
 		orderProductRepository.save(testOrderProduct);
 

@@ -40,8 +40,8 @@ import com.kt.repository.inventory.InventoryRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
-import com.kt.service.OrderPaymentService;
-import com.kt.service.OrderService;
+import com.kt.service.orderpay.OrderPaymentService;
+import com.kt.service.order.OrderService;
 
 import lombok.extern.slf4j.Slf4j;
 

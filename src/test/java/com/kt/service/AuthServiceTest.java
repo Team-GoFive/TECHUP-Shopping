@@ -38,6 +38,7 @@ import com.kt.infra.redis.RedisCache;
 import com.kt.repository.PasswordRequestRepository;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.auth.AuthServiceImpl;
 import com.kt.util.EncryptUtil;
 import com.mysema.commons.lang.Pair;
 
@@ -481,6 +482,5 @@ public class AuthServiceTest {
 		log.info("exception getMessage :: {}", exception.getMessage());
 		assertEquals("AUTH_INVALID", exception.getMessage());
 	}
-
 
 }

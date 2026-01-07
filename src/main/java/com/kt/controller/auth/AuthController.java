@@ -17,7 +17,7 @@ import com.kt.domain.dto.request.PasswordManagementRequest;
 import com.kt.domain.dto.request.SignupRequest;
 import com.kt.domain.dto.request.TokenReissueRequest;
 import com.kt.domain.dto.response.TokenResponse;
-import com.kt.service.AuthService;
+import com.kt.service.auth.AuthService;
 import com.mysema.commons.lang.Pair;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

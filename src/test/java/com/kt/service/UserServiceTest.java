@@ -41,6 +41,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.user.UserService;
 
 @Transactional
 @SpringBootTest

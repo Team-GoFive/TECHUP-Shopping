@@ -29,7 +29,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.CartService;
+import com.kt.service.cart.CartService;
 
 @SpringBootTest
 @AutoConfigureMockMvc

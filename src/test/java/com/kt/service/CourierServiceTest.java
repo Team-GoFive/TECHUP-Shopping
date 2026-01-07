@@ -17,16 +17,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.CourierEntityCreator;
-import com.kt.common.UserEntityCreator;
 import com.kt.constant.Gender;
 import com.kt.constant.message.ErrorCode;
 import com.kt.domain.dto.request.CourierRequest;
 import com.kt.domain.dto.response.CourierResponse;
 import com.kt.domain.entity.CourierEntity;
-import com.kt.domain.entity.UserEntity;
 import com.kt.exception.CustomException;
 import com.kt.repository.courier.CourierRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.courier.CourierService;
 
 @SpringBootTest
 @Transactional

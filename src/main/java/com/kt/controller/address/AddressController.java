@@ -20,7 +20,7 @@ import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.request.AddressRequest;
 import com.kt.domain.dto.response.AddressResponse;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.AddressService;
+import com.kt.service.address.AddressService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

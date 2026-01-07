@@ -31,7 +31,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.CartService;
+import com.kt.service.cart.CartService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -90,7 +90,7 @@ class CartOrderCreateTest extends MockMvcTest {
 		CartEntity savedCart = cartService.getCart(user.getId());
 		item1 = savedCart.getItems().get(0);
 		item2 = savedCart.getItems().get(1);
-		}
+	}
 
 	@Test
 	void 장바구니_상품_선택__주문_생성_성공() throws Exception {

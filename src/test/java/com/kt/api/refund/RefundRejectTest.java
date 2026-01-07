@@ -1,6 +1,5 @@
 package com.kt.api.refund;
 
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,7 +32,7 @@ import com.kt.repository.refund.RefundHistoryRepository;
 import com.kt.repository.seller.SellerRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.DefaultCurrentUser;
-import com.kt.service.RefundService;
+import com.kt.service.refund.RefundService;
 
 @SpringBootTest
 @AutoConfigureMockMvc

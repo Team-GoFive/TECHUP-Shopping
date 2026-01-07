@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.api.ApiResult;
 import com.kt.domain.dto.response.CategoryResponse;
-import com.kt.service.CategoryService;
+import com.kt.service.category.CategoryService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryController implements CategorySwaggerSupporter{
+public class CategoryController implements CategorySwaggerSupporter {
 
 	private final CategoryService categoryService;
 
