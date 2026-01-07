@@ -59,7 +59,8 @@ public class PaymentSettlementService {
 				PayTransactionPurpose.ORDER_PAYMENT,
 				totalPrice,
 				pay.getBalance(),
-				bankAccount.getId()
+				pay.getDisplayName(),
+				bankAccount.getDisplayName()
 			);
 		payTransactionRepository.save(payTransaction);
 	}
